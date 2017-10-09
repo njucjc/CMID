@@ -11,7 +11,6 @@ import cn.edu.nju.model.Context;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
-import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -62,6 +61,9 @@ public class Parser {
                // Checker checker = new EccChecker(idNode.getTextContent(), root, contextSets);
                 Checker checker = new PccChecker(idNode.getTextContent(), root, contextSets, stMap);
                 checkerList.add(checker);
+
+//                System.out.println("[DEBUG] " + checker.getName());
+//                checker.printSyntaxTree();
             }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -118,6 +120,8 @@ public class Parser {
     }
 
     public void doContextChange(String change) {
+        System.out.println("[DEBUG] Change: " + change);
+
         String [] s0 = change.split(",");
         assert s0.length == 6:"[DEBUG] Illegal change：" + change + ".";
         String [] s1 = s0[s0.length - 1].split("_");
@@ -143,11 +147,13 @@ public class Parser {
     public void doCheck() {
         for(Checker checker : checkerList) {
             String links = checker.doCheck();
+//            System.out.println("[DEBUG] CCT: ");
+//            checker.printCCT();
             if("".equals(links)) {
-                System.out.println(checker.getName() + ": Pass!");
+                System.out.println("[rule] " + checker.getName() + ": Pass!");
             }
             else {
-                System.out.println(checker.getName() + ": Failed!");
+                System.out.println("[rule] " + checker.getName() + ": Failed!");
                 String[] strs = links.split("#");
                 for (String s : strs) {
                     System.out.println(s);
@@ -165,16 +171,22 @@ public class Parser {
             FileReader fr = new FileReader("resource/changes/00.txt");
             BufferedReader br = new BufferedReader(fr);
             String change;
+            int scheduleCount = 0;
+
+            long startTime = System.currentTimeMillis();
+
             while ((change = br.readLine()) != null) {
+                scheduleCount++;
                 checker.doContextChange(change);
+                System.out.println("[INFO] " + "schedule number: " + scheduleCount);
                 checker.doCheck();
             }
-        }
-        catch (IOException e) {
+
+            long endTime = System.currentTimeMillis(); //获取结束时间
+            System.out.println("[INFO] run time： " + (endTime - startTime) + "ms");
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
-
     }
 
 }
