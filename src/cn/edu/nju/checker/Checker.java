@@ -5,10 +5,7 @@ import cn.edu.nju.model.node.CCTNode;
 import cn.edu.nju.model.node.STNode;
 import cn.edu.nju.model.node.TreeNode;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by njucjc on 2017/10/3.
@@ -52,6 +49,51 @@ public abstract class Checker {
      * @return violated link
      */
     abstract public String doCheck();
+
+    public void printSyntaxTree() {
+        BFSOrder(stRoot);
+    }
+
+    public void printCCT() {
+        BFSOrder(cctRoot);
+    }
+
+    private void BFSOrder(TreeNode root) {
+        if (root == null) {
+            return ;
+        }
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        TreeNode last = root;
+        TreeNode nlast = root;
+        while (!queue.isEmpty()) {
+            TreeNode t = queue.poll();
+            System.out.print(t.getNodeName());
+            if(t instanceof CCTNode) {
+                Context c = ((CCTNode) t).getContext();
+                if(c != null) {
+                    System.out.print("(" + c.getId() + ") ");
+                }
+                else {
+                    System.out.print(" ");
+                }
+            }
+            else {
+                System.out.print(" ");
+            }
+
+            for(TreeNode n : t.getChildTreeNodes()) {
+                queue.add(n);
+                nlast = n;
+            }
+
+            if(t == last) {
+                System.out.println();
+                last = nlast;
+            }
+        }
+
+    }
 
 
 }
