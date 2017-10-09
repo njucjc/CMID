@@ -11,6 +11,7 @@ import cn.edu.nju.model.Context;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
+import javax.swing.*;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -57,7 +58,9 @@ public class Parser {
                 assert treeHead.hasChildNodes():"[DEBUG] Create syntax tree failed !";
 
                 STNode root = (STNode)treeHead.getFirstChild();
-                Checker checker = new EccChecker(idNode.getTextContent(), root, contextSets);
+                root.setParentTreeNode(null);
+               // Checker checker = new EccChecker(idNode.getTextContent(), root, contextSets);
+                Checker checker = new PccChecker(idNode.getTextContent(), root, contextSets, stMap);
                 checkerList.add(checker);
             }
         } catch (ParserConfigurationException e) {
@@ -170,6 +173,7 @@ public class Parser {
         catch (IOException e) {
             e.printStackTrace();
         }
+
 
     }
 
