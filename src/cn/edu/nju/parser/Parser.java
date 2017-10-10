@@ -57,7 +57,9 @@ public class Parser {
                 assert treeHead.hasChildNodes():"[DEBUG] Create syntax tree failed !";
 
                 STNode root = (STNode)treeHead.getFirstChild();
-                Checker checker = new EccChecker(idNode.getTextContent(), root, contextSets);
+                root.setParentTreeNode(null);
+               // Checker checker = new EccChecker(idNode.getTextContent(), root, contextSets);
+                Checker checker = new PccChecker(idNode.getTextContent(), root, contextSets, stMap);
                 checkerList.add(checker);
 
 //                System.out.println("[DEBUG] " + checker.getName());
@@ -171,7 +173,7 @@ public class Parser {
             String change;
             int scheduleCount = 0;
 
-            long startTime=System.currentTimeMillis();
+            long startTime = System.currentTimeMillis();
 
             while ((change = br.readLine()) != null) {
                 scheduleCount++;
@@ -180,10 +182,9 @@ public class Parser {
                 checker.doCheck();
             }
 
-            long endTime=System.currentTimeMillis(); //获取结束时间
-            System.out.println("[INFO] run time： "+ (endTime -startTime) +"ms");
-        }
-        catch (IOException e) {
+            long endTime = System.currentTimeMillis(); //获取结束时间
+            System.out.println("[INFO] run time： " + (endTime - startTime) + "ms");
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
