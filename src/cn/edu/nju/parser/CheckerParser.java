@@ -139,7 +139,7 @@ public class CheckerParser {
         }
     }
 
-    public void doContextChange(String change) {
+    private void doContextChange(String change) {
         System.out.println("[DEBUG] Change: " + change);
 
         String [] s0 = change.split(",");
@@ -164,7 +164,7 @@ public class CheckerParser {
 
     }
 
-    public void doCheck() {
+    private void doCheck() {
         for(Checker checker : checkerList) {
             String links = checker.doCheck();
 //            System.out.println("[DEBUG] CCT: ");
