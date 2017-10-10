@@ -48,6 +48,9 @@ public class PccChecker extends Checker{
         Set<Context> contextSet = contextSets.get(contextSetName);
         List<CCTNode> criticalNodeList = cctMap.get(contextSetName);
         STNode stNode = stMap.get(contextSetName);
+        assert stNode.getNodeType() == STNode.EXISTENTIAL_NODE
+                || stNode.getNodeType() == STNode.UNIVERSAL_NODE
+                :"[DEBUG] Type Error.";
 
         if("-".equals(op)) {
             contextSet.remove(context);
@@ -59,7 +62,8 @@ public class PccChecker extends Checker{
                 for (TreeNode n : childNodes) {
                     CCTNode child = (CCTNode)n;
                     if(context.equals(child.getContext())) {
-                        removeCriticalNode((STNode) stRoot.getFirstChild(), child);
+                        removeCriticalNode((STNode) stNode.getFirstChild(), child);
+                        childNodes.remove(n);//移除子树
                         break;
                     }
                 }
@@ -137,18 +141,25 @@ public class PccChecker extends Checker{
      * @param cctRoot
      */
     private void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
-        if(stRoot.getNodeType() == STNode.UNIVERSAL_NODE || stRoot.getNodeType() == STNode.UNIVERSAL_NODE) {
-            cctMap.get(stRoot.getContextSetName()).remove(cctRoot); //删除相关信息
+        assert stRoot.getNodeType() == cctRoot.getNodeType()
+                :"[DEBUG] Type error:" + stRoot.getNodeName() + " != " + cctRoot.getNodeName();
+        if(!cctRoot.hasChildNodes()) {
+            return;
+        }
+        if(stRoot.getNodeType() == STNode.UNIVERSAL_NODE || stRoot.getNodeType() == STNode.EXISTENTIAL_NODE) {
+            cctMap.get(stRoot.getContextSetName()).remove(cctRoot);//删除相关信息
             STNode stChild = (STNode) stRoot.getFirstChild();
 
             //全称量词和存在量词的子节点数由其相关的context set大小决定
             Set<Context> contextSet = contextSets.get(stRoot.getContextSetName());
+            assert contextSet.size() == cctRoot.getChildTreeNodes().size():"[DEBUG] Size error.";
             for(int i = 0; i < contextSet.size(); i++) {
                 removeCriticalNode(stChild, (CCTNode) cctRoot.getChildTreeNodes().get(i));
             }
         }
         else {
             List<TreeNode> childNodes = stRoot.getChildTreeNodes();
+            assert childNodes.size() == cctRoot.getChildTreeNodes().size():"[DEBUG] Size error.";
             for (int i = 0; i < childNodes.size(); i++) {
                 removeCriticalNode((STNode) childNodes.get(i), (CCTNode) cctRoot.getChildTreeNodes().get(i));
             }

@@ -20,16 +20,30 @@ import java.io.IOException;
 /**
  * Created by njucjc on 2017/10/4.
  */
-public class Parser {
+public class CheckerParser {
+
+    public static final int ECC_TYPE = 0;
+    public static final int PCC_TYPE = 1;
     /* Checker list */
     private List<Checker> checkerList;
 
     private Map<String, Set<Context>> contextSets;
 
+    private String xmlFilePath;
 
-    public Parser(String xmlFilePath) {
+    private  String changeFilePath;
+
+    private int batch;
+
+    private  int checkType;
+
+    public CheckerParser(String xmlFilePath, String changeFilePath,int batch, int checkType) {
         this.checkerList = new ArrayList<>();
         this.contextSets = new HashMap<>();
+        this.xmlFilePath = xmlFilePath;
+        this.changeFilePath = changeFilePath;
+        this.batch = batch > 1 ? batch : 1;
+        this.checkType = checkType == PCC_TYPE ? PCC_TYPE : ECC_TYPE;
         parserXML(xmlFilePath);
     }
 
@@ -58,8 +72,14 @@ public class Parser {
 
                 STNode root = (STNode)treeHead.getFirstChild();
                 root.setParentTreeNode(null);
-               // Checker checker = new EccChecker(idNode.getTextContent(), root, contextSets);
-                Checker checker = new PccChecker(idNode.getTextContent(), root, contextSets, stMap);
+
+                Checker checker;
+                if(checkType == PCC_TYPE) {
+                    checker = new PccChecker(idNode.getTextContent(), root, contextSets, stMap);
+                }
+                else{
+                    checker = new EccChecker(idNode.getTextContent(), root, contextSets);
+                }
                 checkerList.add(checker);
 
 //                System.out.println("[DEBUG] " + checker.getName());
@@ -119,7 +139,7 @@ public class Parser {
         }
     }
 
-    public void doContextChange(String change) {
+    private void doContextChange(String change) {
         System.out.println("[DEBUG] Change: " + change);
 
         String [] s0 = change.split(",");
@@ -144,7 +164,7 @@ public class Parser {
 
     }
 
-    public void doCheck() {
+    private void doCheck() {
         for(Checker checker : checkerList) {
             String links = checker.doCheck();
 //            System.out.println("[DEBUG] CCT: ");
@@ -164,11 +184,9 @@ public class Parser {
         System.out.println("======================================");
     }
 
-
-    public static void main(String[] args) {
-        Parser checker = new Parser("resource/rules.xml");
+    public void run() {
         try {
-            FileReader fr = new FileReader("resource/changes/00.txt");
+            FileReader fr = new FileReader(changeFilePath);
             BufferedReader br = new BufferedReader(fr);
             String change;
             int scheduleCount = 0;
@@ -177,13 +195,22 @@ public class Parser {
 
             while ((change = br.readLine()) != null) {
                 scheduleCount++;
-                checker.doContextChange(change);
-                System.out.println("[INFO] " + "schedule number: " + scheduleCount);
-                checker.doCheck();
+                doContextChange(change);
+                if (scheduleCount % batch == 0) {
+                    System.out.println("[INFO] " + "schedule number: " + (scheduleCount / batch));
+                    doCheck();
+                }
+            }
+
+            if(scheduleCount % batch != 0) {
+                System.out.println("[INFO] " + "schedule number: " + (scheduleCount / batch));
+                doCheck();
             }
 
             long endTime = System.currentTimeMillis(); //获取结束时间
             System.out.println("[INFO] run time： " + (endTime - startTime) + "ms");
+            fr.close();
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
