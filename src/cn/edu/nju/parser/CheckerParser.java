@@ -209,6 +209,8 @@ public class CheckerParser {
 
             long endTime = System.currentTimeMillis(); //获取结束时间
             System.out.println("[INFO] run time： " + (endTime - startTime) + "ms");
+            fr.close();
+            br.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
