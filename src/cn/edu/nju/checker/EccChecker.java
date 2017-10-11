@@ -41,8 +41,7 @@ public class EccChecker extends Checker{
             }
         }
 
-        cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
-        buildCCT(stRoot, cctRoot);
+
      }
 
     /**
@@ -51,9 +50,8 @@ public class EccChecker extends Checker{
      */
     @Override
     public String doCheck() {
-        if(cctRoot == null) {
-            return "";
-        }
+        cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
+        buildCCT(stRoot, cctRoot);
         List<Context> param = new ArrayList<>();
         evaluation(cctRoot, param);
         if(cctRoot.getNodeValue()) {
