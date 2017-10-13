@@ -4,6 +4,7 @@ import cn.edu.nju.checker.*;
 import cn.edu.nju.model.node.STNode;
 
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.*;
 
@@ -37,17 +38,20 @@ public class CheckerParser {
 
     private  int checkType;
 
-    public CheckerParser(String xmlFilePath, String changeFilePath,int batch, int checkType) {
+    public CheckerParser(String configFilePath) {
         this.checkerList = new ArrayList<>();
         this.contextSets = new HashMap<>();
-        this.xmlFilePath = xmlFilePath;
-        this.changeFilePath = changeFilePath;
-        this.batch = batch > 1 ? batch : 1;
-        this.checkType = checkType == PCC_TYPE ? PCC_TYPE : ECC_TYPE;
-        parserXML(xmlFilePath);
+//        this.xmlFilePath = xmlFilePath;
+//        this.changeFilePath = changeFilePath;
+//        this.batch = batch > 1 ? batch : 1;
+//        this.checkType = checkType == PCC_TYPE ? PCC_TYPE : ECC_TYPE;
+        //Set xmlFile、changFile、batch、checkType
+        parseConfigFile(configFilePath);
+
+        parseXML(xmlFilePath);
     }
 
-    private void parserXML(String xmlFilePath) {
+    private void parseXML(String xmlFilePath) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
         try {
@@ -92,6 +96,36 @@ public class CheckerParser {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private void parseConfigFile(String configFilePath) {
+        Properties properties = new Properties();
+        try {
+            FileInputStream fis = new FileInputStream(configFilePath);
+            properties.load(fis);
+            fis.close();
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        this.xmlFilePath = properties.getProperty("xmlFilePath");
+        this.changeFilePath = properties.getProperty("changeFilePath");
+        String technique = properties.getProperty("technique");
+        if("PCC".equals(technique)) {
+            this.checkType = PCC_TYPE;
+        } else if("ECC".equals(technique)){
+            this.checkType = ECC_TYPE;
+        } else {
+            assert false:"[DEBUG] Checking technique error: " + technique;
+        }
+
+        String schedule = properties.getProperty("schedule");
+        if(schedule.matches("[0-9]+")) {
+            this.batch = Integer.parseInt(schedule);
+        } else {
+            assert false:"[DEBUG] Schedule error: " + schedule;
+        }
+
     }
 
     private void buildSyntaxTree(NodeList list, STNode root, Map<String,STNode> stMap) {
