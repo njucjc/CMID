@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.util.*;
 
 import cn.edu.nju.model.Context;
+import cn.edu.nju.util.LogFile;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -33,6 +34,8 @@ public class CheckerParser {
     private String xmlFilePath;
 
     private  String changeFilePath;
+
+    private  String logFilePath;
 
     private int batch;
 
@@ -80,9 +83,11 @@ public class CheckerParser {
                 Checker checker;
                 if(checkType == PCC_TYPE) {
                     checker = new PccChecker(idNode.getTextContent(), root, contextSets, stMap);
+                    System.out.println("[DEBUG] PCC checker");
                 }
                 else{
                     checker = new EccChecker(idNode.getTextContent(), root, contextSets);
+                    System.out.println("[DEBUG] ECC checker");
                 }
                 checkerList.add(checker);
 
@@ -109,7 +114,12 @@ public class CheckerParser {
         }
 
         this.xmlFilePath = properties.getProperty("xmlFilePath");
+
         this.changeFilePath = properties.getProperty("changeFilePath");
+
+        this.logFilePath = properties.getProperty("logFilePath");
+        LogFile.createLogFile(this.logFilePath);
+
         String technique = properties.getProperty("technique");
         if("PCC".equals(technique)) {
             this.checkType = PCC_TYPE;
@@ -204,18 +214,18 @@ public class CheckerParser {
 //            System.out.println("[DEBUG] CCT: ");
 //            checker.printCCT();
             if("".equals(links)) {
-                System.out.println("[rule] " + checker.getName() + ": Pass!");
+                  LogFile.writeLog(logFilePath,"[rule] " + checker.getName() + ": Pass!");
             }
             else {
-                System.out.println("[rule] " + checker.getName() + ": Failed!");
+                LogFile.writeLog(logFilePath, "[rule] " + checker.getName() + ": Failed!");
                 String[] strs = links.split("#");
                 for (String s : strs) {
-                    System.out.println(s);
+                    LogFile.writeLog(logFilePath, s);
                 }
 
             }
         }
-        System.out.println("======================================");
+        LogFile.writeLog(logFilePath, "============================================================");
     }
 
     public void run() {
@@ -231,18 +241,18 @@ public class CheckerParser {
                 scheduleCount++;
                 doContextChange(change);
                 if (scheduleCount % batch == 0) {
-                    System.out.println("[INFO] " + "schedule number: " + (scheduleCount / batch));
+                    LogFile.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
                     doCheck();
                 }
             }
 
             if(scheduleCount % batch != 0) {
-                System.out.println("[INFO] " + "schedule number: " + (scheduleCount / batch));
+                LogFile.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
                 doCheck();
             }
 
             long endTime = System.currentTimeMillis(); //获取结束时间
-            System.out.println("[INFO] run time： " + (endTime - startTime) + "ms");
+            LogFile.writeLog(logFilePath, "[INFO] run time： " + (endTime - startTime) + "ms");
             fr.close();
             br.close();
         } catch (IOException e) {
