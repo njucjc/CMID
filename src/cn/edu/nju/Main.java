@@ -21,7 +21,13 @@ public class Main  {
 
     public static void main(String[] args) {
 //        launch(args);
-        CheckerParser checkerParser = new CheckerParser("resource/rules.xml","resource/changes/00.txt",2,CheckerParser.PCC_TYPE);
-        checkerParser.run();
+        if (args.length == 1) {
+            CheckerParser checkerParser = new CheckerParser(args[0]);
+            checkerParser.run();
+        }
+        else {
+            System.out.println("Usage: java Main [configFilePath].");
+        }
+
     }
 }
