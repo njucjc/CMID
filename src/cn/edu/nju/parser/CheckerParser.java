@@ -44,10 +44,7 @@ public class CheckerParser {
     public CheckerParser(String configFilePath) {
         this.checkerList = new ArrayList<>();
         this.contextSets = new HashMap<>();
-//        this.xmlFilePath = xmlFilePath;
-//        this.changeFilePath = changeFilePath;
-//        this.batch = batch > 1 ? batch : 1;
-//        this.checkType = checkType == PCC_TYPE ? PCC_TYPE : ECC_TYPE;
+
         //Set xmlFile、changFile、batch、checkType
         parseConfigFile(configFilePath);
 
@@ -214,18 +211,22 @@ public class CheckerParser {
 //            System.out.println("[DEBUG] CCT: ");
 //            checker.printCCT();
             if("".equals(links)) {
-                  LogFile.writeLog(logFilePath,"[rule] " + checker.getName() + ": Pass!");
+                 // LogFile.writeLog(logFilePath,"[rule] " + checker.getName() + ": Pass!");
+                System.out.println("[rule] " + checker.getName() + ": Pass!");
             }
             else {
-                LogFile.writeLog(logFilePath, "[rule] " + checker.getName() + ": Failed!");
+                // LogFile.writeLog(logFilePath, "[rule] " + checker.getName() + ": Failed!");
+                System.out.println("[rule] " + checker.getName() + ": Failed!");
                 String[] strs = links.split("#");
                 for (String s : strs) {
-                    LogFile.writeLog(logFilePath, s);
+                 //   LogFile.writeLog(logFilePath, s);
+                    System.out.println(s);
                 }
 
             }
         }
-        LogFile.writeLog(logFilePath, "============================================================");
+        // LogFile.writeLog(logFilePath, "============================================================");
+        System.out.println("============================================================");
     }
 
     public void run() {
@@ -241,17 +242,20 @@ public class CheckerParser {
                 scheduleCount++;
                 doContextChange(change);
                 if (scheduleCount % batch == 0) {
-                    LogFile.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
+                   // LogFile.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
+                    System.out.println("[INFO] " + "schedule number: " + (scheduleCount / batch));
                     doCheck();
                 }
             }
 
             if(scheduleCount % batch != 0) {
-                LogFile.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
+                // LogFile.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
+                System.out.println("[INFO] " + "schedule number: " + (scheduleCount / batch));
                 doCheck();
             }
 
             long endTime = System.currentTimeMillis(); //获取结束时间
+            System.out.println("[INFO] run time： " + (endTime - startTime) + "ms");
             LogFile.writeLog(logFilePath, "[INFO] run time： " + (endTime - startTime) + "ms");
             fr.close();
             br.close();
