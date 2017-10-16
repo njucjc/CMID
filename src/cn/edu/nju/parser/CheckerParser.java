@@ -41,6 +41,8 @@ public class CheckerParser {
 
     private  int checkType;
 
+    private int incCount;
+
     public CheckerParser(String configFilePath) {
         this.checkerList = new ArrayList<>();
         this.contextSets = new HashMap<>();
@@ -49,6 +51,7 @@ public class CheckerParser {
         parseConfigFile(configFilePath);
 
         parseXML(xmlFilePath);
+        this.incCount = 0;
     }
 
     private void parseXML(String xmlFilePath) {
@@ -80,11 +83,9 @@ public class CheckerParser {
                 Checker checker;
                 if(checkType == PCC_TYPE) {
                     checker = new PccChecker(idNode.getTextContent(), root, contextSets, stMap);
-                    System.out.println("[DEBUG] PCC checker");
                 }
                 else{
                     checker = new EccChecker(idNode.getTextContent(), root, contextSets);
-                    System.out.println("[DEBUG] ECC checker");
                 }
                 checkerList.add(checker);
 
@@ -216,6 +217,7 @@ public class CheckerParser {
             }
             else {
                 // LogFile.writeLog(logFilePath, "[rule] " + checker.getName() + ": Failed!");
+                incCount++;
                 System.out.println("[rule] " + checker.getName() + ": Failed!");
                 String[] strs = links.split("#");
                 for (String s : strs) {
@@ -255,8 +257,10 @@ public class CheckerParser {
             }
 
             long endTime = System.currentTimeMillis(); //获取结束时间
-            System.out.println("[INFO] run time： " + (endTime - startTime) + "ms");
-            LogFile.writeLog(logFilePath, "[INFO] run time： " + (endTime - startTime) + "ms");
+            System.out.println("[INFO] INC: " + incCount +" times");
+            LogFile.writeLog(logFilePath, "[INFO] INC: " + incCount +" times");
+            System.out.println("[INFO] run time： " + (endTime - startTime) + " ms");
+            LogFile.writeLog(logFilePath, "[INFO] run time： " + (endTime - startTime) + " ms");
             fr.close();
             br.close();
         } catch (IOException e) {
