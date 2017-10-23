@@ -1,4 +1,4 @@
-package cn.edu.nju.parser;
+package cn.edu.nju.builder;
 
 import cn.edu.nju.checker.*;
 import cn.edu.nju.model.node.STNode;
@@ -22,7 +22,7 @@ import java.io.IOException;
 /**
  * Created by njucjc on 2017/10/4.
  */
-public class CheckerParser {
+public class CheckerBuilder {
 
     public static final int ECC_TYPE = 0;
     public static final int PCC_TYPE = 1;
@@ -43,7 +43,7 @@ public class CheckerParser {
 
     private int incCount;
 
-    public CheckerParser(String configFilePath) {
+    public CheckerBuilder(String configFilePath) {
         this.checkerList = new ArrayList<>();
         this.contextSets = new HashMap<>();
 
