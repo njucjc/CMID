@@ -1,6 +1,6 @@
-package cn.edu.nju.model.node;
+package cn.edu.nju.node;
 
-import cn.edu.nju.model.Context;
+import cn.edu.nju.context.Context;
 
 /**
  * Created by njucjc on 2017/10/3.

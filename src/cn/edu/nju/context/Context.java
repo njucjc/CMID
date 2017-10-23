@@ -1,31 +1,23 @@
-package cn.edu.nju.model;
+package cn.edu.nju.context;
 
 /**
  * Created by njucjc on 2017/10/3.
  */
 public class Context {
-    private int id;
     private String timestamp;
-    private  String plateNumber;
+    private String plateNumber;
     private double longitude;
     private double latitude;
     private double speed;
+    private int status;
 
-    public Context(int id, String timestamp, String plateNumber, double longitude, double latitude, double speed) {
-        this.id = id;
+    public Context(String timestamp, String plateNumber, double longitude, double latitude, double speed, int status) {
         this.timestamp = timestamp;
         this.plateNumber = plateNumber;
         this.longitude = longitude;
         this.latitude = latitude;
         this.speed = speed;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
+        this.status = status;
     }
 
     public String getTimestamp() {
@@ -68,38 +60,23 @@ public class Context {
         this.speed = speed;
     }
 
-    @Override
-    public int hashCode() {
-        return Integer.hashCode(id);
+    public int getStatus() {
+        return status;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if(this == obj) {
-            return true;
-        }
-
-        if(obj == null) {
-            return false;
-        }
-
-        if(getClass() != obj.getClass()) {
-            return false;
-        }
-
-        Context c = (Context)obj;
-        return id == c.getId();
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     @Override
     public String toString() {
         return "Context{" +
-                "id=" + id +
-                ", timestamp=" + timestamp +
+                "timestamp=" + timestamp +
                 ", plateNumber=" + plateNumber +
                 ", longitude=" + longitude +
                 ", latitude=" + latitude +
                 ", speed=" + speed +
+                ", status=" + status +
                 '}';
     }
 }

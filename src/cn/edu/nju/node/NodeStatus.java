@@ -1,4 +1,4 @@
-package cn.edu.nju.model.node;
+package cn.edu.nju.node;
 
 /**
  * Created by njucjc on 2017/10/7.

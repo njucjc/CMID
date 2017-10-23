@@ -1,4 +1,4 @@
-package cn.edu.nju.model.node;
+package cn.edu.nju.node;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -1,14 +1,14 @@
 package cn.edu.nju.builder;
 
 import cn.edu.nju.checker.*;
-import cn.edu.nju.model.node.STNode;
+import cn.edu.nju.node.STNode;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileReader;
 import java.util.*;
 
-import cn.edu.nju.model.Context;
+import cn.edu.nju.context.Context;
 import cn.edu.nju.util.LogFileHelper;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;

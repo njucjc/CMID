@@ -1,9 +1,9 @@
 package cn.edu.nju.checker;
 
-import cn.edu.nju.model.Context;
-import cn.edu.nju.model.node.CCTNode;
-import cn.edu.nju.model.node.STNode;
-import cn.edu.nju.model.node.TreeNode;
+import cn.edu.nju.context.Context;
+import cn.edu.nju.node.CCTNode;
+import cn.edu.nju.node.STNode;
+import cn.edu.nju.node.TreeNode;
 import cn.edu.nju.util.BFuncHelper;
 import cn.edu.nju.util.LinkHelper;
 
