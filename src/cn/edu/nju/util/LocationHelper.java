@@ -3,7 +3,7 @@ package cn.edu.nju.util;
 /**
  * Created by njucjc on 2017/10/7.
  */
-public class LocationUtils {
+public class LocationHelper {
     private static final double EARTH_RADIUS = 6378.137;
 
     private static double rad(double d){

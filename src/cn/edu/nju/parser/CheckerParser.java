@@ -9,7 +9,7 @@ import java.io.FileReader;
 import java.util.*;
 
 import cn.edu.nju.model.Context;
-import cn.edu.nju.util.LogFile;
+import cn.edu.nju.util.LogFileHelper;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -82,8 +82,7 @@ public class CheckerParser {
 
                 Checker checker;
                 if(checkType == PCC_TYPE) {
-                    checker = new PccChecker(idNode.getTextContent(), root, contextSets, stMap);
-                }
+                    checker = new PccChecker(idNode.getTextContent(), root, contextSets, stMap);               }
                 else{
                     checker = new EccChecker(idNode.getTextContent(), root, contextSets);
                 }
@@ -116,7 +115,7 @@ public class CheckerParser {
         this.changeFilePath = properties.getProperty("changeFilePath");
 
         this.logFilePath = properties.getProperty("logFilePath");
-        LogFile.createLogFile(this.logFilePath);
+        LogFileHelper.createLogFile(this.logFilePath);
 
         String technique = properties.getProperty("technique");
         if("PCC".equals(technique)) {
@@ -212,22 +211,22 @@ public class CheckerParser {
 //            System.out.println("[DEBUG] CCT: ");
 //            checker.printCCT();
             if("".equals(links)) {
-                 // LogFile.writeLog(logFilePath,"[rule] " + checker.getName() + ": Pass!");
+                 // LogFileHelper.writeLog(logFilePath,"[rule] " + checker.getName() + ": Pass!");
                 System.out.println("[rule] " + checker.getName() + ": Pass!");
             }
             else {
-                // LogFile.writeLog(logFilePath, "[rule] " + checker.getName() + ": Failed!");
+                // LogFileHelper.writeLog(logFilePath, "[rule] " + checker.getName() + ": Failed!");
                 incCount++;
                 System.out.println("[rule] " + checker.getName() + ": Failed!");
                 String[] strs = links.split("#");
                 for (String s : strs) {
-                 //   LogFile.writeLog(logFilePath, s);
+                 //   LogFileHelper.writeLog(logFilePath, s);
                     System.out.println(s);
                 }
 
             }
         }
-        // LogFile.writeLog(logFilePath, "============================================================");
+        // LogFileHelper.writeLog(logFilePath, "============================================================");
         System.out.println("============================================================");
     }
 
@@ -244,23 +243,23 @@ public class CheckerParser {
                 scheduleCount++;
                 doContextChange(change);
                 if (scheduleCount % batch == 0) {
-                   // LogFile.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
+                   // LogFileHelper.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
                     System.out.println("[INFO] " + "schedule number: " + (scheduleCount / batch));
                     doCheck();
                 }
             }
 
             if(scheduleCount % batch != 0) {
-                // LogFile.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
+                // LogFileHelper.writeLog(logFilePath, "[INFO] " + "schedule number: " + (scheduleCount / batch));
                 System.out.println("[INFO] " + "schedule number: " + (scheduleCount / batch));
                 doCheck();
             }
 
             long endTime = System.currentTimeMillis(); //获取结束时间
             System.out.println("[INFO] INC: " + incCount +" times");
-            LogFile.writeLog(logFilePath, "[INFO] INC: " + incCount +" times");
+            LogFileHelper.writeLog(logFilePath, "[INFO] INC: " + incCount +" times");
             System.out.println("[INFO] run time： " + (endTime - startTime) + " ms");
-            LogFile.writeLog(logFilePath, "[INFO] run time： " + (endTime - startTime) + " ms");
+            LogFileHelper.writeLog(logFilePath, "[INFO] run time： " + (endTime - startTime) + " ms");
             fr.close();
             br.close();
         } catch (IOException e) {

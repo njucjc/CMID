@@ -4,7 +4,7 @@ import cn.edu.nju.model.Context;
 import cn.edu.nju.model.node.CCTNode;
 import cn.edu.nju.model.node.STNode;
 import cn.edu.nju.model.node.TreeNode;
-import cn.edu.nju.util.BFunc;
+import cn.edu.nju.util.BFuncHelper;
 import cn.edu.nju.util.LinkHelper;
 
 import java.util.*;
@@ -204,7 +204,7 @@ public class PccChecker extends Checker{
             else {
                 int size = param.size();
                 assert size >= 1:"[DEBUG] Param error";
-                value = BFunc.bfun(cctRoot.getNodeName(), param.get(size - 1), param.get(size >= 2 ? size - 2:size - 1));
+                value = BFuncHelper.bfun(cctRoot.getNodeName(), param.get(size - 1), param.get(size >= 2 ? size - 2:size - 1));
             }
             //设置本结点布尔值
             cctRoot.setNodeValue(value);
