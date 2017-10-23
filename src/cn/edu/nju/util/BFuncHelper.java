@@ -1,11 +1,11 @@
 package cn.edu.nju.util;
 
-import cn.edu.nju.model.Context;
+import cn.edu.nju.context.Context;
 
 /**
  * Created by njucjc on 2017/10/7.
  */
-public class BFunc {
+public class BFuncHelper {
     /**
      * 所有车辆经度在[112, 116]，纬度在[20, 24]
      * @param context
@@ -77,7 +77,7 @@ public class BFunc {
      */
     private static boolean szLocClose(Context context1, Context context2) {
         double d = getDistance(context1, context2);
-        return Double.compare(d, 0.00625) <= 0;
+        return Double.compare(d, 0.001) <= 0;
     }
 
     /**
@@ -92,29 +92,29 @@ public class BFunc {
         double longitude2 = context2.getLongitude();
         double latitude2 = context2.getLatitude();
 
-        return LocationUtils.getDistance(longitude1, latitude1, longitude2, latitude2);
+        return LocationHelper.getDistance(longitude1, latitude1, longitude2, latitude2);
     }
 
     public static boolean bfun(String name, Context context1, Context context2) {
         boolean value = false;
         switch (name) {
             case "sz_loc_range":
-                value = BFunc.szLocRange(context1);
+                value = BFuncHelper.szLocRange(context1);
                 break;
             case "same":
-                value = BFunc.same(context1, context2);
+                value = BFuncHelper.same(context1, context2);
                 break;
             case "sz_loc_close":
-                value = BFunc.szLocClose(context1, context2);
+                value = BFuncHelper.szLocClose(context1, context2);
                 break;
             case "sz_spd_close":
-                value = BFunc.szSpdClose(context1, context2);
+                value = BFuncHelper.szSpdClose(context1, context2);
                 break;
             case "sz_loc_dist":
-                value = BFunc.szLocDist(context1, context2);
+                value = BFuncHelper.szLocDist(context1, context2);
                 break;
             case "sz_loc_dist_neq":
-                value = BFunc.szLocDistNeq(context1, context2);
+                value = BFuncHelper.szLocDistNeq(context1, context2);
                 break;
             default:
                 assert  false:"[DEBUG] Illegal bfunc: " + name;

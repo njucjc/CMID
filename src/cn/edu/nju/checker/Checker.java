@@ -1,9 +1,10 @@
 package cn.edu.nju.checker;
 
-import cn.edu.nju.model.Context;
-import cn.edu.nju.model.node.CCTNode;
-import cn.edu.nju.model.node.STNode;
-import cn.edu.nju.model.node.TreeNode;
+import cn.edu.nju.context.Context;
+import cn.edu.nju.node.CCTNode;
+import cn.edu.nju.node.STNode;
+import cn.edu.nju.node.TreeNode;
+import cn.edu.nju.pattern.Pattern;
 
 import java.util.*;
 
@@ -20,12 +21,15 @@ public abstract class Checker {
     /*Syntax tree for constraint*/
     protected STNode stRoot;
 
-    protected Map<String, Set<Context>> contextSets;
+    protected Map<String, Pattern> patternMap;
 
-    public Checker(String name, STNode stRoot, Map<String, Set<Context>> contextSets) {
+    protected int inc;
+
+    public Checker(String name, STNode stRoot, Map<String, Pattern> patternMap) {
         this.name = name;
         this.stRoot = stRoot;
-        this.contextSets = contextSets;
+        this.patternMap = patternMap;
+        this.inc = 0;
     }
 
     public String getName() {
@@ -36,13 +40,17 @@ public abstract class Checker {
         this.name = name;
     }
 
+    public int getInc() {
+        return inc;
+    }
+
     /**
      *
-     * @param op: addition(+) or deletion(-)
-     * @param contextSetName: the name of the changed context set
-     * @param context: context
+     * @param patternId
+     * @param context
+     * @return
      */
-    abstract public void update(String op, String contextSetName, Context context);
+    abstract public boolean update(String patternId, Context context);
 
     /**
      *
@@ -72,7 +80,7 @@ public abstract class Checker {
             if(t instanceof CCTNode) {
                 Context c = ((CCTNode) t).getContext();
                 if(c != null) {
-                    System.out.print("(" + c.getId() + ") ");
+                    System.out.print("(" + c.getPlateNumber() + ") ");
                 }
                 else {
                     System.out.print(" ");

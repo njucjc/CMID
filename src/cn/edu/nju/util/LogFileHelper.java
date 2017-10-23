@@ -7,7 +7,7 @@ import java.io.IOException;
 /**
  * Created by njucjc on 2017/10/13.
  */
-public class LogFile {
+public class LogFileHelper {
     /**
      * 将logStr添加到logFile的文件末尾
      * @param logFilePath
