@@ -37,13 +37,14 @@ public class PccChecker extends Checker{
 
     /**
      *
-     * @param op: addition(+) or deletion(-)
-     * @param contextSetName: the name of the changed context set
-     * @param context: context
+     * @param patternId
+     * @param context
+     * @return
      */
     @Override
-    public void update(String op, String contextSetName, Context context) {
+    public boolean update(String patternId, Context context) {
         //TODO:
+        return true;
     }
 
     /**

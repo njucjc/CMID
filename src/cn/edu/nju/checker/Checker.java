@@ -39,11 +39,11 @@ public abstract class Checker {
 
     /**
      *
-     * @param op: addition(+) or deletion(-)
-     * @param contextSetName: the name of the changed context set
-     * @param context: context
+     * @param patternId
+     * @param context
+     * @return
      */
-    abstract public void update(String op, String contextSetName, Context context);
+    abstract public boolean update(String patternId, Context context);
 
     /**
      *

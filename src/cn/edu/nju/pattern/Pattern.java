@@ -141,9 +141,11 @@ public class Pattern {
      * @param timestamp 当前时间戳
      */
     public void delete(String timestamp) {
-        for(Context context : contextList) {
+        Iterator<Context> it = contextList.iterator();
+        while (it.hasNext()) {
+            Context context = it.next();
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) > freshness) {
-                contextList.remove(context);
+                it.remove(); //注意要用迭代器进行遍历删除操作
             }
             else { //context按timestamp的升序添加并排列，故只需找到第一个符合要求的就可退出循环
                 break;

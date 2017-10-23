@@ -3,6 +3,7 @@ package cn.edu.nju.builder;
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.checker.EccChecker;
 import cn.edu.nju.checker.PccChecker;
+import cn.edu.nju.context.Context;
 import cn.edu.nju.context.ContextRepoService;
 import cn.edu.nju.context.ContextStaticRepo;
 import cn.edu.nju.node.STNode;
@@ -42,7 +43,9 @@ public class CheckerBuilder {
     /*所有pattern*/
     private Map<String, Pattern> patternMap;
 
-    private int checkType;
+    private int checkType = ECC_TYPE;
+
+    private int incCount = 0;
 
     public CheckerBuilder(String configFilePath) {
         parseConfigFile(configFilePath);
@@ -88,6 +91,7 @@ public class CheckerBuilder {
         String schedule = properties.getProperty("schedule");
         if(schedule.matches("[0-9]+")) {
             this.scheduler = new BatchScheduler(Integer.parseInt(schedule));
+            System.out.println("[DEBUG] " + schedule);
         } else {
             assert false:"[DEBUG] Schedule error: " + schedule;
         }
@@ -217,6 +221,64 @@ public class CheckerBuilder {
                 root.addChildeNode(stNode);
             }
         }
+    }
+
+    public void run() {
+        Context context;
+        try {
+            long startTime = System.currentTimeMillis();
+            while ( (context =  contextRepoService.getContext()) != null) {
+
+                doContextChange(context);
+                scheduler.update();
+                if(scheduler.schedule()) {
+                    doCheck();
+                }
+            }
+            long endTime = System.currentTimeMillis(); //获取结束时间
+            System.out.println("[INFO] INC: " + incCount +" times");
+            System.out.println("[INFO] run time： " + (endTime - startTime) + " ms");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void doContextChange(Context context) {
+        //在相关的pattern里添加context
+        for(String key : patternMap.keySet()) {
+            Pattern pattern = patternMap.get(key);
+            if(pattern.isBelong(context)) {
+                pattern.addContext(context);
+                pattern.delete(context.getTimestamp());
+                for (Checker checker : checkerList) {
+                    //一个pattern的改变只影响一条rule
+                    if(checker.update(pattern.getId(), context)) {
+                        break; //这里是在一个pattern只影响一条rule的前提下进行的优化，若不满足则不能break
+                    }
+                }
+            }
+        }
+    }
+
+    private void doCheck() {
+        for(Checker checker : checkerList) {
+            String links = checker.doCheck();
+            System.out.println("[DEBUG] CCT: ");
+            checker.printCCT();
+            if("".equals(links)) {
+                System.out.println("[rule] " + checker.getName() + ": Pass!");
+            }
+            else {
+                incCount++;
+                System.out.println("[rule] " + checker.getName() + ": Failed!");
+                String[] strs = links.split("#");
+                for (String s : strs) {
+                    System.out.println(s);
+                }
+
+            }
+        }
+        System.out.println("============================================================");
     }
 
     public static void main(String[] args) {

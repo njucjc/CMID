@@ -77,7 +77,7 @@ public class BFuncHelper {
      */
     private static boolean szLocClose(Context context1, Context context2) {
         double d = getDistance(context1, context2);
-        return Double.compare(d, 0.00625) <= 0;
+        return Double.compare(d, 0.001) <= 0;
     }
 
     /**

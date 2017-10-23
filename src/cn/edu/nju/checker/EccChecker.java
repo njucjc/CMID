@@ -22,15 +22,17 @@ public class EccChecker extends Checker{
         super(name, stRoot, patternMap);
     }
 
+
     /**
      *
-     * @param op: addition(+) or deletion(-)
-     * @param contextSetName: the name of the changed context set
-     * @param context: context
+     * @param patternId
+     * @param context
+     * @return
      */
     @Override
-     public void update(String op, String contextSetName, Context context) {
-        //TODO:
+     public boolean update(String patternId, Context context) {
+        /* Nothing to do for ECC */
+        return true;
      }
 
     /**
