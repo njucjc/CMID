@@ -23,10 +23,13 @@ public abstract class Checker {
 
     protected Map<String, Pattern> patternMap;
 
+    protected int inc;
+
     public Checker(String name, STNode stRoot, Map<String, Pattern> patternMap) {
         this.name = name;
         this.stRoot = stRoot;
         this.patternMap = patternMap;
+        this.inc = 0;
     }
 
     public String getName() {
@@ -35,6 +38,10 @@ public abstract class Checker {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public int getInc() {
+        return inc;
     }
 
     /**

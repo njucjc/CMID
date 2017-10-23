@@ -7,6 +7,7 @@ import cn.edu.nju.node.TreeNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.BFuncHelper;
 import cn.edu.nju.util.LinkHelper;
+import cn.edu.nju.util.TimestampHelper;
 
 import java.util.*;
 
@@ -43,7 +44,38 @@ public class PccChecker extends Checker{
      */
     @Override
     public boolean update(String patternId, Context context) {
-        //TODO:
+        if (!affected(patternId)) {
+            return false;
+        }
+        List<CCTNode> criticalNodeList = cctMap.get(patternId);
+        STNode stNode = stMap.get(patternId);
+        Pattern pattern = patternMap.get(patternId);
+        assert stNode.getNodeType() == STNode.EXISTENTIAL_NODE
+                || stNode.getNodeType() == STNode.UNIVERSAL_NODE
+                :"[DEBUG] Type Error.";
+        for (CCTNode node : criticalNodeList) {
+            //更新从关键节点到根节点的状态
+            updateNodesToRoot(node);
+            //创建一个以context相关联的新子树
+            CCTNode newChild = new CCTNode(stNode.getFirstChild().getNodeName(),((STNode)(stNode.getFirstChild())).getNodeType(), context);
+            buildCCT((STNode) stNode.getFirstChild(), newChild);
+            //添加到本结点
+            node.addChildeNode(newChild);
+
+            //删除过期结点
+            List<TreeNode> childTreeNodes = node.getChildTreeNodes();
+            Iterator<TreeNode> it = childTreeNodes.iterator();
+            while (it.hasNext()) {
+                CCTNode child = (CCTNode)it.next();
+                if (TimestampHelper.timestampDiff(child.getContext().getTimestamp(), context.getTimestamp()) > pattern.getFreshness()) {
+                    removeCriticalNode((STNode) stNode.getFirstChild(), child);
+                    it.remove();
+                }
+                else {
+                    break;
+                }
+            }
+        }
         return true;
     }
 
@@ -59,6 +91,7 @@ public class PccChecker extends Checker{
             return "";
         }
         else {
+            inc++;
             return  cctRoot.getLink();
         }
     }

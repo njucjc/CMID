@@ -43,9 +43,9 @@ public class CheckerBuilder {
     /*所有pattern*/
     private Map<String, Pattern> patternMap;
 
-    private int checkType = ECC_TYPE;
+    private Map<String, Checker> checkerMap;
 
-    private int incCount = 0;
+    private int checkType = ECC_TYPE;
 
     public CheckerBuilder(String configFilePath) {
         parseConfigFile(configFilePath);
@@ -138,6 +138,7 @@ public class CheckerBuilder {
 
     private void parseRuleFile(String ruleFilePath) {
         this.checkerList = new ArrayList<>();
+        this.checkerMap = new HashMap<>();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
         try {
@@ -170,7 +171,11 @@ public class CheckerBuilder {
                 else{
                     checker = new EccChecker(idNode.getTextContent(), root, this.patternMap);
                 }
+
                 checkerList.add(checker);
+                for(String key : stMap.keySet()) {
+                    checkerMap.put(stMap.get(key).getContextSetName(), checker);
+                }
 
                 System.out.println("[DEBUG] " + checker.getName());
                 checker.printSyntaxTree();
@@ -236,7 +241,12 @@ public class CheckerBuilder {
                 }
             }
             long endTime = System.currentTimeMillis(); //获取结束时间
-            System.out.println("[INFO] INC: " + incCount +" times");
+            int incCount = 0;
+            for(Checker checker : checkerList) {
+                incCount += checker.getInc();
+                System.out.println("[DEBUG] " + checker.getName() + ": " + checker.getInc() + " times" );
+            }
+            System.out.println("[INFO] Total INC: " + incCount +" times");
             System.out.println("[INFO] run time： " + (endTime - startTime) + " ms");
         } catch (Exception e) {
             e.printStackTrace();
@@ -250,12 +260,14 @@ public class CheckerBuilder {
             if(pattern.isBelong(context)) {
                 pattern.addContext(context);
                 pattern.delete(context.getTimestamp());
-                for (Checker checker : checkerList) {
-                    //一个pattern的改变只影响一条rule
-                    if(checker.update(pattern.getId(), context)) {
-                        break; //这里是在一个pattern只影响一条rule的前提下进行的优化，若不满足则不能break
-                    }
-                }
+//                for (Checker checker : checkerList) {
+//                    //一个pattern的改变只影响一条rule
+//                    if(checker.update(pattern.getId(), context)) {
+//                        break; //这里是在一个pattern只影响一条rule的前提下进行的优化，若不满足则不能break
+//                    }
+//                }
+                Checker checker = checkerMap.get(pattern.getId());
+                checker.update(pattern.getId(),context);
             }
         }
     }
@@ -263,13 +275,12 @@ public class CheckerBuilder {
     private void doCheck() {
         for(Checker checker : checkerList) {
             String links = checker.doCheck();
-            System.out.println("[DEBUG] CCT: ");
-            checker.printCCT();
+//            System.out.println("[DEBUG] " + checker.getName() + " CCT: ");
+//            checker.printCCT();
             if("".equals(links)) {
                 System.out.println("[rule] " + checker.getName() + ": Pass!");
             }
             else {
-                incCount++;
                 System.out.println("[rule] " + checker.getName() + ": Failed!");
                 String[] strs = links.split("#");
                 for (String s : strs) {
@@ -278,7 +289,7 @@ public class CheckerBuilder {
 
             }
         }
-        System.out.println("============================================================");
+        System.out.println("============================================================================================");
     }
 
     public static void main(String[] args) {

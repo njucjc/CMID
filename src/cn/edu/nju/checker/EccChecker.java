@@ -49,6 +49,7 @@ public class EccChecker extends Checker{
             return "";
         }
         else {
+            inc++;
             return  cctRoot.getLink();
         }
 

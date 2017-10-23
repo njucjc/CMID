@@ -35,6 +35,10 @@ public class Pattern {
         this.contextList = new LinkedList<>();
     }
 
+    public long getFreshness() {
+        return freshness;
+    }
+
     public String getId() {
         return id;
     }
@@ -145,7 +149,7 @@ public class Pattern {
         while (it.hasNext()) {
             Context context = it.next();
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) > freshness) {
-                System.out.println("[DEBUG] '-' " + context.toString());
+                System.out.println("[DEBUG] '-' " + id + " "+ context.toString());
                 it.remove(); //注意要用迭代器进行遍历删除操作
             }
             else { //context按timestamp的升序添加并排列，故只需找到第一个符合要求的就可退出循环
