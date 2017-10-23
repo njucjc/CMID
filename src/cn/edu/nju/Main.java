@@ -6,8 +6,6 @@ package cn.edu.nju;
 //import javafx.scene.Scene;
 //import javafx.stage.Stage;
 
-import cn.edu.nju.builder.CheckerBuilder;
-
 public class Main  {
 
 //    @Override
@@ -22,8 +20,8 @@ public class Main  {
     public static void main(String[] args) {
 //        launch(args);
         if (args.length == 1) {
-            CheckerBuilder checkerParser = new CheckerBuilder(args[0]);
-            checkerParser.run();
+//            CheckerBuilderBackUp checkerParser = new CheckerBuilderBackUp(args[0]);
+//            checkerParser.run();
         }
         else {
             System.out.println("Usage: java Main [configFilePath].");

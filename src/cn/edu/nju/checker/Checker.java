@@ -4,6 +4,7 @@ import cn.edu.nju.context.Context;
 import cn.edu.nju.node.CCTNode;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.node.TreeNode;
+import cn.edu.nju.pattern.Pattern;
 
 import java.util.*;
 
@@ -20,12 +21,12 @@ public abstract class Checker {
     /*Syntax tree for constraint*/
     protected STNode stRoot;
 
-    protected Map<String, Set<Context>> contextSets;
+    protected Map<String, Pattern> patternMap;
 
-    public Checker(String name, STNode stRoot, Map<String, Set<Context>> contextSets) {
+    public Checker(String name, STNode stRoot, Map<String, Pattern> patternMap) {
         this.name = name;
         this.stRoot = stRoot;
-        this.contextSets = contextSets;
+        this.patternMap = patternMap;
     }
 
     public String getName() {
@@ -72,7 +73,7 @@ public abstract class Checker {
             if(t instanceof CCTNode) {
                 Context c = ((CCTNode) t).getContext();
                 if(c != null) {
-                    System.out.print("(" + c.getId() + ") ");
+                    System.out.print("(" + c.getPlateNumber() + ") ");
                 }
                 else {
                     System.out.print(" ");

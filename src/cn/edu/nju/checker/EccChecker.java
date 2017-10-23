@@ -4,6 +4,7 @@ import cn.edu.nju.context.Context;
 import cn.edu.nju.node.CCTNode;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.node.TreeNode;
+import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.BFuncHelper;
 import cn.edu.nju.util.LinkHelper;
 
@@ -17,8 +18,8 @@ import java.util.Set;
  */
 public class EccChecker extends Checker{
 
-    public EccChecker(String name, STNode stRoot, Map<String, Set<Context>> contextSets) {
-        super(name, stRoot, contextSets);
+    public EccChecker(String name, STNode stRoot, Map<String, Pattern> patternMap) {
+        super(name, stRoot, patternMap);
     }
 
     /**
@@ -29,19 +30,7 @@ public class EccChecker extends Checker{
      */
     @Override
      public void update(String op, String contextSetName, Context context) {
-        Set<Context> contextSet = contextSets.get(contextSetName);
-        if (!contextSet.contains(context)) {
-            if ("+".equals(op)) {
-                contextSet.add(context);
-            }
-        }
-        else {
-            if("-".equals(op)) {
-                contextSet.remove(context);
-            }
-        }
-
-
+        //TODO:
      }
 
     /**
@@ -74,7 +63,7 @@ public class EccChecker extends Checker{
         }
         if(stRoot.getNodeType() == STNode.EXISTENTIAL_NODE || stRoot.getNodeType() == STNode.UNIVERSAL_NODE) {
             STNode stChild = (STNode) stRoot.getFirstChild();
-            for(Context context : contextSets.get(stRoot.getContextSetName())) {
+            for(Context context : patternMap.get(stRoot.getContextSetName()).getContextList()) {
                 CCTNode cctChild = new CCTNode(stChild.getNodeName(), stChild.getNodeType(), context);
                 buildCCT(stChild, cctChild);
                 cctRoot.addChildeNode(cctChild);

@@ -4,6 +4,7 @@ import cn.edu.nju.context.Context;
 import cn.edu.nju.node.CCTNode;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.node.TreeNode;
+import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.BFuncHelper;
 import cn.edu.nju.util.LinkHelper;
 
@@ -19,8 +20,8 @@ public class PccChecker extends Checker{
     private Map<String, List<CCTNode>> cctMap; //记录与context set相关的CCT关键结点
 
 
-    public PccChecker(String name, STNode stRoot, Map<String, Set<Context>> contextSets, Map<String, STNode> stMap) {
-        super(name, stRoot, contextSets);
+    public PccChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap) {
+        super(name, stRoot, patternMap);
         this.stMap = stMap;
         this.cctMap = new HashMap<>();
 
@@ -42,46 +43,7 @@ public class PccChecker extends Checker{
      */
     @Override
     public void update(String op, String contextSetName, Context context) {
-        if(!affected(contextSetName)) {
-            return ;
-        }
-        Set<Context> contextSet = contextSets.get(contextSetName);
-        List<CCTNode> criticalNodeList = cctMap.get(contextSetName);
-        STNode stNode = stMap.get(contextSetName);
-        assert stNode.getNodeType() == STNode.EXISTENTIAL_NODE
-                || stNode.getNodeType() == STNode.UNIVERSAL_NODE
-                :"[DEBUG] Type Error.";
-
-        if("-".equals(op)) {
-            contextSet.remove(context);
-            for (CCTNode node : criticalNodeList) {
-                //更新从关键节点到根节点的状态
-                updateNodesToRoot(node);
-                //删除相关子树
-                List<TreeNode> childNodes= node.getChildTreeNodes();
-                for (TreeNode n : childNodes) {
-                    CCTNode child = (CCTNode)n;
-                    if(context.equals(child.getContext())) {
-                        removeCriticalNode((STNode) stNode.getFirstChild(), child);
-                        childNodes.remove(n);//移除子树
-                        break;
-                    }
-                }
-
-            }
-        }
-        else {
-            contextSet.add(context);
-            for (CCTNode node : criticalNodeList) {
-                //更新从关键节点到根节点的状态
-                updateNodesToRoot(node);
-                //创建一个以context相关联的新子树
-                CCTNode newChild = new CCTNode(stNode.getFirstChild().getNodeName(),((STNode)(stNode.getFirstChild())).getNodeType(), context);
-                buildCCT((STNode) stNode.getFirstChild(), newChild);
-                //添加到本结点
-                node.addChildeNode(newChild);
-            }
-        }
+        //TODO:
     }
 
     /**
@@ -117,7 +79,7 @@ public class PccChecker extends Checker{
         if(stRoot.getNodeType() == STNode.EXISTENTIAL_NODE || stRoot.getNodeType() == STNode.UNIVERSAL_NODE) {
             cctMap.get(stRoot.getContextSetName()).add(cctRoot); //add critical node information
             STNode stChild = (STNode) stRoot.getFirstChild();
-            for(Context context : contextSets.get(stRoot.getContextSetName())) {
+            for(Context context : patternMap.get(stRoot.getContextSetName()).getContextList()) {
                 //CCT结点创建默认为FC状态
                 CCTNode cctChild = new CCTNode(stChild.getNodeName(), stChild.getNodeType(), context);
                 buildCCT(stChild, cctChild);
@@ -151,7 +113,7 @@ public class PccChecker extends Checker{
             STNode stChild = (STNode) stRoot.getFirstChild();
 
             //全称量词和存在量词的子节点数由其相关的context set大小决定
-            Set<Context> contextSet = contextSets.get(stRoot.getContextSetName());
+            List<Context> contextSet = patternMap.get(stRoot.getContextSetName()).getContextList();
             assert contextSet.size() == cctRoot.getChildTreeNodes().size():"[DEBUG] Size error.";
             for(int i = 0; i < contextSet.size(); i++) {
                 removeCriticalNode(stChild, (CCTNode) cctRoot.getChildTreeNodes().get(i));
