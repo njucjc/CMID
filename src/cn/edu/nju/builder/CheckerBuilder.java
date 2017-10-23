@@ -61,6 +61,16 @@ public class CheckerBuilder {
             e.printStackTrace();
         }
 
+        //check type
+        String technique = properties.getProperty("technique");
+        if("PCC".equals(technique)) {
+            this.checkType = PCC_TYPE;
+        } else if("ECC".equals(technique)){
+            this.checkType = ECC_TYPE;
+        } else {
+            assert false:"[DEBUG] Checking technique error: " + technique;
+        }
+
         //pattern
         String patternFilePath = properties.getProperty("patternFilePath");
         parsePatternFile(patternFilePath);
@@ -77,15 +87,7 @@ public class CheckerBuilder {
         String logFilePath = properties.getProperty("logFilePath");
         LogFileHelper.createLogFile(logFilePath);
 
-        //check type
-        String technique = properties.getProperty("technique");
-        if("PCC".equals(technique)) {
-            this.checkType = PCC_TYPE;
-        } else if("ECC".equals(technique)){
-            this.checkType = ECC_TYPE;
-        } else {
-            assert false:"[DEBUG] Checking technique error: " + technique;
-        }
+
 
         //schedule
         String schedule = properties.getProperty("schedule");
