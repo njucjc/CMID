@@ -85,8 +85,7 @@ public class CheckerBuilder {
 
         //log
         String logFilePath = properties.getProperty("logFilePath");
-        LogFileHelper.createLogFile(logFilePath);
-
+        LogFileHelper.initLogger(logFilePath);
 
 
         //schedule
@@ -246,10 +245,10 @@ public class CheckerBuilder {
             int incCount = 0;
             for(Checker checker : checkerList) {
                 incCount += checker.getInc();
-                System.out.println("[DEBUG] " + checker.getName() + ": " + checker.getInc() + " times" );
+                LogFileHelper.getLogger().info(checker.getName() + ": " + checker.getInc() + " times" );
             }
-            System.out.println("[INFO] Total INC: " + incCount +" times");
-            System.out.println("[INFO] run time： " + (endTime - startTime) + " ms");
+            LogFileHelper.getLogger().info("Total INC: " + incCount + " times");
+            LogFileHelper.getLogger().info("run time： " + (endTime - startTime) + " ms");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -262,12 +261,6 @@ public class CheckerBuilder {
             if(pattern.isBelong(context)) {
                 pattern.addContext(context);
                 pattern.delete(context.getTimestamp());
-//                for (Checker checker : checkerList) {
-//                    //一个pattern的改变只影响一条rule
-//                    if(checker.update(pattern.getId(), context)) {
-//                        break; //这里是在一个pattern只影响一条rule的前提下进行的优化，若不满足则不能break
-//                    }
-//                }
                 Checker checker = checkerMap.get(pattern.getId());
                 checker.update(pattern.getId(),context);
             }

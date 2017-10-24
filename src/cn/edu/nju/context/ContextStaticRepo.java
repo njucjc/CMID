@@ -5,8 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- * Created by njucjc on 2017/10/23.
- */
+ * Created by njucjc on 2017/10/23. */
 public class ContextStaticRepo implements ContextRepoService{
     private BufferedReader bufferedReader;
     private ContextParser contextParser;
