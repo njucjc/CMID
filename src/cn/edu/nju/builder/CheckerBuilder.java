@@ -245,7 +245,7 @@ public class CheckerBuilder {
             int incCount = 0;
             for(Checker checker : checkerList) {
                 incCount += checker.getInc();
-                System.out.println("[DEBUG] " + checker.getName() + ": " + checker.getInc() + " times" );
+                LogFileHelper.getLogger().info(checker.getName() + ": " + checker.getInc() + " times" );
             }
             LogFileHelper.getLogger().info("Total INC: " + incCount + " times");
             LogFileHelper.getLogger().info("run time： " + (endTime - startTime) + " ms");
