@@ -269,18 +269,14 @@ public class CheckerBuilder {
 
     private void doCheck() {
         for(Checker checker : checkerList) {
-            String links = checker.doCheck();
+            boolean value = checker.doCheck();
 //            System.out.println("[DEBUG] " + checker.getName() + " CCT: ");
 //            checker.printCCT();
-            if("".equals(links)) {
+            if(value) {
                 System.out.println("[rule] " + checker.getName() + ": Pass!");
             }
             else {
                 System.out.println("[rule] " + checker.getName() + ": Failed!");
-                String[] strs = links.split("#");
-                for (String s : strs) {
-                    LogFileHelper.getLogger().info(checker.getName() + " " + s);
-                }
             }
         }
         System.out.println("============================================================================================");

@@ -4,3 +4,9 @@ out/
 resource/
 *.iml
 *.log
+output/
+data/
+config/
+*.py
+*.xml
+*.properties

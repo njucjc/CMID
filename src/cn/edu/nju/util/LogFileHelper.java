@@ -44,6 +44,7 @@ public class LogFileHelper {
 class MyFormatter extends Formatter {
     @Override
     public String format(LogRecord record) {
-        return "[" + record.getLevel() +  "] " + record.getMessage() + "\n";
+        return /*"[" + record.getLevel() +  "] " + */
+                record.getMessage() + "\n";
     }
 }
