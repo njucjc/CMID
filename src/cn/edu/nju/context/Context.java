@@ -82,4 +82,19 @@ public class Context {
     public String toString() {
         return "cxt_" + id;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Context context = (Context) o;
+
+        return plateNumber != null ? plateNumber.equals(context.plateNumber) : context.plateNumber == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return plateNumber != null ? plateNumber.hashCode() : 0;
+    }
 }
