@@ -70,13 +70,14 @@ public class Context {
 
     @Override
     public String toString() {
-        return "Context{" +
-                "timestamp=" + timestamp +
-                ", plateNumber=" + plateNumber +
-                ", longitude=" + longitude +
-                ", latitude=" + latitude +
-                ", speed=" + speed +
-                ", status=" + status +
-                '}';
+//        return "Context{" +
+//                "timestamp=" + timestamp +
+//                ", plateNumber=" + plateNumber +
+//                ", longitude=" + longitude +
+//                ", latitude=" + latitude +
+//                ", speed=" + speed +
+//                ", status=" + status +
+//                '}';
+        return "cxt_" + plateNumber;
     }
 }

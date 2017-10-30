@@ -279,9 +279,8 @@ public class CheckerBuilder {
                 System.out.println("[rule] " + checker.getName() + ": Failed!");
                 String[] strs = links.split("#");
                 for (String s : strs) {
-                    System.out.println(s);
+                    LogFileHelper.getLogger().info(checker.getName() + " " + s);
                 }
-
             }
         }
         System.out.println("============================================================================================");
