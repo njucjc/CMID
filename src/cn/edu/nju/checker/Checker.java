@@ -23,13 +23,13 @@ public abstract class Checker {
 
     protected Map<String, Pattern> patternMap;
 
-    protected int inc;
+    private Set<String> incLinkSet;
 
     public Checker(String name, STNode stRoot, Map<String, Pattern> patternMap) {
         this.name = name;
         this.stRoot = stRoot;
         this.patternMap = patternMap;
-        this.inc = 0;
+        this.incLinkSet = new HashSet<>();
     }
 
     public String getName() {
@@ -41,7 +41,15 @@ public abstract class Checker {
     }
 
     public int getInc() {
-        return inc;
+        return incLinkSet.size();
+    }
+
+    protected boolean addIncLink(String link) {
+        return incLinkSet.add(link);
+    }
+
+    protected Set<String> getIncLinkSet() {
+        return incLinkSet;
     }
 
     /**
@@ -56,7 +64,7 @@ public abstract class Checker {
      *
      * @return violated link
      */
-    abstract public String doCheck();
+    abstract public boolean doCheck();
 
     public void printSyntaxTree() {
         BFSOrder(stRoot);

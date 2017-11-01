@@ -7,6 +7,7 @@ import cn.edu.nju.node.TreeNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.BFuncHelper;
 import cn.edu.nju.util.LinkHelper;
+import cn.edu.nju.util.LogFileHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,17 +41,21 @@ public class EccChecker extends Checker{
      * @return violated link
      */
     @Override
-    public String doCheck() {
+    public boolean doCheck() {
         cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
         buildCCT(stRoot, cctRoot);
         List<Context> param = new ArrayList<>();
         evaluation(cctRoot, param);
-        if(cctRoot.getNodeValue()) {
-            return "";
+        if (cctRoot.getNodeValue()) {
+            return true;
         }
         else {
-            inc++;
-            return  cctRoot.getLink();
+            for(String link : LinkHelper.splitLinks(cctRoot.getLink())) {
+                if(addIncLink(link)) {
+                    LogFileHelper.getLogger().info(getName() + " " + link);
+                }
+            }
+            return false;
         }
 
     }
@@ -105,7 +110,10 @@ public class EccChecker extends Checker{
             cctRoot.setNodeValue(value);
             String link = "";
             for(Context context : param) {
-                link = link + context.toString() + ";";
+                link = link + context.toString() + " ";
+            }
+            if(!"".equals(link)) {
+                link = link.substring(0, link.length() - 1);
             }
             //生成link
             cctRoot.setLink(link);

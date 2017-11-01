@@ -1,6 +1,7 @@
 package cn.edu.nju.util;
 
 import cn.edu.nju.context.Context;
+import cn.edu.nju.context.ContextParser;
 
 /**
  * Created by njucjc on 2017/10/7.
@@ -121,5 +122,19 @@ public class BFuncHelper {
                 break;
         }
         return value;
+    }
+
+    public static void main(String[] args) {
+        ContextParser contextParser = new ContextParser();
+        boolean loc = szLocClose(contextParser.parseContext(0,"2007-10-26 11:00:34:240,A,12198,113.883050,22.579217,70,-1,1,-1"),
+                contextParser.parseContext(0,"2007-10-26 11:00:25:064,A,12198,113.883467,22.578850,17,-1,1,-1")
+                );
+
+        boolean spd = szSpdClose(contextParser.parseContext(0,"2007-10-26 11:00:34:240,A,12198,113.883050,22.579217,70,-1,1,-1"),
+                contextParser.parseContext(0,"2007-10-26 11:00:25:064,A,12198,113.883467,22.578850,17,-1,1,-1")
+             );
+
+        System.out.println(loc + " " + spd);
+
     }
 }

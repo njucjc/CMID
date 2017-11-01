@@ -9,6 +9,7 @@ import java.io.IOException;
 public class ContextStaticRepo implements ContextRepoService{
     private BufferedReader bufferedReader;
     private ContextParser contextParser;
+    private int count = 0;
 
     public ContextStaticRepo(String changeFilePath) {
         try {
@@ -29,7 +30,7 @@ public class ContextStaticRepo implements ContextRepoService{
             return null;
         }
         else {
-            Context context =  contextParser.parseContext(pattern);
+            Context context =  contextParser.parseContext(count++, pattern);
             System.out.println("[DEBUG] '+' " + context.toString());
             return context;
         }

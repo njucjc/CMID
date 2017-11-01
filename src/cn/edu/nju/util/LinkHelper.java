@@ -17,8 +17,8 @@ public class LinkHelper {
         String [] strs1 = links1.split("#");
         String [] strs2 = links2.split("#");
 
-        String [] cxts1 = strs1[0].split(";");
-        String [] cxts2 = strs2[0].split(";");
+        String [] cxts1 = strs1[0].split(" ");
+        String [] cxts2 = strs2[0].split(" ");
 
         int length = cxts1.length > cxts2.length ? cxts2.length : cxts1.length;
         int index;
@@ -39,7 +39,7 @@ public class LinkHelper {
             for(String s2 : strs2) {
                 res.append(s1);
                 if(start == 0) {
-                    res.append(";");
+                    res.append(" ");
                     res.append(s2);
                 }
                 else {
@@ -52,11 +52,15 @@ public class LinkHelper {
         return res.toString();
     }
 
+    public static  String [] splitLinks(String links) {
+        return links.split("#");
+    }
+
     public static void main(String[] args) {
-        System.out.println(linkCartesian("abc;b;c#abc;b;d","e;f"));
-        System.out.println(linkCartesian("abc;b;c#abc;b;d","e;f#e;g"));
-        System.out.println(linkCartesian("abc;b;c#abc;b;d","abc;b;e#abc;b;f"));
-        System.out.println(linkCartesian("abc;b;c#abc;b;d","abc;b"));
-        System.out.println(linkCartesian("abc;b","abc;b;c#abc;b;d"));
+        System.out.println(linkCartesian("abc b c#abc b d","e f"));
+        System.out.println(linkCartesian("abc b c#abc b d","e f#e g"));
+        System.out.println(linkCartesian("abc b c#abc b d","abc b e#abc b f"));
+        System.out.println(linkCartesian("abc b c#abc b d","abc;b"));
+        System.out.println(linkCartesian("abc b","abc b c#abc b d"));
     }
 }

@@ -7,6 +7,7 @@ import cn.edu.nju.node.TreeNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.BFuncHelper;
 import cn.edu.nju.util.LinkHelper;
+import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.util.*;
@@ -84,15 +85,20 @@ public class PccChecker extends Checker{
      * @return violated link
      */
     @Override
-    public String doCheck() {
+    public boolean doCheck() {
         List<Context> param = new ArrayList<>();
         evaluation(cctRoot, param); //PCC计算
-        if(cctRoot.getNodeValue()) {
-            return "";
+        if (!cctRoot.getNodeValue()) {
+            for(String link : LinkHelper.splitLinks(cctRoot.getLink())) {
+                if(addIncLink(link)) {
+                    LogFileHelper.getLogger().info(getName() + " " + link);
+                }
+            }
+            return false;
+
         }
         else {
-            inc++;
-            return  cctRoot.getLink();
+            return true;
         }
     }
 
@@ -206,7 +212,10 @@ public class PccChecker extends Checker{
             cctRoot.setNodeValue(value);
             String link = "";
             for(Context context : param) {
-                link = link + context.toString() + ";";
+                link = link + context.toString() + " ";
+            }
+            if(!"".equals(link)) {
+                link = link.substring(0, link.length() - 1);
             }
             //生成link
             cctRoot.setLink(link);
