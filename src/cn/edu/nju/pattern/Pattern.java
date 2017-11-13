@@ -141,21 +141,36 @@ public class Pattern {
     }
 
     /**
-     * 删除与当前时间戳相距较远的context
-     * @param timestamp 当前时间戳
+     * 若第一个context的过期时间为timestamp则删除
+     * @param timestamp 时间戳
      */
-    public void delete(String timestamp) {
+    public void deleteFirstByTime(String timestamp) {
         Iterator<Context> it = contextList.iterator();
-        while (it.hasNext()) {
+        if (it.hasNext()) {
             Context context = it.next();
-            if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) > freshness) {
+            if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) == freshness) {
                 System.out.println("[DEBUG] '-' " + id + " "+ context.toString());
-                it.remove(); //注意要用迭代器进行遍历删除操作
+                it.remove();
             }
-            else { //context按timestamp的升序添加并排列，故只需找到第一个符合要求的就可退出循环
+        }
+    }
+
+    /**
+     * 获取到timestamp时刻，已经过时的context，并返回它们的过时时刻
+     * @param timestamp
+     * @return
+     */
+    public Set<String> getOutOfDateTimes(String timestamp) {
+        Set<String> timeSet = new HashSet<>();
+        for(Context context : contextList) {
+            if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) > freshness) {
+                timeSet.add(TimestampHelper.plusMillis(context.getTimestamp(), freshness));
+            }
+            else {//找到第一个还未过期的context即可结束遍历
                 break;
             }
         }
+        return timeSet;
     }
 
     @Override

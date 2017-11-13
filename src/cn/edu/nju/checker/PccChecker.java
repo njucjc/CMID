@@ -44,7 +44,7 @@ public class PccChecker extends Checker{
      * @return
      */
     @Override
-    public boolean update(String patternId, Context context) {
+    public boolean add(String patternId, Context context) {
         if (!affected(patternId)) {
             return false;
         }
@@ -62,18 +62,34 @@ public class PccChecker extends Checker{
             buildCCT((STNode) stNode.getFirstChild(), newChild);
             //添加到本结点
             node.addChildeNode(newChild);
+        }
+        return true;
+    }
 
-            //删除过期结点
+    @Override
+    public boolean delete(String patternId, String timestamp) {
+        if (!affected(patternId)) {
+            return false;
+        }
+        List<CCTNode> criticalNodeList = cctMap.get(patternId);
+        STNode stNode = stMap.get(patternId);
+        Pattern pattern = patternMap.get(patternId);
+        assert stNode.getNodeType() == STNode.EXISTENTIAL_NODE
+                || stNode.getNodeType() == STNode.UNIVERSAL_NODE
+                :"[DEBUG] Type Error.";
+
+        for (CCTNode node : criticalNodeList) {
+            //更新从关键节点到根节点的状态
+            updateNodesToRoot(node);
+
+            //删除timestamp时刻过期结点，由于是按时间顺序删除，故只需看第一个结点
             List<TreeNode> childTreeNodes = node.getChildTreeNodes();
             Iterator<TreeNode> it = childTreeNodes.iterator();
-            while (it.hasNext()) {
-                CCTNode child = (CCTNode)it.next();
-                if (TimestampHelper.timestampDiff(child.getContext().getTimestamp(), context.getTimestamp()) > pattern.getFreshness()) {
+            if (it.hasNext()) {//是否存在结点
+                CCTNode child = (CCTNode)it.next(); //第一个结点
+                if (TimestampHelper.timestampDiff(child.getContext().getTimestamp(), timestamp) == pattern.getFreshness()) {
                     removeCriticalNode((STNode) stNode.getFirstChild(), child);
                     it.remove();
-                }
-                else {
-                    break;
                 }
             }
         }
@@ -86,6 +102,7 @@ public class PccChecker extends Checker{
      */
     @Override
     public boolean doCheck() {
+        checkTimes++;
         List<Context> param = new ArrayList<>();
         evaluation(cctRoot, param); //PCC计算
         if (!cctRoot.getNodeValue()) {
