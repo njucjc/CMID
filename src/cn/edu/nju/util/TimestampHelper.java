@@ -44,6 +44,10 @@ public class TimestampHelper {
         return timestamp2;
     }
 
+    public static String getCurrentTimestamp() {
+        return dfs.format(new java.util.Date());
+    }
+
     public static void main(String[] args) {
         System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:057"));
         System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:228"));
