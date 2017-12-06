@@ -27,9 +27,27 @@ public class TimestampHelper {
         return diff > 0 ? diff : -diff;
     }
 
+    /**
+     * 计算timstamp加上一个毫秒数的timestamp
+     * @param timestamp
+     * @param millis
+     * @return
+     */
+    public static String plusMillis(String timestamp, long millis) {
+        String timestamp2 = null;
+        try {
+            java.util.Date begin = dfs.parse(timestamp);
+            timestamp2 = dfs.format(new java.util.Date(begin.getTime() + millis));
+        }catch (Exception e) {
+            e.printStackTrace();
+        }
+        return timestamp2;
+    }
+
     public static void main(String[] args) {
         System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:057"));
         System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:228"));
         System.out.println(timestampDiff("2007-10-26 11:00:00:057","2007-10-26 11:00:00:228"));
+        System.out.println(plusMillis("2007-10-26 11:00:00:057", 100));
     }
 }

@@ -31,10 +31,15 @@ public class EccChecker extends Checker{
      * @return
      */
     @Override
-     public boolean update(String patternId, Context context) {
+     public boolean add(String patternId, Context context) {
         /* Nothing to do for ECC */
         return true;
      }
+
+    @Override
+    public boolean delete(String patternId, String timestamp) {
+        return true;
+    }
 
     /**
      *
@@ -42,6 +47,7 @@ public class EccChecker extends Checker{
      */
     @Override
     public boolean doCheck() {
+        checkTimes++;
         cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
         buildCCT(stRoot, cctRoot);
         List<Context> param = new ArrayList<>();

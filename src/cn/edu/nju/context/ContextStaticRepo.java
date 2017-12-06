@@ -31,7 +31,6 @@ public class ContextStaticRepo implements ContextRepoService{
         }
         else {
             Context context =  contextParser.parseContext(count++, pattern);
-            System.out.println("[DEBUG] '+' " + context.toString());
             return context;
         }
     }

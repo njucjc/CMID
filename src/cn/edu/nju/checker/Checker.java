@@ -25,11 +25,14 @@ public abstract class Checker {
 
     private Set<String> incLinkSet;
 
+    protected int checkTimes = 0;
+
     public Checker(String name, STNode stRoot, Map<String, Pattern> patternMap) {
         this.name = name;
         this.stRoot = stRoot;
         this.patternMap = patternMap;
         this.incLinkSet = new HashSet<>();
+        this.checkTimes = 0;
     }
 
     public String getName() {
@@ -58,7 +61,9 @@ public abstract class Checker {
      * @param context
      * @return
      */
-    abstract public boolean update(String patternId, Context context);
+    abstract public boolean add(String patternId, Context context);
+
+    abstract public boolean delete(String patternId, String timestamp);
 
     /**
      *
@@ -111,5 +116,7 @@ public abstract class Checker {
 
     }
 
-
+    public int getCheckTimes() {
+        return checkTimes;
+    }
 }
