@@ -170,7 +170,7 @@ public class CheckerBuilder {
                     checker = new PccChecker(idNode.getTextContent(), root, this.patternMap, stMap);
                 }
                 else{
-                    checker = new EccChecker(idNode.getTextContent(), root, this.patternMap);
+                    checker = new EccChecker(idNode.getTextContent(), root, this.patternMap, stMap);
                 }
 
                 checkerList.add(checker);
