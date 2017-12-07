@@ -52,11 +52,11 @@ public class Client {
             toServer = new DataOutputStream(socket.getOutputStream());
 
             long sleepMillis = 0;
-
+            long sleepNanos = 1;
             long t1 = System.nanoTime();
             for (int i = 0; i < contextStrList.size(); i++){
                 try {
-                    Thread.sleep(sleepMillis);
+                    Thread.sleep(sleepMillis, (int) sleepNanos);
                 }catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -67,9 +67,10 @@ public class Client {
                 toServer.flush();
                 long endTime = System.nanoTime();
 
-                long sleepNanos = endTime - startTime;
+                sleepNanos = endTime - startTime;
                 long temp = (sleepMillis * 1000000 - sleepNanos);
                 sleepMillis = temp / 1000000;
+                sleepNanos = temp % 1000000;
             }
             long t2 = System.nanoTime();
             System.out.println("Total send time： " + (t2 - t1) / 1000000 + " ms");
