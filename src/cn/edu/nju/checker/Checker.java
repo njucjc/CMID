@@ -87,7 +87,7 @@ public abstract class Checker {
      * @param context
      * @return
      */
-    public boolean add(String patternId, Context context) {
+    public synchronized boolean add(String patternId, Context context) {
         if (!affected(patternId)) {
             return false;
         }
@@ -110,7 +110,7 @@ public abstract class Checker {
     }
 
 
-    public boolean delete(String patternId, String timestamp) {
+    public synchronized boolean delete(String patternId, String timestamp) {
         if (!affected(patternId)) {
             return false;
         }
@@ -125,15 +125,17 @@ public abstract class Checker {
             //更新从关键节点到根节点的状态
             updateNodesToRoot(node);
 
-            //TODO: 兼容动态检测接口
-            //删除timestamp时刻过期结点，由于是按时间顺序删除，故只需看第一个结点
+            //删除timestamp时刻过期结点
             List<TreeNode> childTreeNodes = node.getChildTreeNodes();
             Iterator<TreeNode> it = childTreeNodes.iterator();
-            if (it.hasNext()) {//是否存在结点
+            while (it.hasNext()) {//是否存在结点
                 CCTNode child = (CCTNode)it.next(); //第一个结点
-                if (TimestampHelper.timestampDiff(child.getContext().getTimestamp(), timestamp) == pattern.getFreshness()) {
+                if (TimestampHelper.timestampDiff(child.getContext().getTimestamp(), timestamp) >= pattern.getFreshness()) {
                     removeCriticalNode((STNode) stNode.getFirstChild(), child);
                     it.remove();
+                }
+                else {
+                    break;
                 }
             }
         }
@@ -228,7 +230,7 @@ public abstract class Checker {
      * @param param
      * @return
      */
-    protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
+    protected synchronized boolean evaluation(CCTNode cctRoot, List<Context> param) {
         if(cctRoot.getContext() != null) {
             param.add(cctRoot.getContext());
         }

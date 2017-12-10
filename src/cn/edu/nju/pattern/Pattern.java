@@ -132,7 +132,7 @@ public class Pattern {
      * @param context
      * @return
      */
-    public boolean addContext(Context context) {
+    public synchronized boolean addContext(Context context) {
         if(!isBelong(context)) {
             return false;
         }
@@ -146,11 +146,14 @@ public class Pattern {
      */
     public void deleteFirstByTime(String timestamp) {
         Iterator<Context> it = contextList.iterator();
-        if (it.hasNext()) {
+        while (it.hasNext()) {
             Context context = it.next();
-            if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) == freshness) {
+            if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) >= freshness) {
                 System.out.println("[DEBUG] '-' " + id + " "+ context.toString());
                 it.remove();
+            }
+            else {
+                break;
             }
         }
     }

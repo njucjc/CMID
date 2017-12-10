@@ -23,7 +23,7 @@ public class PccChecker extends Checker{
      * @return violated link
      */
     @Override
-    public boolean doCheck() {
+    public synchronized boolean doCheck() {
         checkTimes++;
         List<Context> param = new ArrayList<>();
         evaluation(cctRoot, param); //PCC计算
@@ -48,7 +48,7 @@ public class PccChecker extends Checker{
      * @return
      */
     @Override
-    protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
+    protected synchronized boolean evaluation(CCTNode cctRoot, List<Context> param) {
         if(cctRoot.getNodeStatus() == CCTNode.NC_STATE) { //无需重算就直接返回
             return cctRoot.getNodeValue();
         }

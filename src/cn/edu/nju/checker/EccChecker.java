@@ -25,7 +25,7 @@ public class EccChecker extends Checker{
      * @return violated link
      */
     @Override
-    public boolean doCheck() {
+    public synchronized boolean doCheck() {
         checkTimes++;
         removeCriticalNode(stRoot, cctRoot);
         cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
