@@ -224,4 +224,19 @@ public abstract class AbstractCheckerBuilder {
             }
         }
     }
+
+    protected synchronized void doCheck() {
+        for(Checker checker : checkerList) {
+            boolean value = checker.doCheck();
+//            System.out.println("[DEBUG] " + checker.getName() + " CCT: ");
+//            checker.printCCT();
+            if(value) {
+                System.out.println("[rule] " + checker.getName() + ": Pass!");
+            }
+            else {
+                System.out.println("[rule] " + checker.getName() + ": Failed!");
+            }
+        }
+        System.out.println("============================================================================================");
+    }
 }

@@ -1,8 +1,10 @@
 package cn.edu.nju.server;
 
 import cn.edu.nju.builder.AbstractCheckerBuilder;
+import cn.edu.nju.checker.Checker;
 import cn.edu.nju.context.Context;
 import cn.edu.nju.context.ContextParser;
+import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.io.DataInputStream;
@@ -22,8 +24,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     private DataInputStream inputFromClient;
 
     private DataOutputStream outputToClient;
-
-    private boolean finished = false;
 
     private Queue<Context> contextQueue = new LinkedList<>();
 
@@ -53,7 +53,21 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
             @Override
             public void run() {
                 synchronized (this){
-                    System.out.println("1:" + new Date());
+                    Context c = contextQueue.poll();
+                    if(c != null) {
+                        for(String key : patternMap.keySet()) {
+                            Pattern pattern = patternMap.get(key);
+                            if(pattern.isBelong(c)) {
+                                pattern.addContext(c);
+                                Checker checker = checkerMap.get(pattern.getId());
+                                checker.add(pattern.getId(),c);
+                            }
+                        }
+                        scheduler.update();
+                        if(scheduler.schedule()) {
+                            doCheck();
+                        }
+                    }
                 }
             }
         }, 10,10);
@@ -63,10 +77,20 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
             @Override
             public void run() {
                 synchronized (this) {
-                    System.out.println("2:" + new Date());
+                    String currentTimestamp = TimestampHelper.getCurrentTimestamp();
+                    for(String key : patternMap.keySet()) {
+                        Pattern pattern = patternMap.get(key);
+                        pattern.deleteFirstByTime(currentTimestamp);
+                        Checker checker = checkerMap.get(pattern.getId());
+                        checker.delete(pattern.getId(), currentTimestamp);
+                    }
+                    scheduler.update();
+                    if(scheduler.schedule()) {
+                        doCheck();
+                    }
                 }
             }
-        },1000, 1000);
+        },1000, 100);
     }
 
     @Override
@@ -75,10 +99,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         try {
             while (true) {
                 String pattern = inputFromClient.readUTF();
-                count++;
                 if ("exit".equals(pattern)) {
                     System.out.println("Good bye! Server closed at " + new Date());
-                    finished = true;
                     break;
                 }
                 Context context = contextParser.parseContext(count,pattern);
@@ -86,21 +108,25 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 synchronized (this) {
                     contextQueue.offer(context);
                 }
-
-                System.out.println("[DEBUG] '+' " + pattern);
+                count++;
             }
         }
         catch (IOException e) {
             e.printStackTrace();
         }
 
-        if(finished) {
-            checkTimer.cancel();
-            deleteTimer.cancel();
+        while(true) {
+            synchronized (this) {
+                if(contextQueue.isEmpty()) {
+                    break;
+                }
+            }
         }
+
+        checkTimer.cancel();
+        deleteTimer.cancel();
+
     }
-
-
 
     public static void main(String[] args) {
         new Thread(new Server(args[0])).start();
