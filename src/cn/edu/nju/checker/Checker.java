@@ -55,23 +55,23 @@ public abstract class Checker {
         buildCCT(stRoot, this.cctRoot);
     }
 
-    public String getName() {
+    public synchronized String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public synchronized void setName(String name) {
         this.name = name;
     }
 
-    public int getInc() {
+    public synchronized int getInc() {
         return incLinkSet.size();
     }
 
-    protected boolean addIncLink(String link) {
+    protected synchronized boolean addIncLink(String link) {
         return incLinkSet.add(link);
     }
 
-    protected Set<String> getIncLinkSet() {
+    protected synchronized Set<String> getIncLinkSet() {
         return incLinkSet;
     }
 
@@ -149,7 +149,7 @@ public abstract class Checker {
      * @param stRoot
      * @param cctRoot
      */
-    protected void buildCCT(STNode stRoot, CCTNode cctRoot) {
+    protected synchronized void buildCCT(STNode stRoot, CCTNode cctRoot) {
         if (!stRoot.hasChildNodes()) {
             return ;
         }
@@ -175,7 +175,7 @@ public abstract class Checker {
     }
 
 
-    private boolean affected(String contextSetName) {
+    private synchronized boolean affected(String contextSetName) {
         return stMap.containsKey(contextSetName);
     }
 
@@ -185,7 +185,7 @@ public abstract class Checker {
      * @param stRoot
      * @param cctRoot
      */
-    protected void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
+    protected synchronized void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
         assert stRoot.getNodeType() == cctRoot.getNodeType()
                 :"[DEBUG] Type error:" + stRoot.getNodeName() + " != " + cctRoot.getNodeName();
         if(!cctRoot.hasChildNodes()) {
@@ -217,7 +217,7 @@ public abstract class Checker {
      * 更新从关键结点到根结点路径上的所有结点状态信息
      * @param node
      */
-    private void updateNodesToRoot(CCTNode node) {
+    private synchronized void updateNodesToRoot(CCTNode node) {
         while(node != null) {
             node.setNodeStatus(CCTNode.PC_STATE); //更新为Partial checking
             node = (CCTNode) node.getParentTreeNode();
