@@ -69,9 +69,9 @@ public class CheckerBuilder extends AbstractCheckerBuilder {
         for(String timestamp : timeSet) {
             for(String key : patternMap.keySet()) {
                 Pattern pattern = patternMap.get(key);
-                pattern.deleteFirstByTime(timestamp);
                 Checker checker = checkerMap.get(pattern.getId());
                 checker.delete(pattern.getId(), timestamp);
+                pattern.deleteFirstByTime(timestamp);
             }
             scheduler.update();
             if(scheduler.schedule()) {

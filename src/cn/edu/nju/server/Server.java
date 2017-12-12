@@ -5,6 +5,7 @@ import cn.edu.nju.checker.Checker;
 import cn.edu.nju.context.Context;
 import cn.edu.nju.context.ContextParser;
 import cn.edu.nju.pattern.Pattern;
+import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.io.DataInputStream;
@@ -13,6 +14,8 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by njucjc on 2017/10/29.
@@ -25,11 +28,12 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
     private DataOutputStream outputToClient;
 
-    private Queue<Context> contextQueue = new LinkedList<>();
-
-    private Timer deleteTimer = new Timer();
+    private BlockingQueue<Context> contextQueue = new LinkedBlockingQueue<>();
 
     private Timer checkTimer = new Timer();
+
+    private int lost = 0;
+
 
     ContextParser contextParser = new ContextParser();
 
@@ -48,54 +52,76 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }catch(IOException e) {
             e.printStackTrace();
         }
-
         checkTimer.scheduleAtFixedRate(new TimerTask() {
             @Override
-            public void run() {
-                synchronized (this){
-                    Context c = contextQueue.poll();
-                    if(c != null) {
-                        for(String key : patternMap.keySet()) {
-                            Pattern pattern = patternMap.get(key);
-                            if(pattern.isBelong(c)) {
-                                pattern.addContext(c);
-                                Checker checker = checkerMap.get(pattern.getId());
-                                checker.add(pattern.getId(),c);
-                            }
-                        }
-                        scheduler.update();
-                        if(scheduler.schedule()) {
-                            doCheck();
-                        }
-                    }
-                }
-            }
-        }, 10,10);
-
-
-        deleteTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                synchronized (this) {
-                    String currentTimestamp = TimestampHelper.getCurrentTimestamp();
+            public synchronized void run() {
+                System.out.println("job0 start.");
+                Context c = contextQueue.poll();
+                if(c != null) {
                     for(String key : patternMap.keySet()) {
                         Pattern pattern = patternMap.get(key);
-                        pattern.deleteFirstByTime(currentTimestamp);
-                        Checker checker = checkerMap.get(pattern.getId());
-                        checker.delete(pattern.getId(), currentTimestamp);
+                        if(pattern.isBelong(c)) {
+                            pattern.addContext(c);
+                            Checker checker = checkerMap.get(pattern.getId());
+                            checker.add(pattern.getId(),c);
+                        }
                     }
+                    System.out.println("Check add");
                     scheduler.update();
                     if(scheduler.schedule()) {
                         doCheck();
                     }
                 }
+                System.out.println("job0 end.");
+            }
+        }, 10,10);
+
+
+        checkTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public synchronized void run() {
+                System.out.println("job1 start");
+                String currentTimestamp = TimestampHelper.getCurrentTimestamp();
+                for(String key : patternMap.keySet()) {
+                    Pattern pattern = patternMap.get(key);
+                    Checker checker = checkerMap.get(pattern.getId());
+                    checker.delete(pattern.getId(), currentTimestamp);
+                    pattern.deleteFirstByTime(currentTimestamp);
+                }
+                scheduler.update();
+                if(scheduler.schedule()) {
+                    doCheck();
+                }
+                System.out.println("job1 end");
             }
         },1000, 100);
+
+        //清除堆积的未处理数据，
+        checkTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public synchronized void  run() {
+                System.out.println("job2 start.");
+                String timestamp = TimestampHelper.getCurrentTimestamp();
+                Iterator<Context> it = contextQueue.iterator();
+                while(it.hasNext()) {
+                    Context context = it.next();
+                    if (TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) >= 500) {
+                        it.remove();
+                        lost++;
+                    } else {
+                        break;
+                    }
+                }
+                System.out.println("job2 end");
+            }
+        },1000, 500);
+
     }
 
     @Override
     public void run() {
         int count = 0;
+        long startTime = System.nanoTime();
         try {
             while (true) {
                 String pattern = inputFromClient.readUTF();
@@ -105,9 +131,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 }
                 Context context = contextParser.parseContext(count,pattern);
                 context.setTimestamp(TimestampHelper.getCurrentTimestamp());
-                synchronized (this) {
-                    contextQueue.offer(context);
-                }
+                contextQueue.offer(context);
                 count++;
             }
         }
@@ -116,16 +140,22 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }
 
         while(true) {
-            synchronized (this) {
-                if(contextQueue.isEmpty()) {
-                    break;
-                }
+            System.out.println("Test Empty.");
+            if(contextQueue.isEmpty()) {
+                break;
             }
         }
 
+        long endTime = System.nanoTime();
         checkTimer.cancel();
-        deleteTimer.cancel();
 
+        int inc = 0;
+        for (Checker checker : checkerList) {
+            inc += checker.getInc();
+        }
+        LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
+        LogFileHelper.getLogger().info("Total Inc: " + inc);
+        LogFileHelper.getLogger().info("Lost: " + lost );
     }
 
     public static void main(String[] args) {

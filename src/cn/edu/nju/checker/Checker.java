@@ -106,6 +106,7 @@ public abstract class Checker {
             //添加到本结点
             node.addChildeNode(newChild);
         }
+//        System.out.println("[Check add]: " + context);
         return true;
     }
 
@@ -133,6 +134,7 @@ public abstract class Checker {
                 if (TimestampHelper.timestampDiff(child.getContext().getTimestamp(), timestamp) >= pattern.getFreshness()) {
                     removeCriticalNode((STNode) stNode.getFirstChild(), child);
                     it.remove();
+//                    System.out.println("[Check delete]: " + child.getContext());
                 }
                 else {
                     break;
@@ -196,9 +198,9 @@ public abstract class Checker {
             STNode stChild = (STNode) stRoot.getFirstChild();
 
             //全称量词和存在量词的子节点数由其相关的context set大小决定
-            List<Context> contextSet = patternMap.get(stRoot.getContextSetName()).getContextList();
-            assert contextSet.size() == cctRoot.getChildTreeNodes().size():"[DEBUG] Size error.";
-            for(int i = 0; i < contextSet.size(); i++) {
+  //          List<Context> contextSet = patternMap.get(stRoot.getContextSetName()).getContextList();
+ //           assert contextSet.size() == cctRoot.getChildTreeNodes().size():"[DEBUG] Size error." + stRoot.getContextSetName();
+            for(int i = 0; i < cctRoot.getChildTreeNodes().size(); i++) {
                 removeCriticalNode(stChild, (CCTNode) cctRoot.getChildTreeNodes().get(i));
             }
         }

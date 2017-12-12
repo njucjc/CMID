@@ -69,8 +69,13 @@ public class Client {
 
                 sleepNanos = endTime - startTime;
                 long temp = (sleepMillis * 1000000 - sleepNanos);
-                sleepMillis = temp / 1000000;
-                sleepNanos = temp % 1000000;
+                if(temp <= 0) {
+                    sleepMillis = 0;
+                    sleepNanos = 1;
+                }else {
+                    sleepMillis = temp / 1000000;
+                    sleepNanos = temp % 1000000;
+                }
             }
             long t2 = System.nanoTime();
             System.out.println("Total send time： " + (t2 - t1) / 1000000 + " ms");

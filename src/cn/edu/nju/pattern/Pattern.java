@@ -32,7 +32,7 @@ public class Pattern {
         this.object = object;
         this.site = site;
 
-        this.contextList = new LinkedList<>();
+        this.contextList = new Vector<>();
     }
 
     public long getFreshness() {
@@ -136,6 +136,7 @@ public class Pattern {
         if(!isBelong(context)) {
             return false;
         }
+        System.out.println("[DEBUG] '+' " + id + " " + context);
         contextList.add(context);
         return true;
     }
@@ -144,7 +145,7 @@ public class Pattern {
      * 若第一个context的过期时间为timestamp则删除
      * @param timestamp 时间戳
      */
-    public void deleteFirstByTime(String timestamp) {
+    public synchronized void deleteFirstByTime(String timestamp) {
         Iterator<Context> it = contextList.iterator();
         while (it.hasNext()) {
             Context context = it.next();
