@@ -52,10 +52,9 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }catch(IOException e) {
             e.printStackTrace();
         }
-        checkTimer.scheduleAtFixedRate(new TimerTask() {
+        checkTimer.schedule(new TimerTask() {
             @Override
             public synchronized void run() {
-                System.out.println("job0 start.");
                 Context c = contextQueue.poll();
                 if(c != null) {
                     for(String key : patternMap.keySet()) {
@@ -66,41 +65,39 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                             checker.add(pattern.getId(),c);
                         }
                     }
-                    System.out.println("Check add");
                     scheduler.update();
                     if(scheduler.schedule()) {
                         doCheck();
                     }
                 }
-                System.out.println("job0 end.");
             }
         }, 10,10);
 
 
-        checkTimer.scheduleAtFixedRate(new TimerTask() {
+        checkTimer.schedule(new TimerTask() {
             @Override
             public synchronized void run() {
-                System.out.println("job1 start");
+                boolean isDel = false;
                 String currentTimestamp = TimestampHelper.getCurrentTimestamp();
                 for(String key : patternMap.keySet()) {
                     Pattern pattern = patternMap.get(key);
                     Checker checker = checkerMap.get(pattern.getId());
                     checker.delete(pattern.getId(), currentTimestamp);
-                    pattern.deleteFirstByTime(currentTimestamp);
+                    isDel |= pattern.deleteFirstByTime(currentTimestamp);
                 }
-                scheduler.update();
-                if(scheduler.schedule()) {
-                    doCheck();
+                if(isDel) {
+                    scheduler.update();
+                    if (scheduler.schedule()) {
+                        doCheck();
+                    }
                 }
-                System.out.println("job1 end");
             }
         },1000, 100);
 
         //清除堆积的未处理数据，
-        checkTimer.scheduleAtFixedRate(new TimerTask() {
+        checkTimer.schedule(new TimerTask() {
             @Override
             public synchronized void  run() {
-                System.out.println("job2 start.");
                 String timestamp = TimestampHelper.getCurrentTimestamp();
                 Iterator<Context> it = contextQueue.iterator();
                 while(it.hasNext()) {
@@ -112,9 +109,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                         break;
                     }
                 }
-                System.out.println("job2 end");
             }
-        },1000, 500);
+        },1000, 1000);
 
     }
 

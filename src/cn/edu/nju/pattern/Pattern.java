@@ -145,11 +145,13 @@ public class Pattern {
      * 若第一个context的过期时间为timestamp则删除
      * @param timestamp 时间戳
      */
-    public synchronized void deleteFirstByTime(String timestamp) {
+    public synchronized boolean deleteFirstByTime(String timestamp) {
+        boolean isDel = false;
         Iterator<Context> it = contextList.iterator();
         while (it.hasNext()) {
             Context context = it.next();
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) >= freshness) {
+                isDel = true;
                 System.out.println("[DEBUG] '-' " + id + " "+ context.toString());
                 it.remove();
             }
@@ -157,6 +159,7 @@ public class Pattern {
                 break;
             }
         }
+        return isDel;
     }
 
     /**

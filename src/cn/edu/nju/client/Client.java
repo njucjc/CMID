@@ -69,7 +69,7 @@ public class Client {
 
                 sleepNanos = endTime - startTime;
                 long temp = (sleepMillis * 1000000 - sleepNanos);
-                if(temp <= 0) {
+                if(temp < 0) {
                     sleepMillis = 0;
                     sleepNanos = 1;
                 }else {
