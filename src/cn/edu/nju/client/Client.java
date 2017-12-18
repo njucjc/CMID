@@ -63,7 +63,7 @@ public class Client {
 
                 long startTime = System.nanoTime();
                 sleepMillis = sleepTime.get(i);
-                toServer.writeUTF(contextStrList.get(i));
+                toServer.writeUTF(i+ "," + contextStrList.get(i));
                 toServer.flush();
                 long endTime = System.nanoTime();
 

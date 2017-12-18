@@ -4,7 +4,7 @@ package cn.edu.nju.context;
  * Created by njucjc on 2017/10/23.
  */
 public class ContextParser {
-    public Context parseContext(int id, String pattern) {
+    public synchronized Context parseContext(int id, String pattern) {
         String [] fields = pattern.split(",");
         String timestamp = fields[0];
         String plateNumber = fields[2];

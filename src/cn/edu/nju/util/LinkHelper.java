@@ -10,7 +10,7 @@ public class LinkHelper {
      * @param links2
      * @return
      */
-    public static String linkCartesian(String links1, String links2) {
+    public synchronized static String linkCartesian(String links1, String links2) {
         if(links1.equals(links2)) {
             return links1;
         }
@@ -52,7 +52,7 @@ public class LinkHelper {
         return res.toString();
     }
 
-    public static  String [] splitLinks(String links) {
+    public synchronized static  String [] splitLinks(String links) {
         return links.split("#");
     }
 

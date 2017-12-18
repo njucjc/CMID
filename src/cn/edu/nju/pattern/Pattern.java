@@ -3,6 +3,8 @@ import cn.edu.nju.context.Context;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Created by njucjc on 2017/10/23.
  */
@@ -32,7 +34,7 @@ public class Pattern {
         this.object = object;
         this.site = site;
 
-        this.contextList = new Vector<>();
+        this.contextList = new CopyOnWriteArrayList<>();
     }
 
     public long getFreshness() {
@@ -147,13 +149,11 @@ public class Pattern {
      */
     public synchronized boolean deleteFirstByTime(String timestamp) {
         boolean isDel = false;
-        Iterator<Context> it = contextList.iterator();
-        while (it.hasNext()) {
-            Context context = it.next();
+        for (Context context : contextList) {
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) >= freshness) {
                 isDel = true;
                 System.out.println("[DEBUG] '-' " + id + " "+ context.toString());
-                it.remove();
+                contextList.remove(context);
             }
             else {
                 break;

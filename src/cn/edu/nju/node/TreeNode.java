@@ -1,7 +1,7 @@
 package cn.edu.nju.node;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by njucjc on 2017/10/7.
@@ -17,14 +17,14 @@ public class TreeNode {
     public TreeNode(String nodeName) {
         synchronized (this) {
             this.nodeName = nodeName;
-            childTreeNodes = new LinkedList<>();
+            childTreeNodes = new CopyOnWriteArrayList<>();
         }
     }
 
     public TreeNode() {
         synchronized (this) {
             this.nodeName = "";
-            childTreeNodes = new LinkedList<>();
+            childTreeNodes = new CopyOnWriteArrayList<>();
         }
     }
 

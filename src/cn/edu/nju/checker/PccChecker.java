@@ -8,6 +8,7 @@ import cn.edu.nju.util.LinkHelper;
 import cn.edu.nju.util.LogFileHelper;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by njucjc on 2017/10/7.
@@ -25,7 +26,7 @@ public class PccChecker extends Checker{
     @Override
     public synchronized boolean doCheck() {
         checkTimes++;
-        List<Context> param = new ArrayList<>();
+        List<Context> param = new CopyOnWriteArrayList<>();
         evaluation(cctRoot, param); //PCC计算
         if (!cctRoot.getNodeValue()) {
             for(String link : LinkHelper.splitLinks(cctRoot.getLink())) {

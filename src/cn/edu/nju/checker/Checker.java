@@ -10,6 +10,8 @@ import cn.edu.nju.util.LinkHelper;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by njucjc on 2017/10/3.
@@ -39,15 +41,15 @@ public abstract class Checker {
         this.name = name;
         this.stRoot = stRoot;
         this.patternMap = patternMap;
-        this.incLinkSet = new HashSet<>();
+        this.incLinkSet = ConcurrentHashMap.newKeySet();
         this.checkTimes = 0;
 
         this.stMap = stMap;
-        this.cctMap = new HashMap<>();
+        this.cctMap = new ConcurrentHashMap<>();
 
         //初始化
         for(String key : stMap.keySet()) {
-            cctMap.put(key, new LinkedList<>());
+            cctMap.put(key, new CopyOnWriteArrayList<>());
         }
 
         //初始化CCT
@@ -128,12 +130,11 @@ public abstract class Checker {
 
             //删除timestamp时刻过期结点
             List<TreeNode> childTreeNodes = node.getChildTreeNodes();
-            Iterator<TreeNode> it = childTreeNodes.iterator();
-            while (it.hasNext()) {//是否存在结点
-                CCTNode child = (CCTNode)it.next(); //第一个结点
+            for (TreeNode treeNode : childTreeNodes) {//是否存在结点
+                CCTNode child = (CCTNode)treeNode; //第一个结点
                 if (TimestampHelper.timestampDiff(child.getContext().getTimestamp(), timestamp) >= pattern.getFreshness()) {
                     removeCriticalNode((STNode) stNode.getFirstChild(), child);
-                    it.remove();
+                    childTreeNodes.remove(treeNode);
 //                    System.out.println("[Check delete]: " + child.getContext());
                 }
                 else {

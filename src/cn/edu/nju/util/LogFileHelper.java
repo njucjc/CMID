@@ -30,7 +30,7 @@ public class LogFileHelper {
         }
     }
 
-    public static Logger getLogger() {
+    public synchronized static Logger getLogger() {
         return LOGGER;
     }
 
