@@ -128,6 +128,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     }
 
     public static void main(String[] args) {
-        new Thread(new Server(args[0])).start();
+        Thread serverThread = new Thread(new Server(args[0]));
+        serverThread.setPriority(Thread.MAX_PRIORITY);
+        serverThread.start();
     }
 }

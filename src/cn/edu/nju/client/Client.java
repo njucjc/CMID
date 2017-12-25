@@ -43,6 +43,7 @@ public class Client {
         }
 
         System.out.println("Client begins to start.....");
+        Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
         try {
             Socket socket = new Socket("localhost", 8000);
 
@@ -52,11 +53,11 @@ public class Client {
             toServer = new DataOutputStream(socket.getOutputStream());
 
             long sleepMillis = 0;
-            long sleepNanos = 1;
+            long sleepNanos = 0;
             long t1 = System.nanoTime();
             for (int i = 0; i < contextStrList.size(); i++){
                 try {
-                    Thread.sleep(sleepMillis, (int) sleepNanos);
+                    Thread.sleep(sleepMillis);
                 }catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -71,10 +72,10 @@ public class Client {
                 long temp = (sleepMillis * 1000000 - sleepNanos);
                 if(temp < 0) {
                     sleepMillis = 0;
-                    sleepNanos = 1;
+//                    sleepNanos = 0;
                 }else {
                     sleepMillis = temp / 1000000;
-                    sleepNanos = temp % 1000000;
+//                    sleepNanos = temp % 1000000;
                 }
             }
             long t2 = System.nanoTime();
