@@ -47,36 +47,45 @@ public class Client {
         try {
             Socket socket = new Socket("localhost", 8000);
 
-
             fromServer = new DataInputStream(socket.getInputStream());
 
             toServer = new DataOutputStream(socket.getOutputStream());
 
             long sleepMillis = 0;
             long sleepNanos = 0;
+            long feedback = 0;
             long t1 = System.nanoTime();
             for (int i = 0; i < contextStrList.size(); i++){
-                try {
-                    Thread.sleep(sleepMillis);
-                }catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
                 long startTime = System.nanoTime();
                 sleepMillis = sleepTime.get(i);
                 toServer.writeUTF(i+ "," + contextStrList.get(i));
                 toServer.flush();
+                System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + ":" + sleepNanos);
                 long endTime = System.nanoTime();
 
-                sleepNanos = endTime - startTime;
-                long temp = (sleepMillis * 1000000 - sleepNanos);
+                long diff = endTime - startTime - feedback;
+                long temp = (sleepMillis * 1000000 - diff);
                 if(temp < 0) {
                     sleepMillis = 0;
-//                    sleepNanos = 0;
+                    sleepNanos = 0;
+                    feedback = temp;
                 }else {
                     sleepMillis = temp / 1000000;
-//                    sleepNanos = temp % 1000000;
+                    sleepNanos = temp % 1000000;
+                    try {
+                        if(sleepNanos == 0) {
+                            Thread.sleep(sleepMillis);
+                        }
+                        else {
+                            Thread.sleep(sleepMillis, (int) sleepNanos);
+                        }
+                    }catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    feedback = 0;
+
                 }
+
             }
             long t2 = System.nanoTime();
             System.out.println("Total send time： " + (t2 - t1) / 1000000 + " ms");
