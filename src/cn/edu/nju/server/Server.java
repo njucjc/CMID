@@ -8,11 +8,9 @@ import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.TimestampHelper;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -22,10 +20,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 
 public class Server extends AbstractCheckerBuilder implements Runnable{
-
-    private DataInputStream inputFromClient;
-
-    private DataOutputStream outputToClient;
+    private DatagramSocket serverSocket;
+    private boolean running;
+    private int port = 8000;
+    private byte [] buf = new byte[256];
 
     private Timer checkTimer = new Timer();
 
@@ -37,15 +35,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     public Server(String configFilePath)  {
         super(configFilePath);
         try {
-            ServerSocket serverSocket = new ServerSocket(8000);
-            System.out.println("Server started at " + new Date());
-
-            Socket socket = serverSocket.accept();
-
-            inputFromClient = new DataInputStream(socket.getInputStream());
-
-            outputToClient = new DataOutputStream(socket.getOutputStream());
-
+            serverSocket = new DatagramSocket(port);
         }catch(IOException e) {
             e.printStackTrace();
         }
@@ -76,13 +66,18 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
     @Override
     public void run() {
+        running = true;
+
         int count = 0;
         long startTime = System.nanoTime();
         try {
-            while (true) {
-                String msg = inputFromClient.readUTF();
+            while (running) {
+                DatagramPacket packet = new DatagramPacket(buf, buf.length);
+                serverSocket.receive(packet);
+                String msg = new String(packet.getData(),0, packet.getLength());
                 if ("exit".equals(msg)) {
                     System.out.println("Good bye! Server closed at " + new Date());
+                    running = false;
                     break;
                 }
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
