@@ -13,6 +13,9 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by njucjc on 2017/10/29.
@@ -25,7 +28,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     private int port = 8000;
     private byte [] buf = new byte[256];
 
-    private Timer checkTimer = new Timer();
+//    private Timer checkTimer = new Timer();
+    private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(100);
 
     private Set<String> timeTaskSet = ConcurrentHashMap.newKeySet();
 
@@ -91,7 +95,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                     if(p.isBelong(context)) {
                         String delTime = TimestampHelper.plusMillis(context.getTimestamp(), p.getFreshness());
                         if(timeTaskSet.add(delTime)) {
-                            checkTimer.schedule(new ContextTimeoutTask(delTime), TimestampHelper.parserDate(delTime));
+//                            checkTimer.schedule(new ContextTimeoutTask(delTime), TimestampHelper.parserDate(delTime));
+                            scheduledExecutorService.schedule(new ContextTimeoutTask(delTime), p.getFreshness(), TimeUnit.MILLISECONDS);
                         }
                         p.addContext(context);
                         Checker checker = checkerMap.get(p.getId());
@@ -109,8 +114,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }
 
         while (!timeTaskSet.isEmpty());
-
-        checkTimer.cancel();
+        scheduledExecutorService.shutdown();
+//        checkTimer.cancel();
         long endTime = System.nanoTime();
 
         int inc = 0;

@@ -76,6 +76,7 @@ public class Client implements Runnable{
             }else {
                 sleepMillis = temp / 1000000;
                 sleepNanos = temp % 1000000;
+                sleepNanos = sleepNanos * 11 / 20;
                 try {
                     if(sleepNanos == 0) {
                         Thread.sleep(sleepMillis);
