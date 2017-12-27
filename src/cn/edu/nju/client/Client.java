@@ -56,48 +56,37 @@ public class Client implements Runnable{
         System.out.println("Client begins to start.....");
 
         long sleepMillis = 0;
-        long sleepNanos = 0;
-        long feedback = 0;
-        long t1 = System.nanoTime();
+        long totalTime = 0;
+        long startTime = System.nanoTime();
+        long endTime = 0;
         for (int i = 0; i < contextStrList.size(); i++){
-            long startTime = System.nanoTime();
-            System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + "-" + sleepNanos);
+
+            System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + " ms");
             sleepMillis = sleepTime.get(i);
             sendMsg(i+ "," + contextStrList.get(i));
-            long endTime = System.nanoTime();
+            endTime = System.nanoTime();
 
-            long diff = endTime - startTime - feedback;
-            assert diff >= 0 : "Time error at client.";
-            long temp = (sleepMillis * 1000000 - diff);
-            if(temp < 0) {
-                sleepMillis = 0;
-                sleepNanos = 0;
-                feedback = temp;
-            }else {
-                sleepMillis = temp / 1000000;
-                sleepNanos = temp % 1000000;
-                sleepNanos = sleepNanos * 11 / 20;
-                try {
-                    if(sleepNanos == 0) {
-                        Thread.sleep(sleepMillis);
-                    }
-                    else {
-                        Thread.sleep(sleepMillis, (int) sleepNanos);
-                    }
-                }catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                feedback = 0;
+            long diff = (endTime - startTime) - totalTime * 1000000;
+            totalTime += sleepMillis;
 
+            assert diff >= 0 : "TIme error !";
+
+            sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 0;
+
+            try {
+                Thread.sleep(sleepMillis);
+            }catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
         }
-        long t2 = System.nanoTime();
-        System.out.println("Total send time： " + (t2 - t1) / 1000000 + " ms");
+        endTime = System.nanoTime();
+        System.out.println("Total send time： " + (endTime - startTime) / 1000000 + " ms");
 
         while (true) {
             sendMsg("exit");
         }
+
     }
 
     private void sendMsg(String msg) {
