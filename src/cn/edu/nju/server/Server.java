@@ -34,7 +34,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     private Set<String> timeTaskSet = ConcurrentHashMap.newKeySet();
 
 
-    ContextParser contextParser = new ContextParser();
+    private ContextParser contextParser = new ContextParser();
 
     public Server(String configFilePath)  {
         super(configFilePath);
