@@ -431,6 +431,12 @@ public abstract class Checker {
 
     }
 
+    protected synchronized void clearCCTMap() {
+        for (String key : cctMap.keySet()) {
+           cctMap.get(key).clear();
+        }
+    }
+
     public int getCheckTimes() {
         return checkTimes;
     }

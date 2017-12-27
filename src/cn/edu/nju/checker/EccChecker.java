@@ -27,9 +27,9 @@ public class EccChecker extends Checker{
     @Override
     public synchronized boolean doCheck() {
         checkTimes++;
-//        removeCriticalNode(stRoot, cctRoot);
-//        cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
-//        buildCCT(stRoot, cctRoot);
+        clearCCTMap();
+        cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
+        buildCCT(stRoot, cctRoot);
         List<Context> param = new CopyOnWriteArrayList<>();
         evaluation(cctRoot, param);
         if (cctRoot.getNodeValue()) {
