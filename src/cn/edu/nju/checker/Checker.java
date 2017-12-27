@@ -10,6 +10,8 @@ import cn.edu.nju.util.LinkHelper;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by njucjc on 2017/10/3.
@@ -39,15 +41,15 @@ public abstract class Checker {
         this.name = name;
         this.stRoot = stRoot;
         this.patternMap = patternMap;
-        this.incLinkSet = new HashSet<>();
+        this.incLinkSet = ConcurrentHashMap.newKeySet();
         this.checkTimes = 0;
 
         this.stMap = stMap;
-        this.cctMap = new HashMap<>();
+        this.cctMap = new ConcurrentHashMap<>();
 
         //初始化
         for(String key : stMap.keySet()) {
-            cctMap.put(key, new LinkedList<>());
+            cctMap.put(key, new CopyOnWriteArrayList<>());
         }
 
         //初始化CCT
@@ -55,23 +57,23 @@ public abstract class Checker {
         buildCCT(stRoot, this.cctRoot);
     }
 
-    public String getName() {
+    public synchronized String getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public synchronized void setName(String name) {
         this.name = name;
     }
 
-    public int getInc() {
+    public synchronized int getInc() {
         return incLinkSet.size();
     }
 
-    protected boolean addIncLink(String link) {
+    protected synchronized boolean addIncLink(String link) {
         return incLinkSet.add(link);
     }
 
-    protected Set<String> getIncLinkSet() {
+    protected synchronized Set<String> getIncLinkSet() {
         return incLinkSet;
     }
 
@@ -106,6 +108,7 @@ public abstract class Checker {
             //添加到本结点
             node.addChildeNode(newChild);
         }
+//        System.out.println("[Check add]: " + context);
         return true;
     }
 
@@ -127,12 +130,12 @@ public abstract class Checker {
 
             //删除timestamp时刻过期结点
             List<TreeNode> childTreeNodes = node.getChildTreeNodes();
-            Iterator<TreeNode> it = childTreeNodes.iterator();
-            while (it.hasNext()) {//是否存在结点
-                CCTNode child = (CCTNode)it.next(); //第一个结点
+            for (TreeNode treeNode : childTreeNodes) {//是否存在结点
+                CCTNode child = (CCTNode)treeNode; //第一个结点
                 if (TimestampHelper.timestampDiff(child.getContext().getTimestamp(), timestamp) >= pattern.getFreshness()) {
                     removeCriticalNode((STNode) stNode.getFirstChild(), child);
-                    it.remove();
+                    childTreeNodes.remove(treeNode);
+//                    System.out.println("[Check delete]: " + child.getContext());
                 }
                 else {
                     break;
@@ -149,7 +152,7 @@ public abstract class Checker {
      * @param stRoot
      * @param cctRoot
      */
-    protected void buildCCT(STNode stRoot, CCTNode cctRoot) {
+    protected synchronized void buildCCT(STNode stRoot, CCTNode cctRoot) {
         if (!stRoot.hasChildNodes()) {
             return ;
         }
@@ -175,7 +178,7 @@ public abstract class Checker {
     }
 
 
-    private boolean affected(String contextSetName) {
+    private synchronized boolean affected(String contextSetName) {
         return stMap.containsKey(contextSetName);
     }
 
@@ -185,7 +188,7 @@ public abstract class Checker {
      * @param stRoot
      * @param cctRoot
      */
-    protected void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
+    protected synchronized void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
         assert stRoot.getNodeType() == cctRoot.getNodeType()
                 :"[DEBUG] Type error:" + stRoot.getNodeName() + " != " + cctRoot.getNodeName();
         if(!cctRoot.hasChildNodes()) {
@@ -196,9 +199,9 @@ public abstract class Checker {
             STNode stChild = (STNode) stRoot.getFirstChild();
 
             //全称量词和存在量词的子节点数由其相关的context set大小决定
-            List<Context> contextSet = patternMap.get(stRoot.getContextSetName()).getContextList();
-            assert contextSet.size() == cctRoot.getChildTreeNodes().size():"[DEBUG] Size error.";
-            for(int i = 0; i < contextSet.size(); i++) {
+  //          List<Context> contextSet = patternMap.get(stRoot.getContextSetName()).getContextList();
+ //           assert contextSet.size() == cctRoot.getChildTreeNodes().size():"[DEBUG] Size error." + stRoot.getContextSetName();
+            for(int i = 0; i < cctRoot.getChildTreeNodes().size(); i++) {
                 removeCriticalNode(stChild, (CCTNode) cctRoot.getChildTreeNodes().get(i));
             }
         }
@@ -217,7 +220,7 @@ public abstract class Checker {
      * 更新从关键结点到根结点路径上的所有结点状态信息
      * @param node
      */
-    private void updateNodesToRoot(CCTNode node) {
+    private synchronized void updateNodesToRoot(CCTNode node) {
         while(node != null) {
             node.setNodeStatus(CCTNode.PC_STATE); //更新为Partial checking
             node = (CCTNode) node.getParentTreeNode();
@@ -426,6 +429,12 @@ public abstract class Checker {
             }
         }
 
+    }
+
+    protected synchronized void clearCCTMap() {
+        for (String key : cctMap.keySet()) {
+           cctMap.get(key).clear();
+        }
     }
 
     public int getCheckTimes() {

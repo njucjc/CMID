@@ -7,9 +7,9 @@ import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.LinkHelper;
 import cn.edu.nju.util.LogFileHelper;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by njucjc on 2017/10/7.
@@ -27,10 +27,10 @@ public class EccChecker extends Checker{
     @Override
     public synchronized boolean doCheck() {
         checkTimes++;
-        removeCriticalNode(stRoot, cctRoot);
+        clearCCTMap();
         cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
         buildCCT(stRoot, cctRoot);
-        List<Context> param = new ArrayList<>();
+        List<Context> param = new CopyOnWriteArrayList<>();
         evaluation(cctRoot, param);
         if (cctRoot.getNodeValue()) {
             return true;

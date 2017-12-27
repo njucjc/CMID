@@ -22,6 +22,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public abstract class AbstractCheckerBuilder {
 
@@ -97,7 +99,7 @@ public abstract class AbstractCheckerBuilder {
     }
 
     private void parsePatternFile(String patternFilePath) {
-        this.patternMap = new HashMap<>();
+        this.patternMap = new ConcurrentHashMap<>();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
@@ -134,8 +136,8 @@ public abstract class AbstractCheckerBuilder {
     }
 
     private void parseRuleFile(String ruleFilePath) {
-        this.checkerList = new ArrayList<>();
-        this.checkerMap = new HashMap<>();
+        this.checkerList = new CopyOnWriteArrayList<>();
+        this.checkerMap = new ConcurrentHashMap<>();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
         try {
@@ -223,5 +225,20 @@ public abstract class AbstractCheckerBuilder {
                 root.addChildeNode(stNode);
             }
         }
+    }
+
+    protected synchronized void doCheck() {
+        for(Checker checker : checkerList) {
+            boolean value = checker.doCheck();
+//            System.out.println("[DEBUG] " + checker.getName() + " CCT: ");
+//            checker.printCCT();
+            if(value) {
+                System.out.println("[rule] " + checker.getName() + ": Pass!");
+            }
+            else {
+                System.out.println("[rule] " + checker.getName() + ": Failed!");
+            }
+        }
+        System.out.println("============================================================================================");
     }
 }

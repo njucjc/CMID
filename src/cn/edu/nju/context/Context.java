@@ -22,39 +22,39 @@ public class Context {
         this.status = status;
     }
 
-    public int getId() {
+    public synchronized int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public synchronized void setId(int id) {
         this.id = id;
     }
 
-    public String getTimestamp() {
+    public synchronized String getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public synchronized void setTimestamp(String timestamp) {
         this.timestamp = timestamp;
     }
 
-    public String getPlateNumber() {
+    public synchronized String getPlateNumber() {
         return plateNumber;
     }
 
-    public void setPlateNumber(String plateNumber) {
+    public synchronized void setPlateNumber(String plateNumber) {
         this.plateNumber = plateNumber;
     }
 
-    public double getLongitude() {
+    public synchronized double getLongitude() {
         return longitude;
     }
 
-    public void setLongitude(double longitude) {
+    public synchronized void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 
-    public double getLatitude() {
+    public synchronized double getLatitude() {
         return latitude;
     }
 
@@ -62,19 +62,19 @@ public class Context {
         this.latitude = latitude;
     }
 
-    public double getSpeed() {
+    public synchronized double getSpeed() {
         return speed;
     }
 
-    public void setSpeed(double speed) {
+    public synchronized void setSpeed(double speed) {
         this.speed = speed;
     }
 
-    public int getStatus() {
+    public synchronized int getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public synchronized void setStatus(int status) {
         this.status = status;
     }
 

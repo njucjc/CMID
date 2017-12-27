@@ -13,12 +13,12 @@ public class BatchScheduler implements Scheduler{
     }
 
     @Override
-    public  void update() {
+    public synchronized void update() {
         count = (count + 1) % batch;
     }
 
     @Override
-    public boolean schedule() {
+    public synchronized boolean schedule() {
         return count == 0;
     }
 }

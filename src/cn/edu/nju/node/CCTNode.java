@@ -22,64 +22,68 @@ public class CCTNode extends TreeNode implements NodeType, NodeStatus{
 
 
     public CCTNode(String nodeName, int nodeType, Context context) {
-        super(nodeName);
-        this.nodeValue = false;
-        this.context = context;
-        this.nodeStatus = CCTNode.EC_STATE;
-        this.nodeType = nodeType;
-        this.link = "";
+            super(nodeName);
+            synchronized (this) {
+                this.nodeValue = false;
+                this.context = context;
+                this.nodeStatus = CCTNode.EC_STATE;
+                this.nodeType = nodeType;
+                this.link = "";
+            }
     }
 
     public CCTNode(String nodeName, int nodeType) {
         super(nodeName);
-        this.nodeValue = false;
-        this.context = null;
-        this.nodeStatus = CCTNode.EC_STATE;
-        this.nodeType = nodeType;
-        this.link = "";
+        synchronized (this) {
+            this.nodeValue = false;
+            this.context = null;
+            this.nodeStatus = CCTNode.EC_STATE;
+            this.nodeType = nodeType;
+            this.link = "";
+        }
     }
 
-    public boolean getNodeValue() {
+    public synchronized boolean getNodeValue() {
         return nodeValue;
     }
 
-    public Context getContext() {
+    public synchronized Context getContext() {
         return context;
     }
 
-    public void setNodeValue(boolean nodeValue) {
+    public synchronized void setNodeValue(boolean nodeValue) {
         this.nodeValue = nodeValue;
     }
 
-    public void setContext(Context context) {
+    public synchronized void setContext(Context context) {
         this.context = context;
     }
 
-    public String getLink() {
+    public synchronized String getLink() {
         return link;
     }
 
-    public void setLink(String link) {
+    public synchronized void setLink(String link) {
         this.link = link;
     }
 
     @Override
-    public int getNodeStatus() {
+    public synchronized int getNodeStatus() {
         return nodeStatus;
     }
 
     @Override
-    public void setNodeStatus(int nodeStatus) {
+    public synchronized void setNodeStatus(int nodeStatus) {
         this.nodeStatus = nodeStatus;
     }
 
     @Override
-    public int getNodeType() {
+    public synchronized int getNodeType() {
         return nodeType;
     }
 
     @Override
-    public void setNodeType(int nodeType) {
+    public synchronized void setNodeType(int nodeType) {
         this.nodeType = nodeType;
     }
 }

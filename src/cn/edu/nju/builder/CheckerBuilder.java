@@ -69,9 +69,9 @@ public class CheckerBuilder extends AbstractCheckerBuilder {
         for(String timestamp : timeSet) {
             for(String key : patternMap.keySet()) {
                 Pattern pattern = patternMap.get(key);
-                pattern.deleteFirstByTime(timestamp);
                 Checker checker = checkerMap.get(pattern.getId());
                 checker.delete(pattern.getId(), timestamp);
+                pattern.deleteFirstByTime(timestamp);
             }
             scheduler.update();
             if(scheduler.schedule()) {
@@ -95,20 +95,7 @@ public class CheckerBuilder extends AbstractCheckerBuilder {
         }
     }
 
-    private void doCheck() {
-        for(Checker checker : checkerList) {
-            boolean value = checker.doCheck();
-//            System.out.println("[DEBUG] " + checker.getName() + " CCT: ");
-//            checker.printCCT();
-            if(value) {
-                System.out.println("[rule] " + checker.getName() + ": Pass!");
-            }
-            else {
-                System.out.println("[rule] " + checker.getName() + ": Failed!");
-            }
-        }
-        System.out.println("============================================================================================");
-    }
+
 
     public static void main(String[] args) {
         CheckerBuilder checkerBuilder = new CheckerBuilder("resource/config.properties");

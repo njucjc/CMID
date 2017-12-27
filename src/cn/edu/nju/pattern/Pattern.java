@@ -3,6 +3,8 @@ import cn.edu.nju.context.Context;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 /**
  * Created by njucjc on 2017/10/23.
  */
@@ -32,7 +34,7 @@ public class Pattern {
         this.object = object;
         this.site = site;
 
-        this.contextList = new LinkedList<>();
+        this.contextList = new CopyOnWriteArrayList<>();
     }
 
     public long getFreshness() {
@@ -136,6 +138,7 @@ public class Pattern {
         if(!isBelong(context)) {
             return false;
         }
+        System.out.println("[DEBUG] '+' " + id + " " + context);
         contextList.add(context);
         return true;
     }
@@ -144,18 +147,19 @@ public class Pattern {
      * 若第一个context的过期时间为timestamp则删除
      * @param timestamp 时间戳
      */
-    public void deleteFirstByTime(String timestamp) {
-        Iterator<Context> it = contextList.iterator();
-        while (it.hasNext()) {
-            Context context = it.next();
+    public synchronized boolean deleteFirstByTime(String timestamp) {
+        boolean isDel = false;
+        for (Context context : contextList) {
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) >= freshness) {
+                isDel = true;
                 System.out.println("[DEBUG] '-' " + id + " "+ context.toString());
-                it.remove();
+                contextList.remove(context);
             }
             else {
                 break;
             }
         }
+        return isDel;
     }
 
     /**

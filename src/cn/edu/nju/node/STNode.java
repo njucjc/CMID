@@ -10,37 +10,43 @@ public class STNode extends TreeNode implements NodeType{
 
     public STNode(String nodeName, int nodeType) {
         super(nodeName);
-        this.nodeType = nodeType;
-        this.contextSetName = "";
+        synchronized (this) {
+            this.nodeType = nodeType;
+            this.contextSetName = "";
+        }
     }
 
     public STNode(String nodeName, int nodeType, String contextSetName) {
         super(nodeName);
-        this.nodeType = nodeType;
-        this.contextSetName = contextSetName;
+        synchronized (this) {
+            this.nodeType = nodeType;
+            this.contextSetName = contextSetName;
+        }
     }
 
     public  STNode() {
         super("");
-        this.nodeType = EMPTY_NODE;
-        this.contextSetName = "";
+        synchronized (this) {
+            this.nodeType = EMPTY_NODE;
+            this.contextSetName = "";
+        }
     }
 
-    public String getContextSetName() {
+    public synchronized String getContextSetName() {
         return contextSetName;
     }
 
-    public void setContextSetName(String contextSetName) {
+    public synchronized void setContextSetName(String contextSetName) {
         this.contextSetName = contextSetName;
     }
 
     @Override
-    public int getNodeType() {
+    public synchronized int getNodeType() {
         return nodeType;
     }
 
     @Override
-    public void setNodeType(int nodeType) {
+    public synchronized void setNodeType(int nodeType) {
         this.nodeType = nodeType;
     }
 }
