@@ -83,8 +83,8 @@ public class ConChecker extends EccChecker {
 
             }
 
-            StringBuffer satisfiedLink = new StringBuffer("");
-            StringBuffer violatedLink = new StringBuffer("");
+            StringBuilder satisfiedLink = new StringBuilder();
+            StringBuilder violatedLink = new StringBuilder();
 
             for (TreeNode n : subRootList) {
                 CCTNode subRoot = (CCTNode) n;
@@ -148,6 +148,16 @@ public class ConChecker extends EccChecker {
         public Boolean call() throws Exception {
             return checker.evaluation(subcctRoot, param);
 
+        }
+
+
+        public void setSubcctRoot(CCTNode subcctRoot) {
+            this.subcctRoot = subcctRoot;
+        }
+
+
+        public void setParam(List<Context> param) {
+            this.param = param;
         }
     }
 
