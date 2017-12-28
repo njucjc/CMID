@@ -3,6 +3,7 @@ package cn.edu.nju.checker;
 import cn.edu.nju.context.Context;
 import cn.edu.nju.node.CCTNode;
 import cn.edu.nju.node.STNode;
+import cn.edu.nju.node.TreeNode;
 import cn.edu.nju.pattern.Pattern;
 
 import java.util.*;
@@ -35,8 +36,8 @@ public class ConChecker extends EccChecker {
             findSplittingNode = true;
 
             int workload = cctRoot.getChildTreeNodes().size();
-            List<Future<Boolean>> subResultList = new CopyOnWriteArrayList<>();
-            List<CCTNode> subRootList = new CopyOnWriteArrayList<>();
+            List<Future<Boolean>> subResultList = new ArrayList<>();
+            List<TreeNode> subRootList = new ArrayList<>();
 
            // System.out.println("Workload: " + workload);
             for(int i = 0; i < taskNum; i++) {
@@ -44,7 +45,7 @@ public class ConChecker extends EccChecker {
                 subRootList.add(subRoot);
 
             //    System.out.println("[ " +i * workload / taskNum + "," + ((i + 1) * workload / taskNum - 1) + " ]");
-                for (int j = i * workload / taskNum; j < (i + 1) * workload / taskNum; j++) {
+                for (int j = i * workload / taskNum ; j < (i + 1) * workload / taskNum; j++) {
                     subRoot.addChildeNode(cctRoot.getChildTreeNodes().get(j));
                 }
 
@@ -85,7 +86,8 @@ public class ConChecker extends EccChecker {
             StringBuffer satisfiedLink = new StringBuffer("");
             StringBuffer violatedLink = new StringBuffer("");
 
-            for (CCTNode subRoot : subRootList) {
+            for (TreeNode n : subRootList) {
+                CCTNode subRoot = (CCTNode) n;
                 if(subRoot.getNodeValue()) {
                     satisfiedLink.append(subRoot.getLink());
                     satisfiedLink.append("#");
