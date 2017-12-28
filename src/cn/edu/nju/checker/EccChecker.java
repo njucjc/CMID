@@ -20,6 +20,7 @@ public class EccChecker extends Checker{
         super(name, stRoot, patternMap, stMap);
     }
 
+    protected EccChecker() {}
     /**
      *
      * @return violated link

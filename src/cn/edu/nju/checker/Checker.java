@@ -57,6 +57,8 @@ public abstract class Checker {
         buildCCT(stRoot, this.cctRoot);
     }
 
+    protected Checker() {}
+
     public synchronized String getName() {
         return name;
     }

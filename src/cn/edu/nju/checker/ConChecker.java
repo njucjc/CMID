@@ -137,7 +137,7 @@ public class ConChecker extends EccChecker {
 
         private List<Context> param;
 
-        private EccChecker checker = new EccChecker(name, stRoot, patternMap, stMap);
+        private EccChecker checker = new EccChecker();
 
         public ConCheckTask(CCTNode subcctRoot, List<Context> param) {
             this.subcctRoot = subcctRoot;
