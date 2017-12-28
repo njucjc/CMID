@@ -265,110 +265,20 @@ public abstract class Checker {
         }
         else {
             if(cctRoot.getNodeType() == CCTNode.NOT_NODE) {
-                value = !evaluation((CCTNode) cctRoot.getFirstChild(), param);
-                cctRoot.setNodeValue(value); //更新结点值
-                cctRoot.setLink(((CCTNode) cctRoot.getFirstChild()).getLink()); //更新link信息
+                value = notNodeEval(cctRoot, param);
             }
             else if(cctRoot.getNodeType() == CCTNode.AND_NODE){
-                CCTNode leftChild = (CCTNode) cctRoot.getChildTreeNodes().get(0);
-                CCTNode rightChild = (CCTNode) cctRoot.getChildTreeNodes().get(1);
-                boolean leftValue = evaluation(leftChild, param);
-                boolean rightValue = evaluation(rightChild, param);
-
-                value = leftValue && rightValue;
-                cctRoot.setNodeValue(value); //更新结点值
-
-                //更新link信息
-                if(leftValue && !rightValue) {
-                    cctRoot.setLink(rightChild.getLink());
-                }
-                else if(!leftValue && rightValue) {
-                    cctRoot.setLink(leftChild.getLink());
-                }
-                else {
-                    cctRoot.setLink(LinkHelper.linkCartesian(leftChild.getLink(), rightChild.getLink()));
-                }
+                value = andNodeEval(cctRoot, param);
             }
             else if(cctRoot.getNodeType() == CCTNode.IMPLIES_NODE) {
-                CCTNode leftChild = (CCTNode) cctRoot.getChildTreeNodes().get(0);
-                CCTNode rightChild = (CCTNode) cctRoot.getChildTreeNodes().get(1);
-                boolean leftValue = evaluation(leftChild, param);
-                boolean rightValue = evaluation(rightChild, param);
-
-                value =  !leftValue || (leftValue && rightValue);
-                cctRoot.setNodeValue(value); //更新结点值
-                //更新link信息
-                if(value) {
-                    cctRoot.setLink(LinkHelper.linkCartesian(leftChild.getLink(), rightChild.getLink()));
-                }
-                else {
-                    cctRoot.setLink(rightChild.getLink());
-                }
+                value = impliesNodeEval(cctRoot, param);
             }
             else if(cctRoot.getNodeType() == CCTNode.UNIVERSAL_NODE) {
-                List<TreeNode> childNodes = cctRoot.getChildTreeNodes();
-
-                StringBuilder satisfiedLink = new StringBuilder();
-                StringBuilder violatedLink = new StringBuilder();
-
-                value = true;
-                for (TreeNode n : childNodes) {
-                    CCTNode child = (CCTNode)n;
-                    boolean b = evaluation(child, param);
-                    value = value && b;
-                    if (b) {
-                        if(value) {
-                            satisfiedLink.append(child.getLink());
-                            satisfiedLink.append("#");
-                        }
-                    }
-                    else {
-                        violatedLink.append(child.getLink());
-                        violatedLink.append("#");
-                    }
-
-                }
-                cctRoot.setNodeValue(value); //更新结点值
-                if (!value) {
-                    violatedLink.deleteCharAt(violatedLink.length() -1);
-                    cctRoot.setLink(violatedLink.toString());
-                }
-                else {
-                    satisfiedLink.deleteCharAt(satisfiedLink.length() - 1);
-                    cctRoot.setLink(satisfiedLink.toString());
-                }
+                value = universalNodeEval(cctRoot, param);
             }
             else  if(cctRoot.getNodeType() == CCTNode.EXISTENTIAL_NODE) {
-                List<TreeNode> childNodes = cctRoot.getChildTreeNodes();
 
-                StringBuilder satisfiedLink = new StringBuilder();
-                StringBuilder violatedLink = new StringBuilder();
-
-                value = false;
-                for (TreeNode n : childNodes) {
-                    CCTNode child = (CCTNode)n;
-                    boolean b = evaluation(child, param);
-                    value = value || b;
-                    if (b) {
-                        satisfiedLink.append(child.getLink());
-                        satisfiedLink.append("#");
-                    }
-                    else {
-                        if(!value) {
-                            violatedLink.append(child.getLink());
-                            violatedLink.append("#");
-                        }
-                    }
-                }
-                cctRoot.setNodeValue(value);
-                if (value) {
-                    satisfiedLink.deleteCharAt(satisfiedLink.length() - 1);
-                    cctRoot.setLink(satisfiedLink.toString());
-                }
-                else {
-                    violatedLink.deleteCharAt(violatedLink.length() -1);
-                    cctRoot.setLink(violatedLink.toString());
-                }
+                value = existentialNodeEval(cctRoot, param);
             }
             else {
                 assert false:"[DEBUG] Illegal CCT node: " + cctRoot.getNodeName() + ".";
@@ -380,6 +290,131 @@ public abstract class Checker {
         //返回上一层
         if (cctRoot.getContext() != null) {
             param.remove(param.size() - 1);
+        }
+
+        return value;
+    }
+
+
+    protected boolean notNodeEval(CCTNode notNode, List<Context> param) {
+        boolean value = !evaluation((CCTNode) notNode.getFirstChild(), param);
+        notNode.setNodeValue(value); //更新结点值
+        notNode.setLink(((CCTNode) notNode.getFirstChild()).getLink()); //更新link信息
+        return value;
+    }
+
+
+    protected boolean andNodeEval(CCTNode andNode, List<Context> param) {
+
+        CCTNode leftChild = (CCTNode) andNode.getChildTreeNodes().get(0);
+        CCTNode rightChild = (CCTNode) andNode.getChildTreeNodes().get(1);
+        boolean leftValue = evaluation(leftChild, param);
+        boolean rightValue = evaluation(rightChild, param);
+
+        boolean value = leftValue && rightValue;
+        andNode.setNodeValue(value); //更新结点值
+
+        //更新link信息
+        if(leftValue && !rightValue) {
+            andNode.setLink(rightChild.getLink());
+        }
+        else if(!leftValue && rightValue) {
+            andNode.setLink(leftChild.getLink());
+        }
+        else {
+            andNode.setLink(LinkHelper.linkCartesian(leftChild.getLink(), rightChild.getLink()));
+        }
+
+        return value;
+    }
+
+
+    protected boolean impliesNodeEval(CCTNode impliesNode, List<Context> param) {
+        CCTNode leftChild = (CCTNode) impliesNode.getChildTreeNodes().get(0);
+        CCTNode rightChild = (CCTNode) impliesNode.getChildTreeNodes().get(1);
+        boolean leftValue = evaluation(leftChild, param);
+        boolean rightValue = evaluation(rightChild, param);
+
+        boolean value =  !leftValue || (leftValue && rightValue);
+        impliesNode.setNodeValue(value); //更新结点值
+        //更新link信息
+        if(value) {
+            impliesNode.setLink(LinkHelper.linkCartesian(leftChild.getLink(), rightChild.getLink()));
+        }
+        else {
+            impliesNode.setLink(rightChild.getLink());
+        }
+
+        return value;
+    }
+
+
+    protected boolean universalNodeEval(CCTNode universalNode, List<Context> param) {
+        List<TreeNode> childNodes = universalNode.getChildTreeNodes();
+
+        StringBuilder satisfiedLink = new StringBuilder();
+        StringBuilder violatedLink = new StringBuilder();
+
+        boolean value = true;
+        for (TreeNode n : childNodes) {
+            CCTNode child = (CCTNode)n;
+            boolean b = evaluation(child, param);
+            value = value && b;
+            if (b) {
+                if(value) {
+                    satisfiedLink.append(child.getLink());
+                    satisfiedLink.append("#");
+                }
+            }
+            else {
+                violatedLink.append(child.getLink());
+                violatedLink.append("#");
+            }
+
+        }
+        universalNode.setNodeValue(value); //更新结点值
+        if (!value) {
+            violatedLink.deleteCharAt(violatedLink.length() -1);
+            universalNode.setLink(violatedLink.toString());
+        }
+        else {
+            satisfiedLink.deleteCharAt(satisfiedLink.length() - 1);
+            universalNode.setLink(satisfiedLink.toString());
+        }
+
+        return value;
+    }
+
+    protected boolean existentialNodeEval(CCTNode existentialNode, List<Context> param) {
+        List<TreeNode> childNodes = existentialNode.getChildTreeNodes();
+
+        StringBuilder satisfiedLink = new StringBuilder();
+        StringBuilder violatedLink = new StringBuilder();
+
+        boolean value = false;
+        for (TreeNode n : childNodes) {
+            CCTNode child = (CCTNode)n;
+            boolean b = evaluation(child, param);
+            value = value || b;
+            if (b) {
+                satisfiedLink.append(child.getLink());
+                satisfiedLink.append("#");
+            }
+            else {
+                if(!value) {
+                    violatedLink.append(child.getLink());
+                    violatedLink.append("#");
+                }
+            }
+        }
+        existentialNode.setNodeValue(value);
+        if (value) {
+            satisfiedLink.deleteCharAt(satisfiedLink.length() - 1);
+            existentialNode.setLink(satisfiedLink.toString());
+        }
+        else {
+            violatedLink.deleteCharAt(violatedLink.length() -1);
+            existentialNode.setLink(violatedLink.toString());
         }
 
         return value;
