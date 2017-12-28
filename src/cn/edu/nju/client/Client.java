@@ -100,16 +100,21 @@ public class Client implements Runnable{
     }
 
     public static void main(String[] args) {
-        Properties properties = new Properties();
-        try {
-            FileInputStream fis = new FileInputStream(args[0]);
-            properties.load(fis);
-            fis.close();
-        }catch (IOException e) {
-            e.printStackTrace();
+        if (args.length == 1) {
+            Properties properties = new Properties();
+            try {
+                FileInputStream fis = new FileInputStream(args[0]);
+                properties.load(fis);
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Thread client = new Thread(new Client(properties.getProperty("contextFilePath")));
+            client.setPriority(Thread.MAX_PRIORITY);
+            client.start();
         }
-        Thread client = new Thread(new Client(properties.getProperty("contextFilePath")));
-        client.setPriority(Thread.MAX_PRIORITY);
-        client.start();
+        else {
+            System.out.println("Usage: java Client [configFilePath].");
+        }
     }
 }
