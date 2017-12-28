@@ -32,7 +32,7 @@ public abstract class Checker {
 
     protected int checkTimes = 0;
 
-    private Map<String, STNode> stMap; //记录与context set相关的语法树结点
+    protected Map<String, STNode> stMap; //记录与context set相关的语法树结点
 
     private Map<String, List<CCTNode>> cctMap; //记录与context set相关的CCT关键结点
 
@@ -296,7 +296,7 @@ public abstract class Checker {
     }
 
 
-    protected boolean notNodeEval(CCTNode notNode, List<Context> param) {
+    protected synchronized boolean notNodeEval(CCTNode notNode, List<Context> param) {
         boolean value = !evaluation((CCTNode) notNode.getFirstChild(), param);
         notNode.setNodeValue(value); //更新结点值
         notNode.setLink(((CCTNode) notNode.getFirstChild()).getLink()); //更新link信息
@@ -304,7 +304,7 @@ public abstract class Checker {
     }
 
 
-    protected boolean andNodeEval(CCTNode andNode, List<Context> param) {
+    protected synchronized boolean andNodeEval(CCTNode andNode, List<Context> param) {
 
         CCTNode leftChild = (CCTNode) andNode.getChildTreeNodes().get(0);
         CCTNode rightChild = (CCTNode) andNode.getChildTreeNodes().get(1);
@@ -329,7 +329,7 @@ public abstract class Checker {
     }
 
 
-    protected boolean impliesNodeEval(CCTNode impliesNode, List<Context> param) {
+    protected synchronized boolean impliesNodeEval(CCTNode impliesNode, List<Context> param) {
         CCTNode leftChild = (CCTNode) impliesNode.getChildTreeNodes().get(0);
         CCTNode rightChild = (CCTNode) impliesNode.getChildTreeNodes().get(1);
         boolean leftValue = evaluation(leftChild, param);
@@ -349,7 +349,7 @@ public abstract class Checker {
     }
 
 
-    protected boolean universalNodeEval(CCTNode universalNode, List<Context> param) {
+    protected synchronized boolean universalNodeEval(CCTNode universalNode, List<Context> param) {
         List<TreeNode> childNodes = universalNode.getChildTreeNodes();
 
         StringBuilder satisfiedLink = new StringBuilder();
@@ -385,7 +385,7 @@ public abstract class Checker {
         return value;
     }
 
-    protected boolean existentialNodeEval(CCTNode existentialNode, List<Context> param) {
+    protected synchronized boolean existentialNodeEval(CCTNode existentialNode, List<Context> param) {
         List<TreeNode> childNodes = existentialNode.getChildTreeNodes();
 
         StringBuilder satisfiedLink = new StringBuilder();
@@ -475,4 +475,9 @@ public abstract class Checker {
     public int getCheckTimes() {
         return checkTimes;
     }
+
+    public void shutdown() {
+        //do nothing
+    }
+
 }

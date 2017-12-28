@@ -9,8 +9,9 @@ public class Main  {
 
     public static void main(String[] args) {
         if (args.length == 1) {
-            CheckerBuilder checkerParser = new CheckerBuilder(args[0]);
-            checkerParser.run();
+            CheckerBuilder checkerBuilder = new CheckerBuilder(args[0]);
+            checkerBuilder.run();
+            checkerBuilder.shutdown();
         }
         else {
             System.out.println("Usage: java Main [configFilePath].");

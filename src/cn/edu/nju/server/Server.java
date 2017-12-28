@@ -125,6 +125,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
         LogFileHelper.getLogger().info("Total Inc: " + inc);
         LogFileHelper.getLogger().info("Receive: " + count );
+        shutdown();
     }
 
     public static void main(String[] args) {

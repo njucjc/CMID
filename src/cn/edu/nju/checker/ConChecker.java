@@ -12,21 +12,23 @@ import java.util.concurrent.*;
  * Created by njucjc on 2017/12/27.
  */
 
-public class ConChecker extends EccChecker{
+public class ConChecker extends EccChecker {
     private int taskNum;
 
-    private boolean findSplittingNode = false;
+    private boolean findSplittingNode;
 
-    private ExecutorService checkExecutorService = Executors.newCachedThreadPool();
+    private ExecutorService checkExecutorService;
 
     public ConChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap, int taskNum) {
         super(name, stRoot, patternMap, stMap);
         this.taskNum = taskNum;
+        this.findSplittingNode = false;
+        this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
     }
 
 
     @Override
-    protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
+    protected synchronized boolean evaluation(CCTNode cctRoot, List<Context> param) {
         boolean isSplittingNode = cctRoot.getNodeType() == CCTNode.EXISTENTIAL_NODE
                               || cctRoot.getNodeType() == CCTNode.UNIVERSAL_NODE;
         if (!findSplittingNode && isSplittingNode && cctRoot.getChildTreeNodes().size() >= taskNum) {
@@ -36,15 +38,22 @@ public class ConChecker extends EccChecker{
             List<Future<Boolean>> subResultList = new CopyOnWriteArrayList<>();
             List<CCTNode> subRootList = new CopyOnWriteArrayList<>();
 
+           // System.out.println("Workload: " + workload);
             for(int i = 0; i < taskNum; i++) {
                 CCTNode subRoot = new CCTNode(cctRoot.getNodeName(), cctRoot.getNodeType());
                 subRootList.add(subRoot);
 
+            //    System.out.println("[ " +i * workload / taskNum + "," + ((i + 1) * workload / taskNum - 1) + " ]");
                 for (int j = i * workload / taskNum; j < (i + 1) * workload / taskNum; j++) {
                     subRoot.addChildeNode(cctRoot.getChildTreeNodes().get(j));
                 }
 
-                Future<Boolean> subResult = checkExecutorService.submit(new ConCheckTask(subRoot, param));
+                List<Context> p = new CopyOnWriteArrayList<>();
+                for(Context c : param) {
+                    p.add(c);
+                }
+
+                Future<Boolean> subResult = checkExecutorService.submit(new ConCheckTask(subRoot, p));
                 subResultList.add(subResult);
             }
 
@@ -52,8 +61,9 @@ public class ConChecker extends EccChecker{
             boolean orValue = false;
             try {
                 for (Future<Boolean> subResult : subResultList) {
-                    andValue = andValue && subResult.get();
-                    orValue = orValue || subResult.get();
+                    boolean tmp = subResult.get();
+                    andValue = andValue && tmp;
+                    orValue = orValue || tmp;
                 }
 
             } catch (InterruptedException e) {
@@ -114,28 +124,27 @@ public class ConChecker extends EccChecker{
         return value;
     }
 
+    @Override
+    public void shutdown() {
+        checkExecutorService.shutdown();
+        super.shutdown();
+    }
+
     class ConCheckTask implements Callable<Boolean> {
-        private CCTNode cctRoot;
+        private CCTNode subcctRoot;
 
         private List<Context> param;
 
+        private EccChecker checker = new EccChecker(name, stRoot, patternMap, stMap);
 
-
-        public ConCheckTask(CCTNode cctRoot, List<Context> param) {
-            this.cctRoot = cctRoot;
+        public ConCheckTask(CCTNode subcctRoot, List<Context> param) {
+            this.subcctRoot = subcctRoot;
             this.param = param;
         }
 
         @Override
         public Boolean call() throws Exception {
-            System.out.println("I am here");
-            boolean value;
-            if (cctRoot.getNodeType() == CCTNode.UNIVERSAL_NODE) {
-                value = ConChecker.this.universalNodeEval(cctRoot, param);
-            } else {
-                value = ConChecker.this.existentialNodeEval(cctRoot, param);
-            }
-            return value;
+            return checker.evaluation(subcctRoot, param);
 
         }
     }

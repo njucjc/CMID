@@ -260,4 +260,11 @@ public abstract class AbstractCheckerBuilder {
         }
         System.out.println("============================================================================================");
     }
+
+    public void shutdown() {
+        for (Checker checker : checkerList) {
+            checker.shutdown();
+        }
+    }
+
 }
