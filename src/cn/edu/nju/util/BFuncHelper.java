@@ -12,7 +12,7 @@ public class BFuncHelper {
      * @param context
      * @return
      */
-    public synchronized static boolean szLocRange(Context context) {
+    public static boolean szLocRange(Context context) {
         double longitude = context.getLongitude();
         double latitude = context.getLatitude();
 
@@ -28,7 +28,7 @@ public class BFuncHelper {
      * @param context2
      * @return
      */
-    private synchronized static boolean same(Context context1, Context context2) {
+    private static boolean same(Context context1, Context context2) {
         return context1.equals(context2);
     }
 
@@ -39,7 +39,7 @@ public class BFuncHelper {
      * @param context2
      * @return
      */
-    private synchronized static boolean szSpdClose(Context context1, Context context2) {
+    private static boolean szSpdClose(Context context1, Context context2) {
         double speed1 = context1.getSpeed();
         double speed2 = context2.getSpeed();
         return  Double.compare(speed1 - speed2, -50.0) >= 0 &&
@@ -52,7 +52,7 @@ public class BFuncHelper {
      * @param context2
      * @return
      */
-    private synchronized static boolean szLocDist(Context context1, Context context2) {
+    private static boolean szLocDist(Context context1, Context context2) {
         double d = getDistance(context1, context2);
         return Double.compare(d, 0.025) <= 0;
 
@@ -64,7 +64,7 @@ public class BFuncHelper {
      * @param context2
      * @return
      */
-    private synchronized static boolean szLocDistNeq(Context context1, Context context2) {
+    private static boolean szLocDistNeq(Context context1, Context context2) {
         double d = getDistance(context1, context2);
         return  Double.compare(d, 0.025) <= 0 &&
                 Double.compare(d, 0.0) != 0;
@@ -76,7 +76,7 @@ public class BFuncHelper {
      * @param context2
      * @return
      */
-    private synchronized static boolean szLocClose(Context context1, Context context2) {
+    private static boolean szLocClose(Context context1, Context context2) {
         double d = getDistance(context1, context2);
         return Double.compare(d, 0.001) <= 0;
     }
@@ -87,7 +87,7 @@ public class BFuncHelper {
      * @param context2
      * @return
      */
-    private synchronized static double getDistance(Context context1, Context context2) {
+    private static double getDistance(Context context1, Context context2) {
         double longitude1 = context1.getLongitude();
         double latitude1 = context1.getLatitude();
         double longitude2 = context2.getLongitude();
@@ -96,7 +96,7 @@ public class BFuncHelper {
         return LocationHelper.getDistance(longitude1, latitude1, longitude2, latitude2);
     }
 
-    public synchronized static boolean bfun(String name, Context context1, Context context2) {
+    public static boolean bfun(String name, Context context1, Context context2) {
         boolean value = false;
         switch (name) {
             case "sz_loc_range":

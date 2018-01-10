@@ -15,10 +15,8 @@ public class TreeNode {
 
 
     public TreeNode(String nodeName) {
-        synchronized (this) {
-            this.nodeName = nodeName;
-            childTreeNodes = new CopyOnWriteArrayList<>();
-        }
+        this.nodeName = nodeName;
+        childTreeNodes = new CopyOnWriteArrayList<>();
     }
 
     public TreeNode() {
@@ -30,16 +28,16 @@ public class TreeNode {
 
 
 
-    public synchronized void addChildeNode(TreeNode child) {
+    public void addChildeNode(TreeNode child) {
         child.setParentTreeNode(this);
         childTreeNodes.add(child);
     }
 
-    public synchronized boolean hasChildNodes() {
+    public boolean hasChildNodes() {
         return childTreeNodes != null && childTreeNodes.size() != 0;
     }
 
-    public synchronized TreeNode getFirstChild() {
+    public TreeNode getFirstChild() {
         if(!hasChildNodes()) {
             return null;
         }
@@ -48,7 +46,7 @@ public class TreeNode {
         }
     }
 
-    public synchronized TreeNode getLastChild() {
+    public TreeNode getLastChild() {
         if(!hasChildNodes()) {
             return null;
         }
@@ -57,27 +55,27 @@ public class TreeNode {
         }
     }
 
-    public synchronized String getNodeName() {
+    public String getNodeName() {
         return nodeName;
     }
 
-    public synchronized void setNodeName(String nodeName) {
+    public void setNodeName(String nodeName) {
         this.nodeName = nodeName;
     }
 
-    public synchronized List<TreeNode> getChildTreeNodes() {
+    public List<TreeNode> getChildTreeNodes() {
         return childTreeNodes;
     }
 
-    public synchronized void setChildTreeNodes(List<TreeNode> childTreeNodes) {
+    public void setChildTreeNodes(List<TreeNode> childTreeNodes) {
         this.childTreeNodes = childTreeNodes;
     }
 
-    public synchronized TreeNode getParentTreeNode() {
+    public TreeNode getParentTreeNode() {
         return parentTreeNode;
     }
 
-    public synchronized void setParentTreeNode(TreeNode parentTreeNode) {
+    public void setParentTreeNode(TreeNode parentTreeNode) {
         this.parentTreeNode = parentTreeNode;
     }
 }
