@@ -28,12 +28,13 @@ import javax.xml.parsers.ParserConfigurationException;
 /**
  * Created by njucjc on 2017/10/23.
  */
-public class CheckerBuilder extends AbstractCheckerBuilder {
+public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
 
     public CheckerBuilder(String configFilePath) {
         super(configFilePath);
     }
 
+    @Override
     public void run() {
         Context context;
         try {
@@ -55,6 +56,7 @@ public class CheckerBuilder extends AbstractCheckerBuilder {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        shutdown();
     }
 
     private void doContextChange(Context context) {
