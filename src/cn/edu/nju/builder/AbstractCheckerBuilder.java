@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public abstract class AbstractCheckerBuilder {
 
@@ -49,6 +51,7 @@ public abstract class AbstractCheckerBuilder {
 
     private int taskNum;
 
+    private ExecutorService checkExecutorService;
     public AbstractCheckerBuilder(String configFilePath) {
         parseConfigFile(configFilePath);
     }
@@ -87,6 +90,7 @@ public abstract class AbstractCheckerBuilder {
             assert false:"[DEBUG] taskNum error: " + taskNumStr;
         }
 
+        this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
         //pattern
         String patternFilePath = properties.getProperty("patternFilePath");
         parsePatternFile(patternFilePath);
@@ -187,7 +191,7 @@ public abstract class AbstractCheckerBuilder {
                 else if (checkType == ECC_TYPE){
                     checker = new EccChecker(idNode.getTextContent(), root, this.patternMap, stMap);
                 } else { //CON-C
-                    checker = new ConChecker(idNode.getTextContent(), root, this.patternMap, stMap, taskNum);
+                    checker = new ConChecker(idNode.getTextContent(), root, this.patternMap, stMap, taskNum, checkExecutorService);
                 }
 
                 checkerList.add(checker);
@@ -262,9 +266,7 @@ public abstract class AbstractCheckerBuilder {
     }
 
     public void shutdown() {
-        for (Checker checker : checkerList) {
-            checker.shutdown();
-        }
+        checkExecutorService.shutdown();
     }
 
 }

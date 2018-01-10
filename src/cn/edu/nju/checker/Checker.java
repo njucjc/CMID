@@ -276,11 +276,11 @@ public abstract class Checker {
                 value = impliesNodeEval(cctRoot, param);
             }
             else if(cctRoot.getNodeType() == CCTNode.UNIVERSAL_NODE) {
-                value = universalNodeEval(cctRoot, param);
+                value = universalNodeEval(cctRoot, param, 0, cctRoot.getChildTreeNodes().size() - 1).getValue();
             }
             else  if(cctRoot.getNodeType() == CCTNode.EXISTENTIAL_NODE) {
 
-                value = existentialNodeEval(cctRoot, param);
+                value = existentialNodeEval(cctRoot, param,0, cctRoot.getChildTreeNodes().size() - 1).getValue();
             }
             else {
                 assert false:"[DEBUG] Illegal CCT node: " + cctRoot.getNodeName() + ".";
@@ -351,15 +351,15 @@ public abstract class Checker {
     }
 
 
-    protected synchronized boolean universalNodeEval(CCTNode universalNode, List<Context> param) {
+    protected synchronized Result universalNodeEval(CCTNode universalNode, List<Context> param,int start, int end) {
         List<TreeNode> childNodes = universalNode.getChildTreeNodes();
 
         StringBuilder satisfiedLink = new StringBuilder();
         StringBuilder violatedLink = new StringBuilder();
 
         boolean value = true;
-        for (TreeNode n : childNodes) {
-            CCTNode child = (CCTNode)n;
+        for (int i = start; i <= end; i++) {
+            CCTNode child = (CCTNode)childNodes.get(i);
             boolean b = evaluation(child, param);
             value = value && b;
             if (b) {
@@ -375,27 +375,28 @@ public abstract class Checker {
 
         }
         universalNode.setNodeValue(value); //更新结点值
+        String link;
         if (!value) {
             violatedLink.deleteCharAt(violatedLink.length() -1);
-            universalNode.setLink(violatedLink.toString());
+            link = violatedLink.toString();
         }
         else {
             satisfiedLink.deleteCharAt(satisfiedLink.length() - 1);
-            universalNode.setLink(satisfiedLink.toString());
+            link = satisfiedLink.toString();
         }
-
-        return value;
+        universalNode.setLink(link);
+        return new Result(value,link);
     }
 
-    protected synchronized boolean existentialNodeEval(CCTNode existentialNode, List<Context> param) {
+    protected synchronized Result existentialNodeEval(CCTNode existentialNode, List<Context> param, int start, int end) {
         List<TreeNode> childNodes = existentialNode.getChildTreeNodes();
 
         StringBuilder satisfiedLink = new StringBuilder();
         StringBuilder violatedLink = new StringBuilder();
 
         boolean value = false;
-        for (TreeNode n : childNodes) {
-            CCTNode child = (CCTNode)n;
+        for (int i = start; i <= end; i++) {
+            CCTNode child = (CCTNode)childNodes.get(i);
             boolean b = evaluation(child, param);
             value = value || b;
             if (b) {
@@ -410,16 +411,18 @@ public abstract class Checker {
             }
         }
         existentialNode.setNodeValue(value);
+        String link;
         if (value) {
             satisfiedLink.deleteCharAt(satisfiedLink.length() - 1);
-            existentialNode.setLink(satisfiedLink.toString());
+            link = satisfiedLink.toString();
+
         }
         else {
             violatedLink.deleteCharAt(violatedLink.length() -1);
-            existentialNode.setLink(violatedLink.toString());
+            link = violatedLink.toString();
         }
-
-        return value;
+        existentialNode.setLink(link);
+        return new Result(value, link);
     }
 
 
@@ -476,10 +479,6 @@ public abstract class Checker {
 
     public int getCheckTimes() {
         return checkTimes;
-    }
-
-    public void shutdown() {
-        //do nothing
     }
 
 }

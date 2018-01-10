@@ -3,7 +3,6 @@ package cn.edu.nju.checker;
 import cn.edu.nju.context.Context;
 import cn.edu.nju.node.CCTNode;
 import cn.edu.nju.node.STNode;
-import cn.edu.nju.node.TreeNode;
 import cn.edu.nju.pattern.Pattern;
 
 import java.util.*;
@@ -20,11 +19,11 @@ public class ConChecker extends EccChecker {
 
     private ExecutorService checkExecutorService;
 
-    public ConChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap, int taskNum) {
+    public ConChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap, int taskNum, ExecutorService checkExecutorService) {
         super(name, stRoot, patternMap, stMap);
         this.taskNum = taskNum;
         this.findSplittingNode = false;
-        this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
+        this.checkExecutorService = checkExecutorService;//Executors.newFixedThreadPool(taskNum);
     }
 
 
@@ -36,35 +35,32 @@ public class ConChecker extends EccChecker {
             findSplittingNode = true;
 
             int workload = cctRoot.getChildTreeNodes().size();
-            List<Future<Boolean>> subResultList = new ArrayList<>();
-            List<TreeNode> subRootList = new ArrayList<>();
+            List<Future<Result>> subResultList = new ArrayList<>();
 
-           // System.out.println("Workload: " + workload);
             for(int i = 0; i < taskNum; i++) {
-                CCTNode subRoot = new CCTNode(cctRoot.getNodeName(), cctRoot.getNodeType());
-                subRootList.add(subRoot);
-
-            //    System.out.println("[ " +i * workload / taskNum + "," + ((i + 1) * workload / taskNum - 1) + " ]");
-                for (int j = i * workload / taskNum ; j < (i + 1) * workload / taskNum; j++) {
-                    subRoot.addChildeNode(cctRoot.getChildTreeNodes().get(j));
-                }
-
                 List<Context> p = new CopyOnWriteArrayList<>();
-                for(Context c : param) {
-                    p.add(c);
-                }
-
-                Future<Boolean> subResult = checkExecutorService.submit(new ConCheckTask(subRoot, p));
+                p.addAll(param);
+                Future<Result> subResult = checkExecutorService.submit(new ConCheckTask(cctRoot, p, i * workload / taskNum, (i + 1) * workload / taskNum - 1));
                 subResultList.add(subResult);
             }
 
             boolean andValue = true;
             boolean orValue = false;
+            StringBuilder satisfiedLink = new StringBuilder();
+            StringBuilder violatedLink = new StringBuilder();
             try {
-                for (Future<Boolean> subResult : subResultList) {
-                    boolean tmp = subResult.get();
+                for (Future<Result> subResult : subResultList) {
+                    Result tmpResult = subResult.get();
+                    boolean tmp = tmpResult.getValue();
                     andValue = andValue && tmp;
                     orValue = orValue || tmp;
+                    if (tmp) {
+                        satisfiedLink.append(tmpResult.getLink());
+                        satisfiedLink.append("#");
+                    } else {
+                        violatedLink.append(tmpResult.getLink());
+                        violatedLink.append("#");
+                    }
                 }
 
             } catch (InterruptedException e) {
@@ -83,20 +79,6 @@ public class ConChecker extends EccChecker {
 
             }
 
-            StringBuilder satisfiedLink = new StringBuilder();
-            StringBuilder violatedLink = new StringBuilder();
-
-            for (TreeNode n : subRootList) {
-                CCTNode subRoot = (CCTNode) n;
-                if(subRoot.getNodeValue()) {
-                    satisfiedLink.append(subRoot.getLink());
-                    satisfiedLink.append("#");
-                }
-                else {
-                    violatedLink.append(subRoot.getLink());
-                    violatedLink.append("#");
-                }
-            }
             cctRoot.setNodeValue(value);
 
             if(value) {
@@ -126,27 +108,31 @@ public class ConChecker extends EccChecker {
         return value;
     }
 
-    @Override
-    public void shutdown() {
-        checkExecutorService.shutdown();
-        super.shutdown();
-    }
-
-    class ConCheckTask implements Callable<Boolean> {
+    class ConCheckTask implements Callable<Result> {
         private CCTNode subcctRoot;
 
         private List<Context> param;
 
         private EccChecker checker = new EccChecker();
 
-        public ConCheckTask(CCTNode subcctRoot, List<Context> param) {
+        private int start;
+
+        private int end;
+
+        public ConCheckTask(CCTNode subcctRoot, List<Context> param, int start, int end) {
             this.subcctRoot = subcctRoot;
             this.param = param;
+            this.start = start;
+            this.end = end;
         }
 
         @Override
-        public Boolean call() throws Exception {
-            return checker.evaluation(subcctRoot, param);
+        public Result call() throws Exception {
+            if (subcctRoot.getNodeType() == CCTNode.UNIVERSAL_NODE) {
+                return checker.universalNodeEval(subcctRoot, param, start, end);
+            } else {
+                return checker.existentialNodeEval(subcctRoot, param, start, end);
+            }
 
         }
 
