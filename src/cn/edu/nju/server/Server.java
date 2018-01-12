@@ -125,11 +125,17 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
         LogFileHelper.getLogger().info("Total Inc: " + inc);
         LogFileHelper.getLogger().info("Receive: " + count );
+        shutdown();
     }
 
     public static void main(String[] args) {
-        Thread serverThread = new Thread(new Server(args[0]));
-        serverThread.setPriority(Thread.MAX_PRIORITY);
-        serverThread.start();
+        if(args.length == 1) {
+            Thread serverThread = new Thread(new Server(args[0]));
+            serverThread.setPriority(Thread.MAX_PRIORITY);
+            serverThread.start();
+        }
+        else {
+            System.out.println("Usage: java Server [configFilePath].");
+        }
     }
 }

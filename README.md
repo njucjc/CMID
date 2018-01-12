@@ -14,6 +14,8 @@ logFilePath=report.log
 technique=PCC
 #描述几个context change触发一次check（即batch值，可选项是正整数，目前暂未考虑自适应调度）
 schedule=2
+#描述Con-C的任务数量
+taskNum=4
 ```
 ## 2. Run
 ### (1) Clone [this repository](https://github.com/njucjc/graduation-project).

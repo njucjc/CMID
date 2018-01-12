@@ -1,6 +1,7 @@
 package cn.edu.nju.builder;
 
 import cn.edu.nju.checker.Checker;
+import cn.edu.nju.checker.ConChecker;
 import cn.edu.nju.checker.EccChecker;
 import cn.edu.nju.checker.PccChecker;
 import cn.edu.nju.context.ContextRepoService;
@@ -24,11 +25,14 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public abstract class AbstractCheckerBuilder {
 
     public static final int ECC_TYPE = 0;
-    public static final int PCC_TYPE = 1;    /*每一条rule的checker*/
+    public static final int PCC_TYPE = 1; /*每一条rule的checker*/
+    public static final int CON_TYPE = 2;
 
     protected List<Checker> checkerList;
 
@@ -45,6 +49,9 @@ public abstract class AbstractCheckerBuilder {
 
     private int checkType = ECC_TYPE;
 
+    private int taskNum;
+
+    private ExecutorService checkExecutorService;
     public AbstractCheckerBuilder(String configFilePath) {
         parseConfigFile(configFilePath);
     }
@@ -65,10 +72,25 @@ public abstract class AbstractCheckerBuilder {
             this.checkType = PCC_TYPE;
         } else if("ECC".equals(technique)){
             this.checkType = ECC_TYPE;
+        } else if("Con-C".equals(technique)) {
+            this.checkType = CON_TYPE;
         } else {
             assert false:"[DEBUG] Checking technique error: " + technique;
         }
 
+        //taskNum
+        String taskNumStr = properties.getProperty("taskNum");
+        if(taskNumStr.matches("[0-9]+")) {
+            this.taskNum = Integer.parseInt(taskNumStr);
+            if (taskNum == 0) {
+                assert false:"[DEBUG] taskNum error: " + taskNumStr;
+            }
+            System.out.println("[DEBUG] " + taskNum);
+        } else {
+            assert false:"[DEBUG] taskNum error: " + taskNumStr;
+        }
+
+        this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
         //pattern
         String patternFilePath = properties.getProperty("patternFilePath");
         parsePatternFile(patternFilePath);
@@ -94,7 +116,6 @@ public abstract class AbstractCheckerBuilder {
         } else {
             assert false:"[DEBUG] Schedule error: " + schedule;
         }
-
 
     }
 
@@ -167,8 +188,10 @@ public abstract class AbstractCheckerBuilder {
                 if(checkType == PCC_TYPE) {
                     checker = new PccChecker(idNode.getTextContent(), root, this.patternMap, stMap);
                 }
-                else{
+                else if (checkType == ECC_TYPE){
                     checker = new EccChecker(idNode.getTextContent(), root, this.patternMap, stMap);
+                } else { //CON-C
+                    checker = new ConChecker(idNode.getTextContent(), root, this.patternMap, stMap, taskNum, checkExecutorService);
                 }
 
                 checkerList.add(checker);
@@ -241,4 +264,9 @@ public abstract class AbstractCheckerBuilder {
         }
         System.out.println("============================================================================================");
     }
+
+    public void shutdown() {
+        checkExecutorService.shutdown();
+    }
+
 }
