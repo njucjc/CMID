@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class ChangeFileHelper {
     private List<Pattern> patternList = new ArrayList<>();
-    private Map<String, List<String>> contextChangMap = new HashMap();
+    private Map<String, List<String>> contextChangMap = new TreeMap<>();
     private ContextStaticRepo contextStaticRepo;
 
     public ChangeFileHelper(String patternXmlPath) {
@@ -74,18 +74,20 @@ public class ChangeFileHelper {
             while ((context = contextStaticRepo.getContext()) != null) {
                 String currentTimestamp = context.getTimestamp();
 
-                Set<String> keySet = contextChangMap.keySet();
-                String [] keyArray = new String[keySet.size()];
-                keySet.toArray(keyArray);
-                Arrays.sort(keyArray);
-
-                for(String timestamp: keyArray) {
+//                Set<String> keySet = contextChangMap.keySet();
+//                String [] keyArray = new String[keySet.size()];
+//                keySet.toArray(keyArray);
+//                Arrays.sort(keyArray);
+                Iterator<Map.Entry<String, List<String>>> it = contextChangMap.entrySet().iterator();
+                while(it.hasNext()) {
+                    Map.Entry<String, List<String>> entry = it.next();
+                    String timestamp = entry.getKey();
                     if(TimestampHelper.timestampCmp(timestamp, currentTimestamp) < 0) {
                         for(String change : contextChangMap.get(timestamp)) {
                             writer.write(change);
                             writer.write('\n');
                         }
-                        contextChangMap.get(timestamp).clear();
+                        it.remove();
                     }
                 }
 
@@ -108,13 +110,16 @@ public class ChangeFileHelper {
             e.printStackTrace();
         }
 
-        Set<String> keySet = contextChangMap.keySet();
-        String [] keyArray = new String[keySet.size()];
-        keySet.toArray(keyArray);
-        Arrays.sort(keyArray);
+//        Set<String> keySet = contextChangMap.keySet();
+//        String [] keyArray = new String[keySet.size()];
+//        keySet.toArray(keyArray);
+//        Arrays.sort(keyArray);
 
         try {
-            for (String key : keyArray) {
+            Iterator<Map.Entry<String, List<String>>> it = contextChangMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, List<String>> entry = it.next();
+                String key = entry.getKey();
                 for (String change : contextChangMap.get(key)) {
                     writer.write(change);
                     writer.write('\n');
@@ -135,7 +140,14 @@ public class ChangeFileHelper {
 
 
     public static void main(String[] args) {
-        ChangeFileHelper changeFileHelper = new ChangeFileHelper("resource/consistency_patterns.xml");
-        changeFileHelper.parseChangeFile("resource/changes/00.txt");
+        if(args.length == 2) {
+            ChangeFileHelper changeFileHelper = new ChangeFileHelper(args[0]);
+            changeFileHelper.parseChangeFile(args[1]);
+        }
+        else {
+            System.out.println("Args Error.");
+        }
+//        ChangeFileHelper changeFileHelper = new ChangeFileHelper("resource/consistency_patterns.xml");
+//        changeFileHelper.parseChangeFile("resource/changes/00_small.txt");
     }
 }
