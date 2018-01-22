@@ -15,6 +15,11 @@ public class TimestampHelper {
      * @return 两个时间戳的时间差
      */
     public synchronized static long timestampDiff(String timestamp1, String timestamp2) {
+        long diff = getDiff(timestamp1, timestamp2);
+        return diff > 0 ? diff : -diff;
+    }
+
+    private static long getDiff(String timestamp1, String timestamp2) {
         long diff = 0;
         try {
             java.util.Date begin = dfs.parse(timestamp1);
@@ -23,8 +28,18 @@ public class TimestampHelper {
         }catch (Exception e) {
             e.printStackTrace();
         }
+        return diff;
+    }
 
-        return diff > 0 ? diff : -diff;
+    public synchronized static int timestampCmp(String timestamp1, String timestamp2) {
+        long diff = getDiff(timestamp1, timestamp2);
+        if(diff < 0) {
+            return 1;
+        } else if(diff > 0) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     /**
