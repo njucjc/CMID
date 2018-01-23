@@ -2,13 +2,12 @@ package cn.edu.nju.builder;
 
 import cn.edu.nju.change.ChangeHandler;
 import cn.edu.nju.change.DynamicTimebaseChangeHandler;
+import cn.edu.nju.change.StaticChangebaseChangeHandler;
 import cn.edu.nju.change.StaticTimebaseChangeHandler;
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.checker.ConChecker;
 import cn.edu.nju.checker.EccChecker;
 import cn.edu.nju.checker.PccChecker;
-import cn.edu.nju.context.ContextRepoService;
-import cn.edu.nju.context.ContextStaticRepo;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.BatchScheduler;
@@ -128,6 +127,9 @@ public abstract class AbstractCheckerBuilder {
         }
         else if("DynamicTimebase".equals(changeHandlerType)) {
             this.changeHandler = new DynamicTimebaseChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+        }
+        else if("StaticChangebase".equals(changeHandlerType)) {
+            this.changeHandler = new StaticChangebaseChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
 
     }
@@ -261,21 +263,6 @@ public abstract class AbstractCheckerBuilder {
                 root.addChildeNode(stNode);
             }
         }
-    }
-
-    protected synchronized void doCheck() {
-        for(Checker checker : checkerList) {
-            boolean value = checker.doCheck();
-//            System.out.println("[DEBUG] " + checker.getName() + " CCT: ");
-//            checker.printCCT();
-            if(value) {
-                System.out.println("[rule] " + checker.getName() + ": Pass!");
-            }
-            else {
-                System.out.println("[rule] " + checker.getName() + ": Failed!");
-            }
-        }
-        System.out.println("============================================================================================");
     }
 
     public void shutdown() {
