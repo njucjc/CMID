@@ -16,6 +16,7 @@ technique=PCC
 schedule=2
 #描述Con-C的任务数量
 taskNum=4
+changeHandlerType=StaticTimebase
 ```
 ## 2. Run
 ### (1) Clone [this repository](https://github.com/njucjc/graduation-project).

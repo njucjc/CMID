@@ -28,14 +28,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     private int port = 8000;
     private byte [] buf = new byte[256];
 
-//    private Timer checkTimer = new Timer();
-    private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(100);
-
-    private Set<String> timeTaskSet = ConcurrentHashMap.newKeySet();
-
-
-    private ContextParser contextParser = new ContextParser();
-
     public Server(String configFilePath)  {
         super(configFilePath);
         try {
@@ -45,34 +37,11 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }
     }
 
-    class ContextTimeoutTask extends TimerTask {
-        private String timestamp;
-
-        public ContextTimeoutTask(String timestamp) {
-            this.timestamp = timestamp;
-        }
-
-        @Override
-        public void run() {
-            for(String key : patternMap.keySet()) {
-                Pattern pattern = patternMap.get(key);
-                Checker checker = checkerMap.get(pattern.getId());
-                checker.delete(pattern.getId(), timestamp);
-                pattern.deleteFirstByTime(timestamp);
-            }
-            scheduler.update();
-            if(scheduler.schedule()) {
-                doCheck();
-            }
-            timeTaskSet.remove(timestamp);
-        }
-    }
-
     @Override
     public void run() {
         running = true;
 
-        int count = 0;
+        long count = 0;
         long startTime = System.nanoTime();
         try {
             while (running) {
@@ -86,36 +55,17 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 }
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
                 msg = msg.substring(msg.indexOf(",") + 1);
-                Context context = contextParser.parseContext(num, msg);
-                context.setTimestamp(TimestampHelper.getCurrentTimestamp());
+                changeHandler.doContextChange(num, msg);
                 count++;
-                //do checking
-                for(String key : patternMap.keySet()) {
-                    Pattern p = patternMap.get(key);
-                    if(p.isBelong(context)) {
-                        String delTime = TimestampHelper.plusMillis(context.getTimestamp(), p.getFreshness());
-                        if(timeTaskSet.add(delTime)) {
-//                            checkTimer.schedule(new ContextTimeoutTask(delTime), TimestampHelper.parserDate(delTime));
-                            scheduledExecutorService.schedule(new ContextTimeoutTask(delTime), p.getFreshness(), TimeUnit.MILLISECONDS);
-                        }
-                        p.addContext(context);
-                        Checker checker = checkerMap.get(p.getId());
-                        checker.add(p.getId(),context);
-                    }
-                }
-                scheduler.update();
-                if(scheduler.schedule()) {
-                    doCheck();
-                }
+
             }
         }
         catch (IOException e) {
             e.printStackTrace();
         }
 
-        while (!timeTaskSet.isEmpty());
-        scheduledExecutorService.shutdown();
-//        checkTimer.cancel();
+        changeHandler.shutdown();
+
         long endTime = System.nanoTime();
 
         int inc = 0;

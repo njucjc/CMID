@@ -78,6 +78,11 @@ public class Context {
         this.status = status;
     }
 
+    public String allForString() {
+        return id + "," + timestamp + "," + plateNumber + ","
+                + longitude + "," + latitude + "," + speed + "," + status;
+    }
+
     @Override
     public String toString() {
         return "cxt_" + id;
