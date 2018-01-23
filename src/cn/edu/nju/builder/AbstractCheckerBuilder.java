@@ -1,6 +1,7 @@
 package cn.edu.nju.builder;
 
 import cn.edu.nju.change.ChangeHandler;
+import cn.edu.nju.change.DynamicTimebaseChangeHandler;
 import cn.edu.nju.change.StaticTimebaseChangeHandler;
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.checker.ConChecker;
@@ -124,6 +125,9 @@ public abstract class AbstractCheckerBuilder {
         String changeType = properties.getProperty("changeType");
         if("StaticTimebase".equals(changeType)) {
             this.changeHandler = new StaticTimebaseChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+        }
+        else if("DynamicTimebase".equals(changeType)) {
+            this.changeHandler = new DynamicTimebaseChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
 
     }
