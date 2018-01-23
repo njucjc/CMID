@@ -1,5 +1,7 @@
 package cn.edu.nju.builder;
 
+import cn.edu.nju.change.ChangeHandler;
+import cn.edu.nju.change.StaticTimebaseChangeHandler;
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.checker.ConChecker;
 import cn.edu.nju.checker.EccChecker;
@@ -39,8 +41,7 @@ public abstract class AbstractCheckerBuilder {
     /*调度checker的策略*/
     protected Scheduler scheduler;
 
-    /*用于获取context，从文件中读入或从server读入*/
-    protected ContextRepoService contextRepoService;
+    protected String contextFilePath;
 
     /*所有pattern*/
     protected Map<String, Pattern> patternMap;
@@ -52,6 +53,9 @@ public abstract class AbstractCheckerBuilder {
     private int taskNum;
 
     private ExecutorService checkExecutorService;
+
+    protected ChangeHandler changeHandler;
+
     public AbstractCheckerBuilder(String configFilePath) {
         parseConfigFile(configFilePath);
     }
@@ -99,9 +103,8 @@ public abstract class AbstractCheckerBuilder {
         String ruleFilePath = properties.getProperty("ruleFilePath");
         parseRuleFile(ruleFilePath);
 
-        //context
-        String contextFilePath = properties.getProperty("contextFilePath");
-        this.contextRepoService = new ContextStaticRepo(contextFilePath);
+        //context file path
+        this.contextFilePath = properties.getProperty("contextFilePath");
 
         //log
         String logFilePath = properties.getProperty("logFilePath");
@@ -115,6 +118,12 @@ public abstract class AbstractCheckerBuilder {
             System.out.println("[DEBUG] " + schedule);
         } else {
             assert false:"[DEBUG] Schedule error: " + schedule;
+        }
+
+        //change handler
+        String changeType = properties.getProperty("changeType");
+        if("StaticTimebase".equals(changeType)) {
+            this.changeHandler = new StaticTimebaseChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
 
     }
