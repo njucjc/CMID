@@ -122,11 +122,11 @@ public abstract class AbstractCheckerBuilder {
         }
 
         //change handler
-        String changeType = properties.getProperty("changeType");
-        if("StaticTimebase".equals(changeType)) {
+        String changeHandlerType = properties.getProperty("changeHandlerType");
+        if("StaticTimebase".equals(changeHandlerType)) {
             this.changeHandler = new StaticTimebaseChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
-        else if("DynamicTimebase".equals(changeType)) {
+        else if("DynamicTimebase".equals(changeHandlerType)) {
             this.changeHandler = new DynamicTimebaseChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
 
