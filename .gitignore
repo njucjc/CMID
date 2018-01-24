@@ -5,7 +5,6 @@ out/
 *.log
 output/
 changes/
-config/
 *.py
 *.xml
 *.properties
