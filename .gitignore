@@ -9,4 +9,4 @@ changes/
 *.xml
 *.properties
 *.lck
-datas/
+data/
