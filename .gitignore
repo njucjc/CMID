@@ -5,10 +5,10 @@ resource/
 *.iml
 *.log
 output/
-data/
+change/
 config/
 *.py
 *.xml
 *.properties
 *.lck
-change/
+data/
