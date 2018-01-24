@@ -11,3 +11,4 @@ config/
 *.xml
 *.properties
 *.lck
+change/
