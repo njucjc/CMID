@@ -13,8 +13,8 @@ import java.util.TreeSet;
 /**
  * Created by njucjc at 2018/1/23
  */
-public class StaticTimebaseChangeHandler extends ChangeHandler{
-    public StaticTimebaseChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
+public class StaticTimebasedChangeHandler extends ChangeHandler{
+    public StaticTimebasedChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
         super(patternMap, checkerMap, scheduler, checkerList);
     }
 

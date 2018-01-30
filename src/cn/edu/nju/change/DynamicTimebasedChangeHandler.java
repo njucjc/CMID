@@ -18,13 +18,13 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by njucjc at 2018/1/23
  */
-public class DynamicTimebaseChangeHandler extends ChangeHandler {
+public class DynamicTimebasedChangeHandler extends ChangeHandler {
 
     private Set<String> timeTaskSet = ConcurrentHashMap.newKeySet();
 
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(100);
 
-    public DynamicTimebaseChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
+    public DynamicTimebasedChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
         super(patternMap, checkerMap, scheduler, checkerList);
     }
 

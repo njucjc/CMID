@@ -10,8 +10,8 @@ import java.util.Map;
 /**
  * Created by njucjc at 2018/1/23
  */
-public class StaticChangebaseChangeHandler extends ChangeHandler {
-    public StaticChangebaseChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
+public class StaticChangebasedChangeHandler extends ChangeHandler {
+    public StaticChangebasedChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
         super(patternMap, checkerMap, scheduler, checkerList);
     }
 
