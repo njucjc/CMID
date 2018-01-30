@@ -1,9 +1,6 @@
 package cn.edu.nju.builder;
 
-import cn.edu.nju.change.ChangeHandler;
-import cn.edu.nju.change.DynamicTimebasedChangeHandler;
-import cn.edu.nju.change.StaticChangebasedChangeHandler;
-import cn.edu.nju.change.StaticTimebasedChangeHandler;
+import cn.edu.nju.change.*;
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.checker.ConChecker;
 import cn.edu.nju.checker.EccChecker;
@@ -130,6 +127,9 @@ public abstract class AbstractCheckerBuilder {
         }
         else if("static-change-based".equals(changeHandlerType)) {
             this.changeHandler = new StaticChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+        }
+        else if("dynamic-change-based".equals(changeHandlerType)) {
+            this.changeHandler = new DynamicChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
 
     }
