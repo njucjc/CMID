@@ -33,7 +33,7 @@ public class Client implements Runnable{
             String line = null;
             String lastLine = br.readLine();
             int timestampIndex = 0;
-            if(lastLine.contains("+") || lastLine.contains("-")) {
+            if(lastLine.contains("+")) { //第一行总是增加
                 timestampIndex = 3;
             }
             contextStrList.add(lastLine);
