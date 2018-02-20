@@ -1,14 +1,10 @@
 package cn.edu.nju.builder;
 
-import cn.edu.nju.change.ChangeHandler;
-import cn.edu.nju.change.DynamicTimebaseChangeHandler;
-import cn.edu.nju.change.StaticTimebaseChangeHandler;
+import cn.edu.nju.change.*;
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.checker.ConChecker;
 import cn.edu.nju.checker.EccChecker;
 import cn.edu.nju.checker.PccChecker;
-import cn.edu.nju.context.ContextRepoService;
-import cn.edu.nju.context.ContextStaticRepo;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.BatchScheduler;
@@ -123,11 +119,17 @@ public abstract class AbstractCheckerBuilder {
 
         //change handler
         String changeHandlerType = properties.getProperty("changeHandlerType");
-        if("StaticTimebase".equals(changeHandlerType)) {
-            this.changeHandler = new StaticTimebaseChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+        if("static-time-based".equals(changeHandlerType)) {
+            this.changeHandler = new StaticTimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
-        else if("DynamicTimebase".equals(changeHandlerType)) {
-            this.changeHandler = new DynamicTimebaseChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+        else if("dynamic-time-based".equals(changeHandlerType)) {
+            this.changeHandler = new DynamicTimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+        }
+        else if("static-change-based".equals(changeHandlerType)) {
+            this.changeHandler = new StaticChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+        }
+        else if("dynamic-change-based".equals(changeHandlerType)) {
+            this.changeHandler = new DynamicChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
 
     }
@@ -261,21 +263,6 @@ public abstract class AbstractCheckerBuilder {
                 root.addChildeNode(stNode);
             }
         }
-    }
-
-    protected synchronized void doCheck() {
-        for(Checker checker : checkerList) {
-            boolean value = checker.doCheck();
-//            System.out.println("[DEBUG] " + checker.getName() + " CCT: ");
-//            checker.printCCT();
-            if(value) {
-                System.out.println("[rule] " + checker.getName() + ": Pass!");
-            }
-            else {
-                System.out.println("[rule] " + checker.getName() + ": Failed!");
-            }
-        }
-        System.out.println("============================================================================================");
     }
 
     public void shutdown() {

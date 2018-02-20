@@ -1,13 +1,12 @@
 # Created by .ignore support plugin (hsz.mobi)
 out/
 .idea/
-resource/
 *.iml
 *.log
 output/
-data/
-config/
+changes/
 *.py
 *.xml
 *.properties
 *.lck
+data/

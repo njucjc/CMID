@@ -32,10 +32,14 @@ public class Client implements Runnable{
             BufferedReader br = new BufferedReader(fr);
             String line = null;
             String lastLine = br.readLine();
+            int timestampIndex = 0;
+            if(lastLine.contains("+")) { //第一行总是增加
+                timestampIndex = 3;
+            }
             contextStrList.add(lastLine);
             while ((line = br.readLine()) != null) {
                 contextStrList.add(line);
-                long diff = TimestampHelper.timestampDiff(line.split(",")[0], lastLine.split(",")[0]);
+                long diff = TimestampHelper.timestampDiff(line.split(",")[timestampIndex], lastLine.split(",")[timestampIndex]);
                 sleepTime.add(diff);
                 lastLine = line;
             }

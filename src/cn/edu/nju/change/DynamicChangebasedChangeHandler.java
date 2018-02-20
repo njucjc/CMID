@@ -16,42 +16,37 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Created by njucjc at 2018/1/23
+ * Created by njucjc at 2018/1/30
  */
-public class DynamicTimebaseChangeHandler extends ChangeHandler {
+public class DynamicChangebasedChangeHandler extends ChangeHandler {
 
     private Set<String> timeTaskSet = ConcurrentHashMap.newKeySet();
 
     private ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(100);
 
-    public DynamicTimebaseChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
+    public DynamicChangebasedChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
         super(patternMap, checkerMap, scheduler, checkerList);
-    }
-
-    @Override
-    protected void additionChange(String patternId, Context context) {
-        Pattern p = patternMap.get(patternId);
-        if(p.isBelong(context)) {
-            String delTime = TimestampHelper.plusMillis(context.getTimestamp(), p.getFreshness());
-            if(timeTaskSet.add(delTime)) {
-                scheduledExecutorService.schedule(new ContextTimeoutTask(delTime), p.getFreshness(), TimeUnit.MILLISECONDS);
-            }
-            p.addContext(context);
-            Checker checker = checkerMap.get(p.getId());
-            checker.add(p.getId(),context);
-        }
     }
 
     @Override
     public void doContextChange(int num, String change) {
         Context context = parseContext(num, change);
-        context.setTimestamp(TimestampHelper.getCurrentTimestamp());
-        for(String patternId : patternMap.keySet()) {
+        String [] strs = change.split(",");
+
+        String op = strs[0];
+        String patternId = strs[1];
+
+        if(op.equals("+")) {
+            Pattern p = patternMap.get(patternId);
+            String deleteTime = TimestampHelper.plusMillis(context.getTimestamp(), p.getFreshness());
+            if(timeTaskSet.add(deleteTime + "," + patternId)) {
+                scheduledExecutorService.schedule(new ContextTimeoutTask(deleteTime, patternId), p.getFreshness(), TimeUnit.MILLISECONDS);
+            }
             additionChange(patternId, context);
-        }
-        scheduler.update();
-        if(scheduler.schedule()) {
-            doCheck();
+            scheduler.update();
+            if (scheduler.schedule()) {
+                doCheck();
+            }
         }
     }
 
@@ -64,20 +59,20 @@ public class DynamicTimebaseChangeHandler extends ChangeHandler {
     class ContextTimeoutTask extends TimerTask {
         private String timestamp;
 
-        public ContextTimeoutTask(String timestamp) {
-            this.timestamp = timestamp;
-        }
+        private String patternId;
 
+        private ContextTimeoutTask(String timestamp, String patternId) {
+            this.timestamp = timestamp;
+            this.patternId = patternId;
+        }
         @Override
         public void run() {
-            for(String patternId : patternMap.keySet()) {
-                deleteChange(timestamp, patternId);
-            }
+            deleteChange(timestamp, patternId);
             scheduler.update();
             if(scheduler.schedule()) {
                 doCheck();
             }
-            timeTaskSet.remove(timestamp);
+            timeTaskSet.remove(timestamp + "," + patternId);
         }
     }
 }
