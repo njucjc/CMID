@@ -25,21 +25,26 @@ public class PccChecker extends Checker{
      */
     @Override
     public synchronized boolean doCheck() {
+        long start = System.nanoTime();
+
         checkTimes++;
         List<Context> param = new CopyOnWriteArrayList<>();
         evaluation(cctRoot, param); //PCC计算
+
+        boolean value = true;
         if (!cctRoot.getNodeValue()) {
             for(String link : LinkHelper.splitLinks(cctRoot.getLink())) {
                 if(addIncLink(link)) {
                     LogFileHelper.getLogger().info(getName() + " " + link);
                 }
             }
-            return false;
+            value = false;
+        }
 
-        }
-        else {
-            return true;
-        }
+        long end = System.nanoTime();
+        timeCount = timeCount + (end - start);
+
+        return value;
     }
 
     /**

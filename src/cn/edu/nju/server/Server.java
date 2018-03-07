@@ -68,11 +68,14 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long endTime = System.nanoTime();
 
         int inc = 0;
+        long time = 0L;
         for (Checker checker : checkerList) {
             inc += checker.getInc();
+            time = time + checker.getTimeCount();
         }
         LogFileHelper.getLogger().info("Total Inc: " + inc);
         LogFileHelper.getLogger().info("Receive: " + count );
+        LogFileHelper.getLogger().info("check time: " + time / 1000000 + " ms");
         shutdown();
     }
 
