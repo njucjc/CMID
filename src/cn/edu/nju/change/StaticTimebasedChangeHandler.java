@@ -33,10 +33,8 @@ public class StaticTimebasedChangeHandler extends ChangeHandler{
             for (String patternId : patternMap.keySet()) {
                 deleteChange(timestamp, patternId);
             }
-            scheduler.update();
-            if(scheduler.schedule()) {
-                doCheck();
-            }
+            scheduler.update("");//time-based不需要参数
+            doCheck();
         }
 
         //在相关的pattern里添加context
@@ -44,9 +42,7 @@ public class StaticTimebasedChangeHandler extends ChangeHandler{
         for(String patternId : patternMap.keySet()) {
             additionChange(patternId, context);
         }
-        scheduler.update();
-        if(scheduler.schedule()) {
-            doCheck();
-        }
+        scheduler.update("");//time-based不需要参数
+        doCheck();
     }
 }

@@ -43,10 +43,8 @@ public class DynamicChangebasedChangeHandler extends ChangeHandler {
                 scheduledExecutorService.schedule(new ContextTimeoutTask(deleteTime, patternId), p.getFreshness(), TimeUnit.MILLISECONDS);
             }
             additionChange(patternId, context);
-            scheduler.update();
-            if (scheduler.schedule()) {
-                doCheck();
-            }
+            scheduler.update(change);
+            doCheck();
         }
     }
 
@@ -68,10 +66,8 @@ public class DynamicChangebasedChangeHandler extends ChangeHandler {
         @Override
         public void run() {
             deleteChange(timestamp, patternId);
-            scheduler.update();
-            if(scheduler.schedule()) {
-                doCheck();
-            }
+            scheduler.update("-,"+ patternId + ",");
+            doCheck();
             timeTaskSet.remove(timestamp + "," + patternId);
         }
     }

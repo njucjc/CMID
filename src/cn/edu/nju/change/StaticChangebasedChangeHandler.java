@@ -29,9 +29,7 @@ public class StaticChangebasedChangeHandler extends ChangeHandler {
         else {
             deleteChange(context.getTimestamp(), patternId);
         }
-        scheduler.update();
-        if(scheduler.schedule()) {
-            doCheck();
-        }
+        scheduler.update(change);
+        doCheck();
     }
 }
