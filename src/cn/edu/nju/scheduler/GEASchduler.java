@@ -64,6 +64,7 @@ public class GEASchduler implements Scheduler{
 
         if (result) { //make batch empty
             currentBatch.clear();
+            scheduleMap.put(checker.getName(), false);
         }
         currentBatch.add(tmp);
 
