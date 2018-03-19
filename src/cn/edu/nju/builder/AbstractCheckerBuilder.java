@@ -8,6 +8,7 @@ import cn.edu.nju.checker.PccChecker;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.BatchScheduler;
+import cn.edu.nju.scheduler.GEASchduler;
 import cn.edu.nju.scheduler.Scheduler;
 import cn.edu.nju.util.LogFileHelper;
 import org.w3c.dom.Document;
@@ -110,15 +111,22 @@ public abstract class AbstractCheckerBuilder {
 
         //schedule
         String schedule = properties.getProperty("schedule");
+        //change handler
+        String changeHandlerType = properties.getProperty("changeHandlerType");
         if(schedule.matches("[0-9]+")) {
             this.scheduler = new BatchScheduler(Integer.parseInt(schedule));
             System.out.println("[DEBUG] " + schedule);
-        } else {
+        }
+        else if ("GEAS".equals(schedule) && ("dynamic-change-based".equals(changeHandlerType) || "static-change-based".equals(changeHandlerType))) {
+            this.scheduler = new GEASchduler(this.checkerList);
+            System.out.println("[DEBUG] " + schedule);
+        }
+        else {
             assert false:"[DEBUG] Schedule error: " + schedule;
         }
 
         //change handler
-        String changeHandlerType = properties.getProperty("changeHandlerType");
+
         if("static-time-based".equals(changeHandlerType)) {
             this.changeHandler = new StaticTimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
