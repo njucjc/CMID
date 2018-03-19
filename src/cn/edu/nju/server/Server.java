@@ -42,6 +42,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         running = true;
 
         long count = 0;
+        long startTime = System.nanoTime();
         try {
             while (running) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -68,11 +69,15 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long endTime = System.nanoTime();
 
         int inc = 0;
+        long time = 0L;
         for (Checker checker : checkerList) {
             inc += checker.getInc();
+            time = time + checker.getTimeCount();
         }
         LogFileHelper.getLogger().info("Total Inc: " + inc);
         LogFileHelper.getLogger().info("Receive: " + count );
+        LogFileHelper.getLogger().info("check time: " + time / 1000000 + " ms");
+        LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
         shutdown();
     }
 

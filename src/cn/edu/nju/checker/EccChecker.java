@@ -27,23 +27,29 @@ public class EccChecker extends Checker{
      */
     @Override
     public synchronized boolean doCheck() {
+        long start = System.nanoTime();
+
         checkTimes++;
         clearCCTMap();
         cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
         buildCCT(stRoot, cctRoot);
         List<Context> param = new CopyOnWriteArrayList<>();
         evaluation(cctRoot, param);
-        if (cctRoot.getNodeValue()) {
-            return true;
-        }
-        else {
+
+        boolean value = true;
+        if (!cctRoot.getNodeValue()) {
             for(String link : LinkHelper.splitLinks(cctRoot.getLink())) {
                 if(addIncLink(link)) {
                     LogFileHelper.getLogger().info(getName() + " " + link);
                 }
             }
-            return false;
+            value = false;
         }
+
+        long end = System.nanoTime();
+        timeCount = timeCount + (end - start);
+
+        return value;
 
     }
 

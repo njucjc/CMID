@@ -32,6 +32,8 @@ public abstract class Checker {
 
     protected int checkTimes = 0;
 
+    protected long timeCount = 0L;
+
     protected Map<String, STNode> stMap; //记录与context set相关的语法树结点
 
     private Map<String, List<CCTNode>> cctMap; //记录与context set相关的CCT关键结点
@@ -479,6 +481,10 @@ public abstract class Checker {
 
     public int getCheckTimes() {
         return checkTimes;
+    }
+
+    public long getTimeCount() {
+        return timeCount;
     }
 
 }
