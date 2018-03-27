@@ -21,4 +21,9 @@ public class BatchScheduler implements Scheduler{
     public synchronized boolean schedule(String ruleName) {
         return count == 0;
     }
+
+    @Override
+    public void reset() {
+        count = 0;
+    }
 }

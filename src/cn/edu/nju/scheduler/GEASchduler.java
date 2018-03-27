@@ -46,7 +46,11 @@ public class GEASchduler implements Scheduler{
 
     @Override
     public synchronized boolean schedule(String ruleName) {
-        return scheduleMap.get(ruleName);
+        boolean result = scheduleMap.get(ruleName);
+        if(result) {
+            scheduleMap.put(ruleName, false);
+        }
+        return result;
     }
 
     private boolean suspPairMatch(Checker checker, String change) {
@@ -64,11 +68,17 @@ public class GEASchduler implements Scheduler{
 
         if (result) { //make batch empty
             currentBatch.clear();
-            scheduleMap.put(checker.getName(), false);
         }
         currentBatch.add(tmp);
 
         return result;
+    }
+
+    @Override
+    public void reset() {
+        for(String key : scheduleMap.keySet()) {
+            scheduleMap.put(key, true);
+        }
     }
 
 }

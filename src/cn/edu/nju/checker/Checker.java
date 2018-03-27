@@ -581,4 +581,16 @@ public abstract class Checker {
        return incDelSet.contains(change);
     }
 
+    public void printAddSet() {
+        for(String s : incAddSet) {
+            System.out.println(s);
+        }
+    }
+
+    public void printDelSet() {
+        for(String s : incDelSet) {
+            System.out.println(s);
+        }
+    }
+
 }

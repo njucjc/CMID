@@ -47,7 +47,7 @@ public abstract class ChangeHandler {
             return contextParser.parseContext(num, change);
         }
     }
-    protected void doCheck() {
+    public void doCheck() {
         boolean hasCheck = false;
         for(Checker checker : checkerList) {
             if(scheduler.schedule(checker.getName())) {
