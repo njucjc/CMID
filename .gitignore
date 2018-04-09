@@ -10,3 +10,4 @@ changes/
 *.properties
 *.lck
 data/
+target/
