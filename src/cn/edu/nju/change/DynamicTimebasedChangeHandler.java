@@ -49,10 +49,8 @@ public class DynamicTimebasedChangeHandler extends ChangeHandler {
         for(String patternId : patternMap.keySet()) {
             additionChange(patternId, context);
         }
-        scheduler.update();
-        if(scheduler.schedule()) {
-            doCheck();
-        }
+        scheduler.update(change);
+        doCheck();
     }
 
     @Override
@@ -73,10 +71,8 @@ public class DynamicTimebasedChangeHandler extends ChangeHandler {
             for(String patternId : patternMap.keySet()) {
                 deleteChange(timestamp, patternId);
             }
-            scheduler.update();
-            if(scheduler.schedule()) {
-                doCheck();
-            }
+            scheduler.update(""); //参数只用于GEAS，而time-based不适用于GEAS
+            doCheck();
             timeTaskSet.remove(timestamp);
         }
     }

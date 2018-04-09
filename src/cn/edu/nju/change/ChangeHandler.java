@@ -47,17 +47,22 @@ public abstract class ChangeHandler {
             return contextParser.parseContext(num, change);
         }
     }
-    protected void doCheck() {
+    public void doCheck() {
+        boolean hasCheck = false;
         for(Checker checker : checkerList) {
-            boolean value = checker.doCheck();
-            if(value) {
-                System.out.println("[rule] " + checker.getName() + ": Pass!");
-            }
-            else {
-                System.out.println("[rule] " + checker.getName() + ": Failed!");
+            if(scheduler.schedule(checker.getName())) {
+                boolean value = checker.doCheck();
+                if (value) {
+                    System.out.println("[rule] " + checker.getName() + ": Pass!");
+                } else {
+                    System.out.println("[rule] " + checker.getName() + ": Failed!");
+                }
+                hasCheck = true;
             }
         }
-        System.out.println("============================================================================================");
+        if (hasCheck) {
+            System.out.println("============================================================================================");
+        }
     }
 
     protected void deleteChange(String timestamp, String  patternId) {

@@ -38,6 +38,12 @@ public abstract class Checker {
 
     private Map<String, List<CCTNode>> cctMap; //记录与context set相关的CCT关键结点
 
+    private Set<String> incAddSet;
+
+    private Set<String> incDelSet;
+
+//    private Set<String> incUnpreSet;
+
 
     public Checker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap) {
         this.name = name;
@@ -48,6 +54,12 @@ public abstract class Checker {
 
         this.stMap = stMap;
         this.cctMap = new ConcurrentHashMap<>();
+
+        this.incAddSet = ConcurrentHashMap.newKeySet();
+        this.incDelSet = ConcurrentHashMap.newKeySet();
+//        this.incUnpreSet = ConcurrentHashMap.newKeySet();
+        this.incAddSet.addAll(calcIncAddSet(this.stRoot));
+        this.incDelSet.addAll(calcIncDelSet(this.stRoot));
 
         //初始化
         for(String key : stMap.keySet()) {
@@ -485,6 +497,100 @@ public abstract class Checker {
 
     public long getTimeCount() {
         return timeCount;
+    }
+
+    private Set<String> calcIncAddSet(STNode root) {
+        Set<String> result = new HashSet<>();
+
+        if(root.getNodeType() == STNode.UNIVERSAL_NODE) {
+            result.add("+," + root.getContextSetName());
+            result.addAll(calcIncAddSet((STNode) root.getFirstChild()));
+        }
+        else if(root.getNodeType() == STNode.EXISTENTIAL_NODE) {
+            result.add("-," + root.getContextSetName());
+            result.addAll(calcIncAddSet((STNode) root.getFirstChild()));
+        }
+        else if(root.getNodeType() == STNode.AND_NODE ) {
+            result.addAll(calcIncAddSet((STNode)(root.getChildTreeNodes().get(0))));
+            result.addAll(calcIncAddSet((STNode)(root.getChildTreeNodes().get(1))));
+        }
+        else if(root.getNodeType() == STNode.IMPLIES_NODE) {
+            result.addAll(calcIncDelSet((STNode)(root.getChildTreeNodes().get(0))));
+            result.addAll(calcIncAddSet((STNode)(root.getChildTreeNodes().get(1))));
+        }
+        else if(root.getNodeType() == STNode.NOT_NODE) {
+            result.addAll(calcIncDelSet((STNode)(root.getFirstChild())));
+        }
+        else if(root.getNodeType() == STNode.BFUNC_NODE) {
+            //Do nothing
+        }
+        else {
+            assert false:"Type Error.";
+        }
+
+        return result;
+    }
+
+    private Set<String> calcIncDelSet(STNode root) {
+        Set<String> result = new HashSet<>();
+
+        if(root.getNodeType() == STNode.UNIVERSAL_NODE) {
+            result.add("-," + root.getContextSetName());
+            result.addAll(calcIncDelSet((STNode) root.getFirstChild()));
+        }
+        else if(root.getNodeType() == STNode.EXISTENTIAL_NODE) {
+            result.add("+," + root.getContextSetName());
+            result.addAll(calcIncDelSet((STNode) root.getFirstChild()));
+        }
+        else if(root.getNodeType() == STNode.AND_NODE ) {
+            result.addAll(calcIncDelSet((STNode)(root.getChildTreeNodes().get(0))));
+            result.addAll(calcIncDelSet((STNode)(root.getChildTreeNodes().get(1))));
+        }
+        else if(root.getNodeType() == STNode.IMPLIES_NODE) {
+            result.addAll(calcIncAddSet((STNode)(root.getChildTreeNodes().get(0))));
+            result.addAll(calcIncDelSet((STNode)(root.getChildTreeNodes().get(1))));
+        }
+        else if(root.getNodeType() == STNode.NOT_NODE) {
+            result.addAll(calcIncAddSet((STNode) root.getFirstChild()));
+        }
+        else if(root.getNodeType() == STNode.BFUNC_NODE) {
+            //Do nothing
+        }
+        else {
+            assert false:"Type Error.";
+        }
+
+        return result;
+    }
+
+//    private Set<String> calcIncUnpreSet(STNode root) {
+//        Set<String> result = new HashSet<>();
+//
+//        if(root.getNodeType() == STNode.UNIVERSAL_NODE || root.getNodeType() == STNode.EXISTENTIAL_NODE) {
+//            result.add("+",)
+//        }
+//
+//        return result;
+//    }
+
+    public boolean isInIncAddSet(String change) {
+        return incAddSet.contains(change);
+    }
+
+    public boolean isInIncDelSet(String change) {
+       return incDelSet.contains(change);
+    }
+
+    public void printAddSet() {
+        for(String s : incAddSet) {
+            System.out.println(s);
+        }
+    }
+
+    public void printDelSet() {
+        for(String s : incDelSet) {
+            System.out.println(s);
+        }
     }
 
 }

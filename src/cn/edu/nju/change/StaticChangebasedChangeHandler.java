@@ -17,6 +17,9 @@ public class StaticChangebasedChangeHandler extends ChangeHandler {
 
     @Override
     public void doContextChange(int num, String change) {
+        scheduler.update(change);
+        doCheck();
+        
         Context context = parseContext(num, change);
         String [] strs = change.split(",");
 
@@ -29,9 +32,6 @@ public class StaticChangebasedChangeHandler extends ChangeHandler {
         else {
             deleteChange(context.getTimestamp(), patternId);
         }
-        scheduler.update();
-        if(scheduler.schedule()) {
-            doCheck();
-        }
+
     }
 }

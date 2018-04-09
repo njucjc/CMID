@@ -39,6 +39,8 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
             changeHandler.doContextChange(count, change);
             count++;
         }
+        scheduler.reset();
+        changeHandler.doCheck();
         long endTime = System.nanoTime(); //获取结束时间
         int incCount = 0;
         int checkTimes = 0;

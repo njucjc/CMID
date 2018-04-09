@@ -59,6 +59,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 count++;
 
             }
+            scheduler.reset();
+            changeHandler.doCheck();
         }
         catch (IOException e) {
             e.printStackTrace();

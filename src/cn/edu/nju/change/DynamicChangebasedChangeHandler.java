@@ -37,16 +37,15 @@ public class DynamicChangebasedChangeHandler extends ChangeHandler {
         String patternId = strs[1];
 
         if(op.equals("+")) {
+            scheduler.update(change);
+            doCheck();
+
             Pattern p = patternMap.get(patternId);
             String deleteTime = TimestampHelper.plusMillis(context.getTimestamp(), p.getFreshness());
             if(timeTaskSet.add(deleteTime + "," + patternId)) {
                 scheduledExecutorService.schedule(new ContextTimeoutTask(deleteTime, patternId), p.getFreshness(), TimeUnit.MILLISECONDS);
             }
             additionChange(patternId, context);
-            scheduler.update();
-            if (scheduler.schedule()) {
-                doCheck();
-            }
         }
     }
 
@@ -67,11 +66,10 @@ public class DynamicChangebasedChangeHandler extends ChangeHandler {
         }
         @Override
         public void run() {
+            scheduler.update("-,"+ patternId + ",");
+            doCheck();
+
             deleteChange(timestamp, patternId);
-            scheduler.update();
-            if(scheduler.schedule()) {
-                doCheck();
-            }
             timeTaskSet.remove(timestamp + "," + patternId);
         }
     }
