@@ -98,7 +98,7 @@ public class GAINChecker extends Checker {
             }
             node = (STNode) node.getParentTreeNode();
         }
-        return 0;
+        return ccopyNum;
     }
 
     private int computeRTTBranchSize(STNode root) {
