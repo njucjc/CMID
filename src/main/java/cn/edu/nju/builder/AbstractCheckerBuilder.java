@@ -20,7 +20,9 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +41,9 @@ public abstract class AbstractCheckerBuilder {
     /*调度checker的策略*/
     protected Scheduler scheduler;
 
-    protected String contextFilePath;
+    protected String dataFilePath;
+
+    protected String changeFilePath;
 
     /*所有pattern*/
     protected Map<String, Pattern> patternMap;
@@ -53,6 +57,8 @@ public abstract class AbstractCheckerBuilder {
     private ExecutorService checkExecutorService;
 
     protected ChangeHandler changeHandler;
+
+    protected String changeHandlerType;
 
     public AbstractCheckerBuilder(String configFilePath) {
         parseConfigFile(configFilePath);
@@ -102,7 +108,8 @@ public abstract class AbstractCheckerBuilder {
         parseRuleFile(ruleFilePath);
 
         //context file path
-        this.contextFilePath = properties.getProperty("contextFilePath");
+        this.dataFilePath = properties.getProperty("dataFilePath");
+        this.changeFilePath = properties.getProperty("changeFilePath");
 
         //log
         String logFilePath = properties.getProperty("logFilePath");
@@ -112,7 +119,7 @@ public abstract class AbstractCheckerBuilder {
         //schedule
         String schedule = properties.getProperty("schedule");
         //change handler
-        String changeHandlerType = properties.getProperty("changeHandlerType");
+        this.changeHandlerType = properties.getProperty("changeHandlerType");
         if(schedule.matches("[0-9]+")) {
             this.scheduler = new BatchScheduler(Integer.parseInt(schedule));
             System.out.println("[DEBUG] " + schedule);
@@ -232,6 +239,24 @@ public abstract class AbstractCheckerBuilder {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    protected List<String> fileReader(String filePath) {
+        List<String> list = new ArrayList<>();
+        try {
+            FileReader fr = new FileReader(filePath);
+            BufferedReader bufferedReader = new BufferedReader(fr);
+
+            String change;
+            while ((change = bufferedReader.readLine()) != null) {
+                list.add(change);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
     private void buildSyntaxTree(NodeList list, STNode root, Map<String,STNode> stMap) {
