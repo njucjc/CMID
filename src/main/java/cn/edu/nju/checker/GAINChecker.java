@@ -1,5 +1,6 @@
 package cn.edu.nju.checker;
 
+import cn.edu.nju.memory.GPURuleMemory;
 import cn.edu.nju.node.NodeType;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
@@ -16,6 +17,8 @@ public class GAINChecker extends Checker {
 
     private List<Integer> cunits; //an array for storing the start of each c-unit
 
+    private GPURuleMemory gpuRuleMemory;
+
 
     public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap) {
         super(name, stRoot, patternMap, stMap);
@@ -23,9 +26,62 @@ public class GAINChecker extends Checker {
 
         this.branchSize = new int[stSize];
 
+        //计算cunit以及为语法树重排序
         this.constraintNodes = new STNode[stSize];
         this.cunits = new ArrayList<>();
         split(stRoot);
+
+        //将语法树信息拷贝到GPU
+        initGPURuleMemory();
+    }
+
+
+    private void initGPURuleMemory() {
+        int [] parent = new int[stSize];
+        int [] leftChild = new int[stSize];
+        int [] rightChild = new int[stSize];
+        int [] nodeType = new int[stSize];
+
+        for(int i = 0; i < stSize; i++) {
+            STNode p = (STNode) constraintNodes[i].getParentTreeNode();
+            STNode l = (STNode) constraintNodes[i].getFirstChild();
+            STNode r = (STNode) constraintNodes[i].getLastChild();
+
+            parent[i] = p != null ? p.getNodeNum() : -1;
+            leftChild[i] = l != null ? l.getNodeNum() : -1;
+            rightChild[i] = r != null ? r.getNodeNum() : -1;
+
+            int type = constraintNodes[i].getNodeType();
+            if(type != NodeType.BFUNC_NODE) {
+                nodeType[i] = type;
+            }
+            else {
+                String name = constraintNodes[i].getNodeName();
+                if("sz_loc_range".equals(name)) {
+                    nodeType[i] = NodeType.SZ_LOC_RANGE;
+                }
+                else if("same".equals(name)) {
+                    nodeType[i] = NodeType.SAME;
+                }
+                else if("sz_loc_close".equals(name)) {
+                    nodeType[i] = NodeType.SZ_LOC_CLOSE;
+                }
+                else if("sz_spd_close".equals(name)) {
+                    nodeType[i] = NodeType.SZ_SPD_CLOSE;
+                }
+                else if("sz_loc_dist".equals(name)) {
+                    nodeType[i] = NodeType.SZ_LOC_DIST;
+                }
+                else if("sz_loc_dist_neq".equals(name)) {
+                    nodeType[i] = NodeType.SZ_LOC_DIST_NEQ;
+                }
+                else {
+                    assert false:"BFunc type error.";
+                }
+            }
+
+            this.gpuRuleMemory = new GPURuleMemory(stSize, parent, leftChild, rightChild, nodeType);
+        }
     }
 
     @Override
@@ -124,4 +180,9 @@ public class GAINChecker extends Checker {
         return size;
     }
 
+    @Override
+    public void reset() {
+        this.gpuRuleMemory.free();
+        super.reset();
+    }
 }

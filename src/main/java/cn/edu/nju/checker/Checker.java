@@ -593,4 +593,8 @@ public abstract class Checker {
         }
     }
 
+    public void reset() {
+
+    }
+
 }
