@@ -10,11 +10,11 @@ import java.util.*;
 
 public class GPUPatternMemory {
 
-    Map<String, CUdeviceptr> beginMap = new HashMap<>();
+    private Map<String, CUdeviceptr> beginMap = new HashMap<>();
 
-    Map<String, CUdeviceptr> lengthMap = new HashMap<>();
+    private Map<String, CUdeviceptr> lengthMap = new HashMap<>();
 
-    Map<String, CUdeviceptr> contextsMap = new HashMap<>();
+    private Map<String, CUdeviceptr> contextsMap = new HashMap<>();
 
     public GPUPatternMemory(String [] keySet) {
         for(String key : keySet) {
@@ -34,6 +34,18 @@ public class GPUPatternMemory {
             lengthMap.put(key, length);
             contextsMap.put(key, contexts);
         }
+    }
+
+    public CUdeviceptr getBeginByName(String key) {
+        return beginMap.get(key);
+    }
+
+    public CUdeviceptr getLengthByName(String key) {
+        return lengthMap.get(key);
+    }
+
+    public CUdeviceptr getcontextsByName(String key) {
+        return contextsMap.get(key);
     }
 
     public void free() {

@@ -9,13 +9,13 @@ import jcuda.driver.CUdeviceptr;
 
 public class GPURuleMemory {
 
-    CUdeviceptr parent = new CUdeviceptr();
+    private CUdeviceptr parent = new CUdeviceptr();
 
-    CUdeviceptr leftChild = new CUdeviceptr();
+    private CUdeviceptr leftChild = new CUdeviceptr();
 
-    CUdeviceptr rightChild = new CUdeviceptr();
+    private CUdeviceptr rightChild = new CUdeviceptr();
 
-    CUdeviceptr nodeType = new CUdeviceptr();
+    private CUdeviceptr nodeType = new CUdeviceptr();
 
     public GPURuleMemory(int length, int [] parent, int [] leftChild, int []rightChild, int [] nodeType) {
         cuMemAlloc(this.parent, length * Sizeof.INT);

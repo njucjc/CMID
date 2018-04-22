@@ -11,11 +11,11 @@ import java.util.*;
 
 public class GPUContextMemory {
 
-    CUdeviceptr longitude = new CUdeviceptr();
+    private CUdeviceptr longitude = new CUdeviceptr();
 
-    CUdeviceptr latitude = new CUdeviceptr();
+    private CUdeviceptr latitude = new CUdeviceptr();
 
-    CUdeviceptr speed = new CUdeviceptr();
+    private CUdeviceptr speed = new CUdeviceptr();
 
     public GPUContextMemory(List<String> contextStrList) {
         int size = contextStrList.size();
@@ -46,5 +46,17 @@ public class GPUContextMemory {
         cuMemFree(this.latitude);
         cuMemFree(this.longitude);
         cuMemFree(this.speed);
+    }
+
+    public CUdeviceptr getLongitude() {
+        return longitude;
+    }
+
+    public CUdeviceptr getLatitude() {
+        return latitude;
+    }
+
+    public CUdeviceptr getSpeed() {
+        return speed;
     }
 }
