@@ -1,9 +1,13 @@
 package cn.edu.nju.checker;
 
+import cn.edu.nju.context.Context;
+import cn.edu.nju.memory.GPUContextMemory;
+import cn.edu.nju.memory.GPUPatternMemory;
 import cn.edu.nju.memory.GPURuleMemory;
 import cn.edu.nju.node.NodeType;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
+import jcuda.utils.KernelLauncher;
 
 import java.util.*;
 
@@ -21,14 +25,26 @@ public class GAINChecker extends Checker {
 
     private Map<String, Integer> patternIdMap = new HashMap<>();
 
+    private KernelLauncher genTruthValue;
 
-    public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap) {
+    private KernelLauncher genLinks;
+
+    private KernelLauncher updatePattern;
+
+    private GPUContextMemory gpuContextMemory;
+
+    private GPUPatternMemory gpuPatternMemory;
+
+
+    public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap,
+                       KernelLauncher genTruthValue, KernelLauncher genLinks, KernelLauncher updatePattern,
+                       GPUContextMemory gpuContextMemory, GPUPatternMemory gpuPatternMemory) {
         super(name, stRoot, patternMap, stMap);
         this.stSize = computeSTSize(stRoot);
 
         this.branchSize = new int[stSize];
 
-        //计算cunit以及为语法树重排序
+        //计算cunit以及为语法树重排序(前序遍历)
         this.constraintNodes = new STNode[stSize];
         this.cunits = new ArrayList<>();
         split(stRoot);
@@ -42,6 +58,13 @@ public class GAINChecker extends Checker {
             patternIdMap.put(key, i);
             i++;
         }
+
+        this.genTruthValue = genTruthValue;
+        this.genLinks = genLinks;
+        this.updatePattern = updatePattern;
+
+        this.gpuContextMemory = gpuContextMemory;
+        this.gpuPatternMemory = gpuPatternMemory;
     }
 
 
@@ -98,8 +121,30 @@ public class GAINChecker extends Checker {
         }
     }
 
+
+
     @Override
     public boolean doCheck() {
+        assert false:"Something is being to do.";
+        return false;
+    }
+
+    @Override
+    public synchronized boolean add(String patternId, Context context) {
+      //  return super.add(patternId, context);
+        if(!affected(patternId)) {
+            return false;
+        }
+        assert false:"Something is being to do.";
+        return false;
+    }
+
+    @Override
+    public synchronized boolean delete(String patternId, String timestamp) {
+        if(!affected(patternId)) {
+            return false;
+        }
+        assert false:"Something is being to do.";
         return false;
     }
 

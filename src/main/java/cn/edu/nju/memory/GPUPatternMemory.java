@@ -16,7 +16,7 @@ public class GPUPatternMemory {
 
     private Map<String, CUdeviceptr> contextsMap = new HashMap<>();
 
-    public GPUPatternMemory(String [] keySet) {
+    public GPUPatternMemory(Set<String> keySet) {
         for(String key : keySet) {
             CUdeviceptr begin = new CUdeviceptr();
             CUdeviceptr length = new CUdeviceptr();
