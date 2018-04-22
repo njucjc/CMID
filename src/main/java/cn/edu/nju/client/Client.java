@@ -113,7 +113,18 @@ public class Client implements Runnable{
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Thread client = new Thread(new Client(properties.getProperty("contextFilePath")));
+            String dataFilePath = properties.getProperty("dataFilePath");
+            String changeFilePath = properties.getProperty("changeFilePath");
+            String changeHandlerType = properties.getProperty("changeHandlerType");
+
+            Thread client;
+            if("time".equals(changeHandlerType.split("-")[1])) {
+                client = new Thread(new Client(dataFilePath));
+            }
+            else {
+                client = new Thread(new Client(changeFilePath));
+            }
+
             client.setPriority(Thread.MAX_PRIORITY);
             client.start();
         }

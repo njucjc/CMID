@@ -19,20 +19,13 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
 
     @Override
     public void run() {
-        List<String> contextList = new ArrayList<>();
-        try {
-            FileReader fr = new FileReader(contextFilePath);
-            BufferedReader bufferedReader = new BufferedReader(fr);
-
-            String change;
-            while ((change = bufferedReader.readLine()) != null) {
-                contextList.add(change);
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        List<String> contextList;
+        if("time".equals(this.changeHandlerType.split("-")[1])) {
+            contextList = fileReader(this.dataFilePath);
         }
-
+        else {
+            contextList = fileReader(this.changeFilePath);
+        }
         int count = 0;
         long startTime = System.nanoTime();
         for(String change : contextList) {
@@ -59,7 +52,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
     }
 
     public static void main(String[] args) {
-        CheckerBuilder checkerBuilder = new CheckerBuilder("resource/config.properties");
+        CheckerBuilder checkerBuilder = new CheckerBuilder("config.properties");
     }
 
 
