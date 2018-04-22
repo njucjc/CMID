@@ -9,7 +9,7 @@ import jcuda.Sizeof;
 import jcuda.driver.CUdeviceptr;
 import java.util.*;
 
-public class GPUContextMemory implements Config {
+public class GPUContextMemory {
 
     CUdeviceptr longitude = new CUdeviceptr();
 
