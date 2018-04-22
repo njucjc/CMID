@@ -17,7 +17,9 @@ public class GPURuleMemory {
 
     private CUdeviceptr nodeType = new CUdeviceptr();
 
-    public GPURuleMemory(int length, int [] parent, int [] leftChild, int []rightChild, int [] nodeType) {
+    private CUdeviceptr patternId = new CUdeviceptr();
+
+    public GPURuleMemory(int length, int [] parent, int [] leftChild, int []rightChild, int [] nodeType, int [] patternId) {
         cuMemAlloc(this.parent, length * Sizeof.INT);
         cuMemcpyHtoD(this.parent, Pointer.to(parent), length * Sizeof.INT);
 
@@ -29,6 +31,9 @@ public class GPURuleMemory {
 
         cuMemAlloc(this.nodeType, length * Sizeof.INT);
         cuMemcpyHtoD(this.nodeType, Pointer.to(nodeType), length * Sizeof.INT);
+
+        cuMemAlloc(this.patternId, length * Sizeof.INT);
+        cuMemcpyHtoD(this.patternId, Pointer.to(patternId), length * Sizeof.INT);
     }
 
     public void free() {
@@ -52,5 +57,9 @@ public class GPURuleMemory {
 
     public CUdeviceptr getNodeType() {
         return this.nodeType;
+    }
+
+    public CUdeviceptr getPatternId() {
+        return this.patternId;
     }
 }

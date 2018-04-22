@@ -19,6 +19,8 @@ public class GAINChecker extends Checker {
 
     private GPURuleMemory gpuRuleMemory;
 
+    private Map<String, Integer> patternIdMap = new HashMap<>();
+
 
     public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap) {
         super(name, stRoot, patternMap, stMap);
@@ -30,9 +32,16 @@ public class GAINChecker extends Checker {
         this.constraintNodes = new STNode[stSize];
         this.cunits = new ArrayList<>();
         split(stRoot);
+        cunits.add(stSize - 1);
 
         //将语法树信息拷贝到GPU
         initGPURuleMemory();
+
+        int i = 0;
+        for(String key : stMap.keySet() ) {
+            patternIdMap.put(key, i);
+            i++;
+        }
     }
 
 
@@ -41,6 +50,7 @@ public class GAINChecker extends Checker {
         int [] leftChild = new int[stSize];
         int [] rightChild = new int[stSize];
         int [] nodeType = new int[stSize];
+        int [] patternId = new int[stSize];
 
         for(int i = 0; i < stSize; i++) {
             STNode p = (STNode) constraintNodes[i].getParentTreeNode();
@@ -50,10 +60,14 @@ public class GAINChecker extends Checker {
             parent[i] = p != null ? p.getNodeNum() : -1;
             leftChild[i] = l != null ? l.getNodeNum() : -1;
             rightChild[i] = r != null ? r.getNodeNum() : -1;
+            patternId[i] = -1;
 
             int type = constraintNodes[i].getNodeType();
             if(type != NodeType.BFUNC_NODE) {
                 nodeType[i] = type;
+                if(type == NodeType.UNIVERSAL_NODE || type == NodeType.EXISTENTIAL_NODE) {
+                    patternId[i] = patternIdMap.get(constraintNodes[i].getContextSetName());
+                }
             }
             else {
                 String name = constraintNodes[i].getNodeName();
@@ -80,7 +94,7 @@ public class GAINChecker extends Checker {
                 }
             }
 
-            this.gpuRuleMemory = new GPURuleMemory(stSize, parent, leftChild, rightChild, nodeType);
+            this.gpuRuleMemory = new GPURuleMemory(stSize, parent, leftChild, rightChild, nodeType, patternId);
         }
     }
 
