@@ -65,17 +65,17 @@ public abstract class ChangeHandler {
         }
     }
 
-    protected void deleteChange(String timestamp, String  patternId) {
+    protected final void deleteChange(String timestamp, String  patternId) {
         Pattern pattern = patternMap.get(patternId);
         Checker checker = checkerMap.get(patternId);
         checker.delete(patternId, timestamp);
-        pattern.deleteFirstByTime(timestamp);
+     //   pattern.deleteFirstByTime(timestamp);
     }
 
-    protected void additionChange(String patternId, Context context) {
+    protected final void additionChange(String patternId, Context context) {
         Pattern pattern = patternMap.get(patternId);
         if(pattern.isBelong(context)) {
-            pattern.addContext(context);
+    //        pattern.addContext(context);
             Checker checker = checkerMap.get(pattern.getId());
             checker.add(pattern.getId(),context);
         }

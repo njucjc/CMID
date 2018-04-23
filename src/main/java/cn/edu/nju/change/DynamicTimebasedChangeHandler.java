@@ -28,26 +28,29 @@ public class DynamicTimebasedChangeHandler extends ChangeHandler {
         super(patternMap, checkerMap, scheduler, checkerList);
     }
 
-    @Override
-    protected void additionChange(String patternId, Context context) {
-        Pattern p = patternMap.get(patternId);
-        if(p.isBelong(context)) {
-            String delTime = TimestampHelper.plusMillis(context.getTimestamp(), p.getFreshness());
-            if(timeTaskSet.add(delTime)) {
-                scheduledExecutorService.schedule(new ContextTimeoutTask(delTime), p.getFreshness(), TimeUnit.MILLISECONDS);
-            }
-            p.addContext(context);
-            Checker checker = checkerMap.get(p.getId());
-            checker.add(p.getId(),context);
-        }
-    }
+//    @Override
+//    protected void additionChange(String patternId, Context context) {
+//
+//
+//            p.addContext(context);
+//            Checker checker = checkerMap.get(p.getId());
+//            checker.add(p.getId(),context);
+//        }
+//    }
 
     @Override
     public void doContextChange(int num, String change) {
         Context context = parseContext(num, change);
         context.setTimestamp(TimestampHelper.getCurrentTimestamp());
         for(String patternId : patternMap.keySet()) {
-            additionChange(patternId, context);
+            Pattern p = patternMap.get(patternId);
+            if(p.isBelong(context)) {
+                String delTime = TimestampHelper.plusMillis(context.getTimestamp(), p.getFreshness());
+                if (timeTaskSet.add(delTime)) {
+                    scheduledExecutorService.schedule(new ContextTimeoutTask(delTime), p.getFreshness(), TimeUnit.MILLISECONDS);
+                }
+                additionChange(patternId, context);
+            }
         }
         scheduler.update(change);
         doCheck();
