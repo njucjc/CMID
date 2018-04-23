@@ -23,8 +23,6 @@ public class GAINChecker extends Checker {
 
     private GPURuleMemory gpuRuleMemory;
 
-    private Map<String, Integer> patternIdMap = new HashMap<>();
-
     private KernelLauncher genTruthValue;
 
     private KernelLauncher genLinks;
@@ -34,6 +32,8 @@ public class GAINChecker extends Checker {
     private GPUContextMemory gpuContextMemory;
 
     private GPUPatternMemory gpuPatternMemory;
+
+    private Map<String, Integer> patternIdMap;
 
 
     public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap,
@@ -48,16 +48,12 @@ public class GAINChecker extends Checker {
         this.constraintNodes = new STNode[stSize];
         this.cunits = new ArrayList<>();
         split(stRoot);
-        cunits.add(stSize - 1);
+        cunits.add(stSize);
 
         //将语法树信息拷贝到GPU
         initGPURuleMemory();
 
-        int i = 0;
-        for(String key : stMap.keySet() ) {
-            patternIdMap.put(key, i);
-            i++;
-        }
+        this.patternIdMap = gpuPatternMemory.getIndexMap();
 
         this.genTruthValue = genTruthValue;
         this.genLinks = genLinks;

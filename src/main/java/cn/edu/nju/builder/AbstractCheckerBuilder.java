@@ -347,7 +347,7 @@ public abstract class AbstractCheckerBuilder {
         checkExecutorService.shutdown();
         //free gpu memory
         if (gpuPatternMemory != null) {
-            gpuContextMemory.free();
+            gpuPatternMemory.free();
         }
 
         if(gpuContextMemory != null) {

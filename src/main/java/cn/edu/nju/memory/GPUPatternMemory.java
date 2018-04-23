@@ -10,50 +10,55 @@ import java.util.*;
 
 public class GPUPatternMemory {
 
-    private Map<String, CUdeviceptr> beginMap = new HashMap<>();
+    private CUdeviceptr begin = new CUdeviceptr();
 
-    private Map<String, CUdeviceptr> lengthMap = new HashMap<>();
+    private CUdeviceptr length = new CUdeviceptr();
 
-    private Map<String, CUdeviceptr> contextsMap = new HashMap<>();
+    private CUdeviceptr contexts = new CUdeviceptr();
+
+    private Map<String, Integer> indexMap = new HashMap<>();
 
     public GPUPatternMemory(Set<String> keySet) {
+        int index = 0;
         for(String key : keySet) {
-            CUdeviceptr begin = new CUdeviceptr();
-            CUdeviceptr length = new CUdeviceptr();
-            CUdeviceptr contexts = new CUdeviceptr();
-
-            cuMemAlloc(begin, Sizeof.INT);
-            cuMemcpyHtoD(begin, Pointer.to(new int[]{0}), Sizeof.INT);
-
-            cuMemAlloc(length, Sizeof.INT);
-            cuMemcpyHtoD(length, Pointer.to(new int[]{0}), Sizeof.INT);
-
-            cuMemAlloc(contexts, Config.MAX_PATTERN_SIZE * Sizeof.INT);
-
-            beginMap.put(key, begin);
-            lengthMap.put(key, length);
-            contextsMap.put(key, contexts);
+            indexMap.put(key, index);
+            index++;
         }
+
+        int num = keySet.size();
+        int [] hostData = new int[num];
+        for(int i = 0; i < num; i++) {
+            hostData[i] = 0;
+        }
+        cuMemAlloc(this.begin, num * Sizeof.INT);
+        cuMemcpyHtoD(this.begin, Pointer.to(hostData), num * Sizeof.INT);
+
+        cuMemAlloc(this.length, num * Sizeof.INT);
+        cuMemcpyHtoD(this.length, Pointer.to(hostData), num * Sizeof.INT);
+
+        cuMemAlloc(this.contexts, num * Config.MAX_PATTERN_SIZE * Sizeof.INT);
     }
 
-    public CUdeviceptr getBeginByName(String key) {
-        return beginMap.get(key);
+    public CUdeviceptr getBegin() {
+        return this.begin;
     }
 
-    public CUdeviceptr getLengthByName(String key) {
-        return lengthMap.get(key);
+    public CUdeviceptr getLength() {
+        return this.length;
     }
 
-    public CUdeviceptr getcontextsByName(String key) {
-        return contextsMap.get(key);
+    public CUdeviceptr getContexts() {
+        return this.contexts;
+    }
+
+    public Map<String, Integer> getIndexMap() {
+        return this.indexMap;
     }
 
     public void free() {
-        for(String key : beginMap.keySet()) {
-            cuMemFree(beginMap.get(key));
-            cuMemFree(lengthMap.get(key));
-            cuMemFree(contextsMap.get(key));
-        }
+        cuMemFree(this.begin);
+        cuMemFree(this.length);
+        cuMemFree(this.contexts);
     }
 
 }
