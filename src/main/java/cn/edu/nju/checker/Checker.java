@@ -99,6 +99,28 @@ public abstract class Checker {
      */
     abstract public boolean doCheck();
 
+    protected synchronized boolean addContextToPattern(String patternId, Context context) {
+        if (!affected(patternId)) {
+            return false;
+        }
+        Pattern pattern = patternMap.get(patternId);
+        if(!pattern.addContext(context)) {
+            return false;
+        }
+        return true;
+    }
+
+    protected synchronized boolean deleteContextFromPattern(String patternId, String timestamp) {
+        if (!affected(patternId)) {
+            return false;
+        }
+        Pattern pattern = patternMap.get(patternId);
+        if(!pattern.deleteFirstByTime(timestamp)) {
+            return false;
+        }
+        return true;
+    }
+
     /**
      *
      * @param patternId
@@ -106,12 +128,12 @@ public abstract class Checker {
      * @return
      */
     public synchronized boolean add(String patternId, Context context) {
-        if (!affected(patternId)) {
+        if (!addContextToPattern(patternId, context)) {
             return false;
         }
+
         List<CCTNode> criticalNodeList = cctMap.get(patternId);
         STNode stNode = stMap.get(patternId);
-        Pattern pattern = patternMap.get(patternId);
         assert stNode.getNodeType() == STNode.EXISTENTIAL_NODE
                 || stNode.getNodeType() == STNode.UNIVERSAL_NODE
                 :"[DEBUG] Type Error.";
@@ -130,9 +152,10 @@ public abstract class Checker {
 
 
     public synchronized boolean delete(String patternId, String timestamp) {
-        if (!affected(patternId)) {
+        if(!deleteContextFromPattern(patternId, timestamp)) {
             return false;
         }
+
         List<CCTNode> criticalNodeList = cctMap.get(patternId);
         STNode stNode = stMap.get(patternId);
         Pattern pattern = patternMap.get(patternId);
