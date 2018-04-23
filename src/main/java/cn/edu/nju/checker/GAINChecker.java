@@ -47,8 +47,8 @@ public class GAINChecker extends Checker {
         //计算cunit以及为语法树重排序(前序遍历)
         this.constraintNodes = new STNode[stSize];
         this.cunits = new ArrayList<>();
+        cunits.add(-1);
         split(stRoot);
-        cunits.add(stSize);
 
         //将语法树信息拷贝到GPU
         initGPURuleMemory();
@@ -169,7 +169,7 @@ public class GAINChecker extends Checker {
         Queue<STNode> rootOfCunit = new LinkedList<>();
         rootOfCunit.offer(root);
         int [] currentNodeNum = new int[1];
-        currentNodeNum[0] = 0;
+        currentNodeNum[0] = this.stSize - 1;
         while(!rootOfCunit.isEmpty()) {
             STNode rootOfNextCunit = rootOfCunit.poll();
             cunits.add(currentNodeNum[0]);
@@ -178,24 +178,19 @@ public class GAINChecker extends Checker {
     }
 
     private void parseCunit(Queue<STNode> rootOfCunit, STNode node,int []currentNodeNum) {
+        //假定非全称/存在量词的子树中不会有全称/存在量词节点
         if(node == null) {
             return ;
         }
         node.setNodeNum(currentNodeNum[0]);
-        constraintNodes[currentNodeNum[0]++] = node;
+        constraintNodes[currentNodeNum[0]--] = node;
         int type = node.getNodeType();
         if (type == STNode.UNIVERSAL_NODE || type == STNode.EXISTENTIAL_NODE) {
             rootOfCunit.offer((STNode) node.getFirstChild());
         }
-        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE) { //not support 'OR' node type
-            parseCunit(rootOfCunit, (STNode) node.getFirstChild(), currentNodeNum);
-            parseCunit(rootOfCunit, (STNode) node.getLastChild(), currentNodeNum);
-        }
-        else if(type == STNode.BFUNC_NODE || type == STNode.NOT_NODE) {
-            parseCunit(rootOfCunit, (STNode) node.getFirstChild(), currentNodeNum);
-        }
         else {
-            assert false:"Node type error, type:  " +  type;
+            parseCunit(rootOfCunit, (STNode) node.getLastChild(), currentNodeNum);
+            parseCunit(rootOfCunit, (STNode) node.getFirstChild(), currentNodeNum);
         }
     }
 
