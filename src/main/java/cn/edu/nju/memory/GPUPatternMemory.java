@@ -18,7 +18,9 @@ public class GPUPatternMemory {
 
     private Map<String, Integer> indexMap = new HashMap<>();
 
-    public GPUPatternMemory(Set<String> keySet) {
+    private static GPUPatternMemory gpuPatternMemory;
+
+    private GPUPatternMemory(Set<String> keySet) {
         int index = 0;
         for(String key : keySet) {
             indexMap.put(key, index);
@@ -55,10 +57,17 @@ public class GPUPatternMemory {
         return this.indexMap;
     }
 
-    public void free() {
+    public synchronized void free() {
         cuMemFree(this.begin);
         cuMemFree(this.length);
         cuMemFree(this.contexts);
+    }
+
+    public static synchronized GPUPatternMemory getInstance(Set<String> keySet) {
+        if(gpuPatternMemory == null) {
+            gpuPatternMemory = new GPUPatternMemory(keySet);
+        }
+        return gpuPatternMemory;
     }
 
 }

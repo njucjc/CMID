@@ -1,12 +1,20 @@
 package cn.edu.nju.checker;
 
+import static jcuda.driver.JCudaDriver.*;
+
 import cn.edu.nju.context.Context;
+import cn.edu.nju.memory.Config;
 import cn.edu.nju.memory.GPUContextMemory;
 import cn.edu.nju.memory.GPUPatternMemory;
 import cn.edu.nju.memory.GPURuleMemory;
 import cn.edu.nju.node.NodeType;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
+import cn.edu.nju.util.LogFileHelper;
+import jcuda.Pointer;
+import jcuda.Sizeof;
+import jcuda.driver.CUdeviceptr;
+import jcuda.runtime.dim3;
 import jcuda.utils.KernelLauncher;
 
 import java.util.*;
@@ -35,32 +43,33 @@ public class GAINChecker extends Checker {
 
     private Map<String, Integer> patternIdMap;
 
+    private static final int threadPerBlock = 32;
 
     public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap,
                        KernelLauncher genTruthValue, KernelLauncher genLinks, KernelLauncher updatePattern,
-                       GPUContextMemory gpuContextMemory, GPUPatternMemory gpuPatternMemory) {
+                       List<String> contexts) {
         super(name, stRoot, patternMap, stMap);
         this.stSize = computeSTSize(stRoot);
+ //       System.out.println(name + ": " + stSize);
 
         this.branchSize = new int[stSize];
 
         //计算cunit以及为语法树重排序(前序遍历)
         this.constraintNodes = new STNode[stSize];
         this.cunits = new ArrayList<>();
-        cunits.add(-1);
         split(stRoot);
-
+        cunits.add(-1);
         //将语法树信息拷贝到GPU
-        initGPURuleMemory();
-
-        this.patternIdMap = gpuPatternMemory.getIndexMap();
 
         this.genTruthValue = genTruthValue;
         this.genLinks = genLinks;
         this.updatePattern = updatePattern;
 
-        this.gpuContextMemory = gpuContextMemory;
-        this.gpuPatternMemory = gpuPatternMemory;
+        this.gpuContextMemory = GPUContextMemory.getInstance(contexts);
+        this.gpuPatternMemory = GPUPatternMemory.getInstance(patternMap.keySet());
+
+        this.patternIdMap = gpuPatternMemory.getIndexMap();
+        initGPURuleMemory();
     }
 
 
@@ -121,27 +130,166 @@ public class GAINChecker extends Checker {
 
     @Override
     public boolean doCheck() {
-        assert false:"Something is being to do.";
-        return false;
+       // assert false:"Something is being to do.";
+        computeRTTBranchSize(this.stRoot);
+        int cctSize = branchSize[stSize - 1];
+
+        CUdeviceptr deviceTruthValue = new CUdeviceptr();
+        cuMemAlloc(deviceTruthValue, cctSize * Sizeof.SHORT);
+
+        CUdeviceptr deviceBranchSize = new CUdeviceptr();
+        cuMemAlloc(deviceBranchSize, stSize * Sizeof.INT);
+        cuMemcpyHtoD(deviceBranchSize, Pointer.to(branchSize), stSize * Sizeof.INT);
+
+        CUdeviceptr deviceCunitEnd = new CUdeviceptr();
+        cuMemAlloc(deviceCunitEnd, Sizeof.INT);
+
+        CUdeviceptr deviceCunitStart = new CUdeviceptr();
+        cuMemAlloc(deviceCunitStart, Sizeof.INT);
+
+        CUdeviceptr deviceLinks = new CUdeviceptr();
+        cuMemAlloc(deviceLinks, (1 + Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT * cctSize);
+
+        CUdeviceptr deviceLinkResult = new CUdeviceptr();
+        cuMemAlloc(deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
+
+        CUdeviceptr deviceLinkNum = new CUdeviceptr();
+        cuMemAlloc(deviceLinkNum, Sizeof.INT);
+
+        CUdeviceptr deviceLastCunitRoot = new CUdeviceptr();
+        cuMemAlloc(deviceLastCunitRoot, Sizeof.INT);
+        cuMemcpyHtoD(deviceLastCunitRoot, Pointer.to(new int[]{cunits.get(0)}), Sizeof.INT);
+
+//        double [] la = new double[1500];
+//
+//        cuMemcpyDtoH(Pointer.to(la), gpuContextMemory.getLatitude(), 1500 * Sizeof.DOUBLE);
+//        System.out.println(Arrays.toString(la));
+
+        for(int i = cunits.size() - 2; i >= 0; i--) {
+            int ccopyNum = computeCCopyNum(cunits.get(i));
+            cuMemcpyHtoD(deviceCunitEnd, Pointer.to(new int[]{cunits.get(i)}), Sizeof.INT);
+            cuMemcpyHtoD(deviceCunitStart, Pointer.to(new int[]{cunits.get(i + 1) + 1}), Sizeof.INT);
+
+            dim3 gridSize = new dim3(threadPerBlock, 1, 1);
+            dim3 blockSize = new dim3((ccopyNum + threadPerBlock - 1) / threadPerBlock,1, 1);
+
+            genTruthValue.setup(gridSize, blockSize)
+                    .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
+                            deviceBranchSize, deviceCunitStart, deviceCunitEnd,
+                            gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
+                             gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(),
+                            deviceTruthValue);
+
+
+            genLinks.setup(gridSize, blockSize)
+                    .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
+                            deviceBranchSize, deviceCunitStart, deviceCunitEnd,
+                            gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
+                            gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(),
+                            deviceTruthValue,
+                            deviceLinks, deviceLinkResult, deviceLinkNum,
+                            deviceLastCunitRoot);
+
+        }
+
+        short [] hostTruthValue = new short[cctSize];
+        cuMemcpyDtoH(Pointer.to(hostTruthValue), deviceTruthValue, cctSize * Sizeof.SHORT);
+
+        boolean value = hostTruthValue[cctSize - 1] == 1;
+
+        int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
+        cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
+
+        int [] hostLinkNum = new int[1];
+        cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
+
+        if(!value) {
+            parseLink(hostLinkResult, hostLinkNum[0]);
+        }
+
+        cuMemFree(deviceTruthValue);
+        cuMemFree(deviceBranchSize);
+        cuMemFree(deviceCunitEnd);
+        cuMemFree(deviceCunitStart);
+        cuMemFree(deviceLinks);
+        cuMemFree(deviceLinkResult);
+        cuMemFree(deviceLinkNum);
+        cuMemFree(deviceLastCunitRoot);
+
+        return value;
+    }
+
+    private void parseLink(int [] links, int size) {
+        for(int i = 0; i < size; i++) {
+            String link = "";
+            for(int j = 0; j < Config.MAX_PARAN_NUM; j++) {
+                if(links[i + j] != -1) {
+                    link = link + "ctx_" + links[i + j] + " ";
+                }
+            }
+            LogFileHelper.getLogger().info(getName() + " " + link);
+            addIncLink(link);
+            //link = link.substring(0, link.length() - 1);
+        }
     }
 
     @Override
     public synchronized boolean add(String patternId, Context context) {
       //  return super.add(patternId, context);
-        if(!affected(patternId)) {
+        if (!addContextToPattern(patternId, context)) {
             return false;
         }
-        assert false:"Something is being to do.";
-        return false;
+        //assert false:"Something is being to do.";
+        CUdeviceptr op = new CUdeviceptr();
+        cuMemAlloc(op, Sizeof.INT);
+        cuMemcpyHtoD(op, Pointer.to(new int[]{1}), Sizeof.INT);
+
+        CUdeviceptr pattern_idx = new CUdeviceptr();
+        cuMemAlloc(pattern_idx, Sizeof.INT);
+        cuMemcpyHtoD(pattern_idx, Pointer.to(new int[]{patternIdMap.get(patternId)}), Sizeof.INT);
+
+        CUdeviceptr id = new CUdeviceptr();
+        cuMemAlloc(id, Sizeof.INT);
+        cuMemcpyHtoD(id, Pointer.to(new int[]{context.getId()}), Sizeof.INT);
+
+        updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
+                   .call(op, pattern_idx,
+                        gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
+                        id);
+
+        cuMemFree(op);
+        cuMemFree(pattern_idx);
+        cuMemFree(id);
+        return true;
     }
 
     @Override
     public synchronized boolean delete(String patternId, String timestamp) {
-        if(!affected(patternId)) {
+        if(!deleteContextFromPattern(patternId, timestamp)) {
             return false;
         }
-        assert false:"Something is being to do.";
-        return false;
+       // assert false:"Something is being to do.";
+        CUdeviceptr op = new CUdeviceptr();
+        cuMemAlloc(op, Sizeof.INT);
+        cuMemcpyHtoD(op, Pointer.to(new int[]{0}), Sizeof.INT); //delete
+
+        CUdeviceptr pattern_idx = new CUdeviceptr();
+        cuMemAlloc(pattern_idx, Sizeof.INT);
+        cuMemcpyHtoD(pattern_idx, Pointer.to(new int[]{patternIdMap.get(patternId)}), Sizeof.INT);
+
+        CUdeviceptr id = new CUdeviceptr();
+        cuMemAlloc(id, Sizeof.INT);
+        cuMemcpyHtoD(id, Pointer.to(new int[]{0}), Sizeof.INT);
+
+        updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
+                .call(op, pattern_idx,
+                        gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
+                        id);
+
+        cuMemFree(op);
+        cuMemFree(pattern_idx);
+        cuMemFree(id);
+        return true;
     }
 
     private int computeSTSize(STNode root) {
@@ -182,15 +330,23 @@ public class GAINChecker extends Checker {
         if(node == null) {
             return ;
         }
+  //      System.out.println(currentNodeNum[0] + " :" + node.getNodeName());
         node.setNodeNum(currentNodeNum[0]);
-        constraintNodes[currentNodeNum[0]--] = node;
+        constraintNodes[currentNodeNum[0]] = node;
+        currentNodeNum[0]--;
         int type = node.getNodeType();
         if (type == STNode.UNIVERSAL_NODE || type == STNode.EXISTENTIAL_NODE) {
             rootOfCunit.offer((STNode) node.getFirstChild());
         }
-        else {
+        else if(type == STNode.IMPLIES_NODE || type == STNode.AND_NODE){
             parseCunit(rootOfCunit, (STNode) node.getLastChild(), currentNodeNum);
             parseCunit(rootOfCunit, (STNode) node.getFirstChild(), currentNodeNum);
+        }
+        else if(type == STNode.NOT_NODE) {
+            parseCunit(rootOfCunit, (STNode) node.getFirstChild(), currentNodeNum);
+        }
+        else if(type == STNode.BFUNC_NODE) {
+            return;
         }
     }
 
@@ -233,6 +389,8 @@ public class GAINChecker extends Checker {
     @Override
     public void reset() {
         this.gpuRuleMemory.free();
+        this.gpuPatternMemory.free();
+        this.gpuContextMemory.free();
         super.reset();
     }
 }

@@ -29,30 +29,32 @@ struct Context{
 	double speed;
 };
 
-#pragma pack(1)
 struct Links {
 	int length;
 	int link_pool[MAX_LINK_SIZE][MAX_PARAM_NUM];
 };
-#pragma pack()
 
-
+extern "C"
 __device__ bool same(Context c1, Context c2){
 	return (c1.id == c2.id);
 }
 
+extern "C"
 __device__ bool sz_spd_close(Context c1, Context c2){
 	return ((c1.speed - c2.speed) >= -50.0 && (c1.speed - c2.speed) <= 50.0);
 }
 
+extern "C"
 __device__ bool sz_loc_close(Context c1, Context c2){
 	return ((c1.latitude - c2.latitude) * (c1.latitude - c2.latitude) + (c1.longitude - c2.longitude) * (c1.longitude - c2.longitude)) <= 0.000001;
 }
 
+extern "C"
 __device__ bool sz_loc_dist(Context c1, Context c2){
 	return ((c1.latitude - c2.latitude) * (c1.latitude - c2.latitude) + (c1.longitude - c2.longitude) * (c1.longitude - c2.longitude)) <= 0.000625;
 }
 
+extern "C"
 __device__ bool sz_loc_dist_neq(Context c1, Context c2){
 	double dist = ((c1.latitude - c2.latitude) * (c1.latitude - c2.latitude) + (c1.longitude - c2.longitude) * (c1.longitude - c2.longitude));
 	bool result = true;
@@ -63,10 +65,12 @@ __device__ bool sz_loc_dist_neq(Context c1, Context c2){
 	//return (dist <= 0.000625) && (dist != 0);
 }
 
+extern "C"
 __device__ bool sz_loc_range(Context c){
 	return c.longitude >= 112.0 && c.longitude <= 116.0 && c.latitude >=20.0 && c.latitude <= 24.0;
 }
 
+extern "C"
 __device__ void linkHelper(Links *left, Links *right) {
 	int left_len = left->length;
 	int right_len = right->length;
@@ -88,6 +92,7 @@ __device__ void linkHelper(Links *left, Links *right) {
 	}
 }
 
+extern "C"
 __device__ int calc_offset(	int node, int tid, Context *params,
 							int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx,
 							int *pattern_begin, int *pattern_length, int *pattern,
@@ -111,7 +116,7 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 			params[index].latitude = latitude[params[index].id];
 			params[index].longitude = longitude[params[index].id];
 			params[index].speed = speed[params[index].id];
-			
+
 			offset += (branch_idx + 1) * branch_size[current_node];
 			index++;
 		}
@@ -134,15 +139,15 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 
 
 extern "C"
-__global__ void gen_truth_value(int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx, //constraint rule 
+__global__ void gen_truth_value(int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx, //constraint rule
 								int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
 								int *pattern_begin, int *pattern_length, int *pattern, //patterns
 								double *longitude, double *latitude, double *speed, // contexts
 								int *truth_values) {
 	int tid = threadIdx.x + blockDim.x * blockIdx.x;
 	Context params[MAX_PARAM_NUM];
-	int ccopy_root_offset = calc_offset(cunit_end, tid, params, 
-										parent, left_child, right_child, node_type, pattern_idx, 
+	int ccopy_root_offset = calc_offset(cunit_end, tid, params,
+										parent, left_child, right_child, node_type, pattern_idx,
 										pattern_begin, pattern_length, pattern,
 										longitude, latitude, speed,
 										branch_size);
@@ -204,12 +209,12 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
  }
 
  extern "C"
- __global__ void gen_links(int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx, //constraint rule 
+ __global__ void gen_links(int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx, //constraint rule
 	 int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
 	 int *pattern_begin, int *pattern_length, int *pattern, //patterns
 	 double *longitude, double *latitude, double *speed, // contexts
-	 int *truth_values, 
-	 Links *links, int *link_result, int *link_num, 
+	 int *truth_values,
+	 Links *links, int *link_result, int *link_num,
 	 int last_cunit_root) {
 
 	 int tid = threadIdx.x + blockDim.x * blockIdx.x;
@@ -243,7 +248,7 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 			 if (truth_values[offset - 1] == value) {
 				 linkHelper(cur_links, &links[offset - 1]);
 			 }
-			 
+
 			 if (truth_values[offset - (branch_size[right_child[node]] + 1)] == value) {
 				 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
 			 }
@@ -287,7 +292,7 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 				 link_result[i + 1] = links[branch_size[cunit_end]].link_pool[i][1];
 			 }
 		 }
-		 
+
 	 }
 
   }

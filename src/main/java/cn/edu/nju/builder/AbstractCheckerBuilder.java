@@ -10,6 +10,7 @@ import cn.edu.nju.scheduler.BatchScheduler;
 import cn.edu.nju.scheduler.GEASchduler;
 import cn.edu.nju.scheduler.Scheduler;
 import cn.edu.nju.util.LogFileHelper;
+import cn.edu.nju.util.PTXFileHelper;
 import jcuda.driver.JCudaDriver;
 import jcuda.utils.KernelLauncher;
 import org.w3c.dom.Document;
@@ -68,9 +69,7 @@ public abstract class AbstractCheckerBuilder {
 
     private KernelLauncher updatePattern;
 
-    private GPUContextMemory gpuContextMemory;
-
-    private GPUPatternMemory gpuPatternMemory;
+    private List<String> contexts;
 
     public AbstractCheckerBuilder(String configFilePath) {
         parseConfigFile(configFilePath);
@@ -120,11 +119,17 @@ public abstract class AbstractCheckerBuilder {
 
         String cudaSourceFilePath = properties.getProperty("cudaSourceFilePath");
         //如果是GAIN需要初始化GPU内存
+
+        //context file path
+        this.dataFilePath = properties.getProperty("dataFilePath");
+        this.changeFilePath = properties.getProperty("changeFilePath");
+
         if(this.checkType == GAIN_TYPE) {
             //开启异常捕获
             JCudaDriver.setExceptionsEnabled(true);
 
-            initGPUMemory();
+           // initGPUMemory();
+            contexts = fileReader(this.dataFilePath);
             loadKernelFunction(cudaSourceFilePath);
         }
 
@@ -132,9 +137,6 @@ public abstract class AbstractCheckerBuilder {
         String ruleFilePath = properties.getProperty("ruleFilePath");
         parseRuleFile(ruleFilePath);
 
-        //context file path
-        this.dataFilePath = properties.getProperty("dataFilePath");
-        this.changeFilePath = properties.getProperty("changeFilePath");
 
         //log
         String logFilePath = properties.getProperty("logFilePath");
@@ -251,7 +253,7 @@ public abstract class AbstractCheckerBuilder {
                 } else if(checkType == GAIN_TYPE) {
                     checker = new GAINChecker(idNode.getTextContent(), root, this.patternMap, stMap,
                             genTruthValue, genLinks, updatePattern, //kernel function
-                            gpuContextMemory, gpuPatternMemory); //GPU memory
+                            contexts); //GPU memory
                 }
 
                 checkerList.add(checker);
@@ -328,32 +330,21 @@ public abstract class AbstractCheckerBuilder {
         }
     }
 
-    private void initGPUMemory() {
-        //contexts memory
-        this.gpuContextMemory = new GPUContextMemory(fileReader(this.dataFilePath));
-
-        //pattern memory
-        this.gpuPatternMemory = new GPUPatternMemory(patternMap.keySet());
-
-    }
-
     private void loadKernelFunction(String cudaSourceFilePath) {
-        this.genTruthValue = KernelLauncher.compile(cudaSourceFilePath,"gen_truth_value");
-        this.genLinks = KernelLauncher.compile(cudaSourceFilePath, "gen_links");
-        this.updatePattern = KernelLauncher.compile(cudaSourceFilePath, "update_pattern");
+        String ptxFile = null;
+        try {
+            ptxFile = PTXFileHelper.preparePtxFile(cudaSourceFilePath);
+        }
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+        this.genTruthValue = KernelLauncher.load(ptxFile ,"gen_truth_value");
+        this.genLinks = KernelLauncher.load(ptxFile , "gen_links");
+        this.updatePattern = KernelLauncher.load(ptxFile , "update_pattern");
     }
 
     public void shutdown() {
         checkExecutorService.shutdown();
-        //free gpu memory
-        if (gpuPatternMemory != null) {
-            gpuPatternMemory.free();
-        }
-
-        if(gpuContextMemory != null) {
-            gpuContextMemory.free();
-        }
-
         for(Checker checker : checkerList) {
             checker.reset();
         }
