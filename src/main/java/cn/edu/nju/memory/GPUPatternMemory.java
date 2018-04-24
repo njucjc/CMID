@@ -58,9 +58,9 @@ public class GPUPatternMemory {
     }
 
     public synchronized void free() {
-        cuMemFree(this.begin);
-        cuMemFree(this.length);
-        cuMemFree(this.contexts);
+//        cuMemFree(this.begin);
+//        cuMemFree(this.length);
+//        cuMemFree(this.contexts);
     }
 
     public static synchronized GPUPatternMemory getInstance(Set<String> keySet) {

@@ -21,6 +21,7 @@ enum Type {
 #define MAX_PARAM_NUM 2
 #define MAX_PATTERN_SIZE 500
 #define MAX_LINK_SIZE 40
+//#define DEBUG
 
 struct Context{
 	int id;
@@ -143,67 +144,73 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 								int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
 								int *pattern_begin, int *pattern_length, int *pattern, //patterns
 								double *longitude, double *latitude, double *speed, // contexts
-								int *truth_values) {
+								short *truth_values, int ccopy_num) {
+	
+	
 	int tid = threadIdx.x + blockDim.x * blockIdx.x;
-	Context params[MAX_PARAM_NUM];
-	int ccopy_root_offset = calc_offset(cunit_end, tid, params,
-										parent, left_child, right_child, node_type, pattern_idx,
-										pattern_begin, pattern_length, pattern,
-										longitude, latitude, speed,
-										branch_size);
+	if(tid < ccopy_num) {
 
-	for (int node = cunit_begin; node <= cunit_end; node++) {
-		int offset = ccopy_root_offset - (cunit_end - node);
-		int type = node_type[node];
-		bool value;
-		if(type == Type::UNIVERSAL_NODE) {
-			int step = branch_size[left_child[node]];
-			value = true;
-			for (int i = 0; i < pattern_length[pattern_idx[node]]; i++) {
-				value = value && truth_values[offset - (i * step + 1)];
+		Context params[MAX_PARAM_NUM];
+		int ccopy_root_offset = calc_offset(cunit_end, tid, params,
+											parent, left_child, right_child, node_type, pattern_idx,
+											pattern_begin, pattern_length, pattern,
+											longitude, latitude, speed,
+											branch_size);
+
+//		printf("root offset = %d\n", ccopy_root_offset);
+		for (int node = cunit_begin; node <= cunit_end; node++) {
+			int offset = ccopy_root_offset - (cunit_end - node);
+			int type = node_type[node];
+			bool value;
+			if(type == Type::UNIVERSAL_NODE) {
+				int step = branch_size[left_child[node]];
+				value = true;
+				for (int i = 0; i < pattern_length[pattern_idx[node]]; i++) {
+					value = value && truth_values[offset - (i * step + 1)];
+				}
 			}
-		}
-		else if (type == Type::EXISTENTIAL_NODE) {
-			int step = branch_size[left_child[node]];
-			value = false;
-			for (int i = 0; i < pattern_length[pattern_idx[node]]; i++) {
-				value = value || truth_values[offset - (i * step + 1)];
+			else if (type == Type::EXISTENTIAL_NODE) {
+				int step = branch_size[left_child[node]];
+				value = false;
+				for (int i = 0; i < pattern_length[pattern_idx[node]]; i++) {
+					value = value || truth_values[offset - (i * step + 1)];
+				}
 			}
+			else if (type == Type::AND_NODE) {
+				//right && left
+				value = truth_values[offset - 1] && truth_values[offset - (branch_size[right_child[node]] + 1)];
+			}
+			else if (type == Type::OR_NODE) {
+				//right || left
+				value = truth_values[offset - 1] || truth_values[offset - (branch_size[right_child[node]] + 1)];
+			}
+			else if (type == Type::IMPLIES_NODE) {
+				//!left || right
+				value = !truth_values[offset - (branch_size[right_child[node]] + 1)] || truth_values[offset - 1];
+			}
+			else if (type == Type::NOT_NODE) {
+				value = !truth_values[offset - 1];
+			}
+			else if (type == Type::SAME) {
+				value = same(params[0], params[1]);
+			}
+			else if (type == Type::SZ_SPD_CLOSE) {
+				value = sz_spd_close(params[0], params[1]);
+			}
+			else if (type == Type::SZ_LOC_CLOSE) {
+				value = sz_loc_close(params[0], params[1]);
+			}
+			else if (type == Type::SZ_LOC_DIST) {
+				value = sz_loc_dist(params[0], params[1]);
+			}
+			else if (type == Type::SZ_LOC_DIST_NEQ) {
+				value = sz_loc_dist_neq(params[0], params[1]);
+			}
+			else if (type == Type::SZ_LOC_RANGE) {
+				value = sz_loc_range(params[0]);
+			}
+			truth_values[offset] = value;
 		}
-		else if (type == Type::AND_NODE) {
-			//right && left
-			value = truth_values[offset - 1] && truth_values[offset - (branch_size[right_child[node]] + 1)];
-		}
-		else if (type == Type::OR_NODE) {
-			//right || left
-			value = truth_values[offset - 1] || truth_values[offset - (branch_size[right_child[node]] + 1)];
-		}
-		else if (type == Type::IMPLIES_NODE) {
-			//!left || right
-			value = !truth_values[offset - (branch_size[right_child[node]] + 1)] || truth_values[offset - 1];
-		}
-		else if (type == Type::NOT_NODE) {
-			value = !truth_values[offset - 1];
-		}
-		else if (type == Type::SAME) {
-			value = same(params[0], params[1]);
-		}
-		else if (type == Type::SZ_SPD_CLOSE) {
-			value = sz_spd_close(params[0], params[1]);
-		}
-		else if (type == Type::SZ_LOC_CLOSE) {
-			value = sz_loc_close(params[0], params[1]);
-		}
-		else if (type == Type::SZ_LOC_DIST) {
-			value = sz_loc_dist(params[0], params[1]);
-		}
-		else if (type == Type::SZ_LOC_DIST_NEQ) {
-			value = sz_loc_dist_neq(params[0], params[1]);
-		}
-		else if (type == Type::SZ_LOC_RANGE) {
-			value = sz_loc_range(params[0]);
-		}
-		truth_values[offset] = value;
 	}
 
  }
@@ -213,86 +220,89 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 	 int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
 	 int *pattern_begin, int *pattern_length, int *pattern, //patterns
 	 double *longitude, double *latitude, double *speed, // contexts
-	 int *truth_values,
+	 short *truth_values,
 	 Links *links, int *link_result, int *link_num,
-	 int last_cunit_root) {
+	 int last_cunit_root,
+	 int ccopy_num) {
 
 	 int tid = threadIdx.x + blockDim.x * blockIdx.x;
-	 Context params[MAX_PARAM_NUM];
+	 if(tid < ccopy_num) {
+		 Context params[MAX_PARAM_NUM];
 
-	 for (int i = 0; i < MAX_PARAM_NUM; i++) {
-		 params[i].id = -1;
-	 }
+		 for (int i = 0; i < MAX_PARAM_NUM; i++) {
+			 params[i].id = -1;
+		 }
 
-	 int ccopy_root_offset = calc_offset(cunit_end, tid, params,
-		 parent, left_child, right_child, node_type, pattern_idx,
-		 pattern_begin, pattern_length, pattern,
-		 longitude, latitude, speed,
-		 branch_size);
+		 int ccopy_root_offset = calc_offset(cunit_end, tid, params,
+			 parent, left_child, right_child, node_type, pattern_idx,
+			 pattern_begin, pattern_length, pattern,
+			 longitude, latitude, speed,
+			 branch_size);
 
-	 for (int node = cunit_begin; node <= cunit_end; node++) {
-		 int offset = ccopy_root_offset - (cunit_end - node);
-		 int type = node_type[node];
-		 bool value = truth_values[offset];
-		 Links* cur_links = &links[offset];
-		 cur_links->length = 0;
-		 if (type == Type::UNIVERSAL_NODE || type == Type::EXISTENTIAL_NODE) {
-			 int step = branch_size[left_child[node]];
-			 for (int i = 0; i < pattern_length[pattern_idx[node]]; i++) {
-				 if (truth_values[offset - (i * step + 1)] == value) {
-					 linkHelper(cur_links, &links[offset - (i * step + 1)]);
+		 for (int node = cunit_begin; node <= cunit_end; node++) {
+			 int offset = ccopy_root_offset - (cunit_end - node);
+			 int type = node_type[node];
+			 bool value = truth_values[offset];
+			 Links* cur_links = &links[offset];
+			 cur_links->length = 0;
+			 if (type == Type::UNIVERSAL_NODE || type == Type::EXISTENTIAL_NODE) {
+				 int step = branch_size[left_child[node]];
+				 for (int i = 0; i < pattern_length[pattern_idx[node]]; i++) {
+					 if (truth_values[offset - (i * step + 1)] == value) {
+						 linkHelper(cur_links, &links[offset - (i * step + 1)]);
+					 }
 				 }
 			 }
-		 }
-		 else if (type == Type::AND_NODE || type == Type::OR_NODE) {
-			 if (truth_values[offset - 1] == value) {
+			 else if (type == Type::AND_NODE || type == Type::OR_NODE) {
+				 if (truth_values[offset - 1] == value) {
+					 linkHelper(cur_links, &links[offset - 1]);
+				 }
+
+				 if (truth_values[offset - (branch_size[right_child[node]] + 1)] == value) {
+					 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
+				 }
+			 }
+			 else if (type == Type::IMPLIES_NODE) {
+				 //!left || right
+				 bool left = truth_values[offset - (branch_size[right_child[node]] + 1)];
+				 bool right = truth_values[offset - 1];
+
+				 if ((!left && right) || left && !right) {
+					 linkHelper(cur_links, &links[offset - 1]);
+					 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
+				 }
+				 else if(left && right){
+					 linkHelper(cur_links, &links[offset - 1]);
+				 }
+				 else if (left && right) {
+					 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
+				 }
+			 }
+			 else if (type == Type::NOT_NODE) {
 				 linkHelper(cur_links, &links[offset - 1]);
 			 }
+			 else if (type == Type::SAME
+				 || type == Type::SZ_SPD_CLOSE
+				 || type == Type::SZ_LOC_CLOSE
+				 || type == Type::SZ_LOC_DIST
+				 || type == Type::SZ_LOC_DIST_NEQ
+				 || type == Type::SZ_LOC_RANGE) {
+				 cur_links->length = 1;
+				 for (int i = 0; i < MAX_PARAM_NUM; i++) {
+					 cur_links->link_pool[0][i] = params[i].id;
+				 }
+			 }
 
-			 if (truth_values[offset - (branch_size[right_child[node]] + 1)] == value) {
-				 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
-			 }
-		 }
-		 else if (type == Type::IMPLIES_NODE) {
-			 //!left || right
-			 bool left = truth_values[offset - (branch_size[right_child[node]] + 1)];
-			 bool right = truth_values[offset - 1];
+			 if (last_cunit_root == cunit_end) {
+				 *link_num = links[branch_size[cunit_end]].length;
 
-			 if ((!left && right) || left && !right) {
-				 linkHelper(cur_links, &links[offset - 1]);
-				 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
+				 for (int i = 0; i < *link_num; i++) {
+					 link_result[i] = links[branch_size[cunit_end]].link_pool[i][0];
+					 link_result[i + 1] = links[branch_size[cunit_end]].link_pool[i][1];
+				 }
 			 }
-			 else if(left && right){
-				 linkHelper(cur_links, &links[offset - 1]);
-			 }
-			 else if (left && right) {
-				 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
-			 }
-		 }
-		 else if (type == Type::NOT_NODE) {
-			 linkHelper(cur_links, &links[offset - 1]);
-		 }
-		 else if (type == Type::SAME
-			 || type == Type::SZ_SPD_CLOSE
-			 || type == Type::SZ_LOC_CLOSE
-			 || type == Type::SZ_LOC_DIST
-			 || type == Type::SZ_LOC_DIST_NEQ
-			 || type == Type::SZ_LOC_RANGE) {
-			 cur_links->length = 1;
-			 for (int i = 0; i < MAX_PARAM_NUM; i++) {
-				 cur_links->link_pool[0][i] = params[i].id;
-			 }
-		 }
 
-		 if (last_cunit_root == cunit_end) {
-			 *link_num = links[branch_size[cunit_end]].length;
-
-			 for (int i = 0; i < *link_num; i++) {
-				 link_result[i] = links[branch_size[cunit_end]].link_pool[i][0];
-				 link_result[i + 1] = links[branch_size[cunit_end]].link_pool[i][1];
-			 }
 		 }
-
 	 }
 
   }

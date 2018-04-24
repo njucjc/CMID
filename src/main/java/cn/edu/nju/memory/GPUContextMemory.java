@@ -56,9 +56,9 @@ public class GPUContextMemory {
     }
 
     public synchronized void free() {
-        cuMemFree(this.latitude);
-        cuMemFree(this.longitude);
-        cuMemFree(this.speed);
+//        cuMemFree(this.latitude);
+//        cuMemFree(this.longitude);
+//        cuMemFree(this.speed);
     }
 
     public CUdeviceptr getLongitude() {

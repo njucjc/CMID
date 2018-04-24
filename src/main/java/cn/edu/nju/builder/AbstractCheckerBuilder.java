@@ -345,8 +345,12 @@ public abstract class AbstractCheckerBuilder {
 
     public void shutdown() {
         checkExecutorService.shutdown();
-        for(Checker checker : checkerList) {
-            checker.reset();
+        if(checkType == GAIN_TYPE) {
+            GPUPatternMemory.getInstance(patternMap.keySet()).free();
+            GPUContextMemory.getInstance(contexts).free();
+            for (Checker checker : checkerList) {
+                checker.reset();
+            }
         }
     }
 }

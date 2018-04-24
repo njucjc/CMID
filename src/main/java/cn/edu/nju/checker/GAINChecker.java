@@ -142,17 +142,21 @@ public class GAINChecker extends Checker {
         cuMemcpyHtoD(deviceBranchSize, Pointer.to(branchSize), stSize * Sizeof.INT);
 
 
-        CUdeviceptr deviceLinks = new CUdeviceptr();
-        cuMemAlloc(deviceLinks, (1 + Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT * cctSize);
-
-        CUdeviceptr deviceLinkResult = new CUdeviceptr();
-        cuMemAlloc(deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
-
-        CUdeviceptr deviceLinkNum = new CUdeviceptr();
-        cuMemAlloc(deviceLinkNum, Sizeof.INT);
+//        CUdeviceptr deviceLinks = new CUdeviceptr();
+//        cuMemAlloc(deviceLinks, (1 + Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT * cctSize);
+//
+//        CUdeviceptr deviceLinkResult = new CUdeviceptr();
+//        cuMemAlloc(deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
+//
+//        CUdeviceptr deviceLinkNum = new CUdeviceptr();
+//        cuMemAlloc(deviceLinkNum, Sizeof.INT);
 
         for(int i = cunits.size() - 2; i >= 0; i--) {
             int ccopyNum = computeCCopyNum(cunits.get(i));
+            //System.out.println("num: " + ccopyNum);
+            if(ccopyNum == 0) {
+                continue;
+            }
 
             dim3 gridSize = new dim3(threadPerBlock, 1, 1);
             dim3 blockSize = new dim3((ccopyNum + threadPerBlock - 1) / threadPerBlock,1, 1);
@@ -166,15 +170,15 @@ public class GAINChecker extends Checker {
                             ccopyNum);
 
 
-            genLinks.setup(gridSize, blockSize)
-                    .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
-                            deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
-                            gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                            gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(),
-                            deviceTruthValue,
-                            deviceLinks, deviceLinkResult, deviceLinkNum,
-                            cunits.get(0),
-                            ccopyNum);
+//            genLinks.setup(gridSize, blockSize)
+//                    .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
+//                            deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
+//                            gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
+//                            gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(),
+//                            deviceTruthValue,
+//                            deviceLinks, deviceLinkResult, deviceLinkNum,
+//                            cunits.get(0),
+//                            ccopyNum);
 
         }
 
@@ -182,22 +186,23 @@ public class GAINChecker extends Checker {
         cuMemcpyDtoH(Pointer.to(hostTruthValue), deviceTruthValue, cctSize * Sizeof.SHORT);
 
         boolean value = hostTruthValue[cctSize - 1] == 1;
+        System.out.println(Arrays.toString(hostTruthValue));
 
-        int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
-        cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
-
-        int [] hostLinkNum = new int[1];
-        cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
+//        int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
+//        cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
+//
+//        int [] hostLinkNum = new int[1];
+//        cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
 
         if(!value) {
-            parseLink(hostLinkResult, hostLinkNum[0]);
+           // parseLink(hostLinkResult, hostLinkNum[0]);
         }
 
         cuMemFree(deviceTruthValue);
         cuMemFree(deviceBranchSize);
-        cuMemFree(deviceLinks);
-        cuMemFree(deviceLinkResult);
-        cuMemFree(deviceLinkNum);
+//        cuMemFree(deviceLinks);
+//        cuMemFree(deviceLinkResult);
+//        cuMemFree(deviceLinkNum);
 
 
         return value;
@@ -223,27 +228,13 @@ public class GAINChecker extends Checker {
         if (!addContextToPattern(patternId, context)) {
             return false;
         }
-        //assert false:"Something is being to do.";
-        CUdeviceptr op = new CUdeviceptr();
-        cuMemAlloc(op, Sizeof.INT);
-        cuMemcpyHtoD(op, Pointer.to(new int[]{1}), Sizeof.INT);
-
-        CUdeviceptr pattern_idx = new CUdeviceptr();
-        cuMemAlloc(pattern_idx, Sizeof.INT);
-        cuMemcpyHtoD(pattern_idx, Pointer.to(new int[]{patternIdMap.get(patternId)}), Sizeof.INT);
-
-        CUdeviceptr id = new CUdeviceptr();
-        cuMemAlloc(id, Sizeof.INT);
-        cuMemcpyHtoD(id, Pointer.to(new int[]{context.getId()}), Sizeof.INT);
 
         updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
-                   .call(op, pattern_idx,
+                   .call(1, patternIdMap.get(patternId),
                         gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                        id);
+                        context.getId());
 
-        cuMemFree(op);
-        cuMemFree(pattern_idx);
-        cuMemFree(id);
+
         return true;
     }
 
@@ -252,27 +243,13 @@ public class GAINChecker extends Checker {
         if(!deleteContextFromPattern(patternId, timestamp)) {
             return false;
         }
-       // assert false:"Something is being to do.";
-        CUdeviceptr op = new CUdeviceptr();
-        cuMemAlloc(op, Sizeof.INT);
-        cuMemcpyHtoD(op, Pointer.to(new int[]{0}), Sizeof.INT); //delete
 
-        CUdeviceptr pattern_idx = new CUdeviceptr();
-        cuMemAlloc(pattern_idx, Sizeof.INT);
-        cuMemcpyHtoD(pattern_idx, Pointer.to(new int[]{patternIdMap.get(patternId)}), Sizeof.INT);
-
-        CUdeviceptr id = new CUdeviceptr();
-        cuMemAlloc(id, Sizeof.INT);
-        cuMemcpyHtoD(id, Pointer.to(new int[]{0}), Sizeof.INT);
 
         updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
-                .call(op, pattern_idx,
+                .call(0,patternIdMap.get(patternId),
                         gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                        id);
+                        0);
 
-        cuMemFree(op);
-        cuMemFree(pattern_idx);
-        cuMemFree(id);
         return true;
     }
 
@@ -372,8 +349,6 @@ public class GAINChecker extends Checker {
 
     @Override
     public void reset() {
-        this.gpuRuleMemory.free();
-        this.gpuPatternMemory.free();
         this.gpuContextMemory.free();
         super.reset();
     }
