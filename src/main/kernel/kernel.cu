@@ -29,10 +29,12 @@ struct Context{
 	double speed;
 };
 
+#pragma pack(1)
 struct Links {
 	int length;
 	int link_pool[MAX_LINK_SIZE][MAX_PARAM_NUM];
 };
+#pragma pack()
 
 
 __device__ bool same(Context c1, Context c2){
@@ -299,7 +301,7 @@ __global__ void update_pattern(int op, int pattern_idx,
 		pattern_length[pattern_idx]--;
 	}
 	else if (op == 1) {//+
-		(pattern + pattern_idx * MAX_PATTERN_SIZE)[(pattern_begin[pattern_idx] + pattern_length[pattern_idx]) % MAX_PATTERN_SIZE];
+		(pattern + pattern_idx * MAX_PATTERN_SIZE)[(pattern_begin[pattern_idx] + pattern_length[pattern_idx]) % MAX_PATTERN_SIZE] = id;
 		pattern_length[pattern_idx]++;
 
 	}
