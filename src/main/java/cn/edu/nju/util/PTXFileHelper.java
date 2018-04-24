@@ -28,7 +28,8 @@ public class PTXFileHelper {
         File ptxFile = new File(ptxFileName);
         if (ptxFile.exists())
         {
-            return ptxFileName;
+            //return ptxFileName;
+            ptxFile.delete();
         }
 
         File cuFile = new File(cuFileName);

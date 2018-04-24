@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by njucjc on 2017/10/23.
  */
-public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
+public class CheckerBuilder  extends AbstractCheckerBuilder /*implements Runnable*/{
 
     public CheckerBuilder(String configFilePath) {
         super(configFilePath);
     }
 
-    @Override
+//    @Override
     public void run() {
         List<String> contextList;
         if("time".equals(this.changeHandlerType.split("-")[1])) {
