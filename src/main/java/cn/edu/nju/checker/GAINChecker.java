@@ -13,6 +13,7 @@ import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.LogFileHelper;
 import jcuda.Pointer;
 import jcuda.Sizeof;
+import jcuda.driver.CUcontext;
 import jcuda.driver.CUdeviceptr;
 import jcuda.driver.JCudaDriver;
 import jcuda.runtime.dim3;
@@ -56,12 +57,12 @@ public class GAINChecker extends Checker {
 
     private CUdeviceptr deviceLinkNum = new CUdeviceptr();
 
-
+    private CUcontext cuContext;
 
 
     public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap,
                        KernelLauncher genTruthValue, KernelLauncher genLinks, KernelLauncher updatePattern,
-                       List<String> contexts) {
+                       List<String> contexts, CUcontext cuContext) {
         super(name, stRoot, patternMap, stMap);
         this.stSize = computeSTSize(stRoot);
  //       System.out.println(name + ": " + stSize);
@@ -84,6 +85,7 @@ public class GAINChecker extends Checker {
 
         this.patternIdMap = gpuPatternMemory.getIndexMap();
         initGPURuleMemory();
+        this.cuContext = cuContext;
     }
 
 
@@ -156,6 +158,7 @@ public class GAINChecker extends Checker {
         computeRTTBranchSize(this.stRoot);
         int cctSize = branchSize[stSize - 1];
 
+        cuCtxPushCurrent(cuContext);
         cuMemcpyHtoD(this.deviceBranchSize, Pointer.to(branchSize), stSize * Sizeof.INT);
 
         for(int i = cunits.size() - 2; i >= 0; i--) {
@@ -207,8 +210,7 @@ public class GAINChecker extends Checker {
         }
 
 
-
-
+        cuCtxPopCurrent(cuContext);
         return value;
     }
 
@@ -233,13 +235,13 @@ public class GAINChecker extends Checker {
         if (!addContextToPattern(patternId, context)) {
             return false;
         }
-
+        cuCtxPushCurrent(cuContext);
         updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
                    .call(1, patternIdMap.get(patternId),
                         gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
                         context.getId());
 
-
+        cuCtxPopCurrent(cuContext);
         return true;
     }
 
@@ -249,12 +251,13 @@ public class GAINChecker extends Checker {
             return false;
         }
 
-
+        cuCtxPushCurrent(cuContext);
         updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
                 .call(0,patternIdMap.get(patternId),
                         gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
                         0);
 
+        cuCtxPopCurrent(cuContext);
         return true;
     }
 

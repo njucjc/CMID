@@ -11,6 +11,8 @@ import cn.edu.nju.scheduler.GEASchduler;
 import cn.edu.nju.scheduler.Scheduler;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.PTXFileHelper;
+import jcuda.driver.CUcontext;
+import jcuda.driver.CUdevice;
 import jcuda.driver.JCudaDriver;
 import jcuda.utils.KernelLauncher;
 import org.w3c.dom.Document;
@@ -31,6 +33,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import static jcuda.driver.JCudaDriver.*;
 
 public abstract class AbstractCheckerBuilder {
 
@@ -68,6 +71,8 @@ public abstract class AbstractCheckerBuilder {
     private KernelLauncher genLinks;
 
     private KernelLauncher updatePattern;
+
+    private CUcontext cuContext;
 
     private List<String> contexts;
 
@@ -127,6 +132,13 @@ public abstract class AbstractCheckerBuilder {
         if(this.checkType == GAIN_TYPE) {
             //开启异常捕获
             JCudaDriver.setExceptionsEnabled(true);
+
+            //初始化设备
+            cuInit(0);
+            CUdevice device = new CUdevice();
+            cuDeviceGet(device, 0);
+            cuContext = new CUcontext();
+            cuCtxCreate(cuContext, 0, device);
 
            // initGPUMemory();
             contexts = fileReader(this.dataFilePath);
@@ -253,7 +265,7 @@ public abstract class AbstractCheckerBuilder {
                 } else if(checkType == GAIN_TYPE) {
                     checker = new GAINChecker(idNode.getTextContent(), root, this.patternMap, stMap,
                             genTruthValue, genLinks, updatePattern, //kernel function
-                            contexts); //GPU memory
+                            contexts, cuContext); //GPU memory
                 }
 
                 checkerList.add(checker);
