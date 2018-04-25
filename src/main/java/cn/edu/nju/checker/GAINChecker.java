@@ -46,6 +46,19 @@ public class GAINChecker extends Checker {
 
     private static final int threadPerBlock = 32;
 
+    private CUdeviceptr deviceTruthValue = new CUdeviceptr();
+
+    private CUdeviceptr deviceBranchSize = new CUdeviceptr();
+
+    private CUdeviceptr deviceLinks = new CUdeviceptr();
+
+    private CUdeviceptr deviceLinkResult = new CUdeviceptr();
+
+    private CUdeviceptr deviceLinkNum = new CUdeviceptr();
+
+
+
+
     public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap,
                        KernelLauncher genTruthValue, KernelLauncher genLinks, KernelLauncher updatePattern,
                        List<String> contexts) {
@@ -75,6 +88,14 @@ public class GAINChecker extends Checker {
 
 
     private void initGPURuleMemory() {
+
+        cuMemAlloc(this.deviceTruthValue, Config.MAX_CCT_SIZE * Sizeof.SHORT);
+        cuMemAlloc(this.deviceBranchSize, stSize * Sizeof.INT);
+        cuMemAlloc(this.deviceLinks, (1 + Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT * Config.MAX_CCT_SIZE);
+        cuMemAlloc(this.deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
+        cuMemAlloc(this.deviceLinkNum, Sizeof.INT);
+
+
         int [] parent = new int[stSize];
         int [] leftChild = new int[stSize];
         int [] rightChild = new int[stSize];
@@ -135,22 +156,7 @@ public class GAINChecker extends Checker {
         computeRTTBranchSize(this.stRoot);
         int cctSize = branchSize[stSize - 1];
 
-        CUdeviceptr deviceTruthValue = new CUdeviceptr();
-        cuMemAlloc(deviceTruthValue, cctSize * Sizeof.SHORT);
-
-        CUdeviceptr deviceBranchSize = new CUdeviceptr();
-        cuMemAlloc(deviceBranchSize, stSize * Sizeof.INT);
-        cuMemcpyHtoD(deviceBranchSize, Pointer.to(branchSize), stSize * Sizeof.INT);
-
-
-        CUdeviceptr deviceLinks = new CUdeviceptr();
-        cuMemAlloc(deviceLinks, (1 + Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT * cctSize);
-
-        CUdeviceptr deviceLinkResult = new CUdeviceptr();
-        cuMemAlloc(deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
-
-        CUdeviceptr deviceLinkNum = new CUdeviceptr();
-        cuMemAlloc(deviceLinkNum, Sizeof.INT);
+        cuMemcpyHtoD(this.deviceBranchSize, Pointer.to(branchSize), stSize * Sizeof.INT);
 
         for(int i = cunits.size() - 2; i >= 0; i--) {
             int ccopyNum = computeCCopyNum(cunits.get(i));
@@ -200,11 +206,7 @@ public class GAINChecker extends Checker {
             parseLink(hostLinkResult, hostLinkNum[0]);
         }
 
-        cuMemFree(deviceTruthValue);
-        cuMemFree(deviceBranchSize);
-        cuMemFree(deviceLinks);
-        cuMemFree(deviceLinkResult);
-        cuMemFree(deviceLinkNum);
+
 
 
         return value;
@@ -352,6 +354,11 @@ public class GAINChecker extends Checker {
 
     @Override
     public void reset() {
+        cuMemFree(this.deviceTruthValue);
+        cuMemFree(this.deviceBranchSize);
+        cuMemFree(this.deviceLinks);
+        cuMemFree(this.deviceLinkResult);
+        cuMemFree(this.deviceLinkNum);
         this.gpuContextMemory.free();
         super.reset();
     }
