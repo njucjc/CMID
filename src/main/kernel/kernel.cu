@@ -21,7 +21,7 @@ enum Type {
 #define MAX_PARAM_NUM 2
 #define MAX_PATTERN_SIZE 500
 #define MAX_LINK_SIZE 40
-//#define DEBUG
+#define DEBUG
 
 struct Context{
 	int id;
@@ -99,11 +99,8 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 							int *pattern_begin, int *pattern_length, int *pattern,
 							double *longitude, double *latitude, double *speed, // contexts
 							int *branch_size) {
-	if (parent[node] == -1) {
-		return branch_size[node] - 1;
-	}
 
-	int offset = 0;
+	int offset = branch_size[node];
 	int current_node = node;
 	int index = 0, tmp = tid;
 	while (parent[current_node] != -1) {
@@ -113,28 +110,26 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 			int branch_idx = tmp % len;
 			tmp /= len;
 
-			params[index].id = (pattern + pattern_idx[parent[current_node]] * MAX_PATTERN_SIZE)[(branch_idx + pattern_begin[parent[current_node]]) % MAX_PATTERN_SIZE];
+			params[index].id = (pattern + pattern_idx[parent[current_node]] * MAX_PATTERN_SIZE)[(branch_idx + pattern_begin[pattern_idx[parent[current_node]]]) % MAX_PATTERN_SIZE];
 			params[index].latitude = latitude[params[index].id];
 			params[index].longitude = longitude[params[index].id];
 			params[index].speed = speed[params[index].id];
 
-			offset += (branch_idx + 1) * branch_size[current_node];
+			offset += branch_idx * branch_size[current_node] ;
+//			printf("branch_idx = %d, branch_size = %d\n", branch_idx, branch_size[current_node]);
 			index++;
 		}
 		else if (type == Type::AND_NODE || type == Type::IMPLIES_NODE || type == Type::OR_NODE) {
 			if (right_child[parent[current_node]] == current_node) {
-				offset += 2 * branch_size[current_node];
-			}
-			else {
-				offset += branch_size[current_node];
+				offset += branch_size[left_child[parent[current_node]]];
 			}
 		}
 		else {
-			offset += branch_size[current_node];
+		    offset += 0;
 		}
 		current_node = parent[current_node];
 	}
-	return offset == 0 ? 0 : offset - 1;
+	return offset - 1;
 }
 
 
@@ -156,8 +151,9 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 											pattern_begin, pattern_length, pattern,
 											longitude, latitude, speed,
 											branch_size);
-
-//		printf("root offset = %d\n", ccopy_root_offset);
+//#ifdef DEBUG
+//		printf("root = %d, ccopynum = %d, offset = %d\n",cunit_end, ccopy_num, ccopy_root_offset);
+//#endif
 		for (int node = cunit_begin; node <= cunit_end; node++) {
 			int offset = ccopy_root_offset - (cunit_end - node);
 			int type = node_type[node];
@@ -252,6 +248,10 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 						 linkHelper(cur_links, &links[offset - (i * step + 1)]);
 					 }
 				 }
+//				 printf("length = %d\n", cur_links->length);
+//				 for(int i = 0; i < cur_links->length; i++) {
+//				    printf("%d %d\n", cur_links->link_pool[i][0], cur_links->link_pool[i][1]);
+//				 }
 			 }
 			 else if (type == Type::AND_NODE || type == Type::OR_NODE) {
 				 if (truth_values[offset - 1] == value) {
@@ -293,16 +293,15 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 				 }
 			 }
 
-			 if (last_cunit_root == cunit_end) {
-				 *link_num = links[branch_size[cunit_end]].length;
-
-				 for (int i = 0; i < *link_num; i++) {
-					 link_result[i] = links[branch_size[cunit_end]].link_pool[i][0];
-					 link_result[i + 1] = links[branch_size[cunit_end]].link_pool[i][1];
-				 }
-			 }
-
 		 }
+
+		 if (last_cunit_root == cunit_end) {
+         	*link_num = links[ccopy_root_offset].length;
+         		for (int i = 0; i < *link_num; i++) {
+         			link_result[i] = links[ccopy_root_offset].link_pool[i][0];
+         			link_result[i + 1] = links[ccopy_root_offset].link_pool[i][1];
+         		}
+          }
 	 }
 
   }
