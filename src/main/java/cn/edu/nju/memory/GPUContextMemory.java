@@ -19,6 +19,8 @@ public class GPUContextMemory {
 
     private CUdeviceptr speed = new CUdeviceptr();
 
+    private CUdeviceptr plateNumber = new CUdeviceptr();
+
 
     private static GPUContextMemory gpuContextMemory;
 
@@ -30,11 +32,14 @@ public class GPUContextMemory {
         double [] latitudeRaw = new double[size];
         double [] speedRaw = new double[size];
 
+        int [] plateNumberRaw = new int[size];
+
         for(int i = 0; i < size; i++) {
             Context c = parser.parseContext(i,contextStrList.get(i));
             longitudeRaw[i] = c.getLongitude();
             latitudeRaw[i] = c.getLatitude();
             speedRaw[i] = c.getSpeed();
+            plateNumberRaw[i] = Integer.parseInt(c.getPlateNumber());
         }
 
         cuMemAlloc(this.longitude, size * Sizeof.DOUBLE);
@@ -45,6 +50,9 @@ public class GPUContextMemory {
 
         cuMemAlloc(this.speed, size * Sizeof.DOUBLE);
         cuMemcpyHtoD(this.speed, Pointer.to(speedRaw), size * Sizeof.DOUBLE);
+
+        cuMemAlloc(this.plateNumber, size * Sizeof.INT);
+        cuMemcpyHtoD(this.plateNumber, Pointer.to(plateNumberRaw), size * Sizeof.INT);
 
     }
 
@@ -59,6 +67,7 @@ public class GPUContextMemory {
 //        cuMemFree(this.latitude);
 //        cuMemFree(this.longitude);
 //        cuMemFree(this.speed);
+//        cuMemFree(this.plateNumber);
     }
 
     public CUdeviceptr getLongitude() {
@@ -71,5 +80,9 @@ public class GPUContextMemory {
 
     public CUdeviceptr getSpeed() {
         return speed;
+    }
+
+    public CUdeviceptr getPlateNumber() {
+        return plateNumber;
     }
 }

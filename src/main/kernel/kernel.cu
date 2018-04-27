@@ -28,6 +28,7 @@ struct Context{
 	double latitude;
 	double longitude;
 	double speed;
+	int plateNumber;
 };
 
 struct Links {
@@ -37,7 +38,7 @@ struct Links {
 
 extern "C"
 __device__ bool same(Context c1, Context c2){
-	return (c1.id == c2.id);
+	return (c1.plateNumber == c2.plateNumber);
 }
 
 extern "C"
@@ -97,7 +98,7 @@ extern "C"
 __device__ int calc_offset(	int node, int tid, Context *params,
 							int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx,
 							int *pattern_begin, int *pattern_length, int *pattern,
-							double *longitude, double *latitude, double *speed, // contexts
+							double *longitude, double *latitude, double *speed, int *plateNumber, // contexts
 							int *branch_size) {
 
 	int offset = branch_size[node];
@@ -114,6 +115,7 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 			params[index].latitude = latitude[params[index].id];
 			params[index].longitude = longitude[params[index].id];
 			params[index].speed = speed[params[index].id];
+			params[index].plateNumber = plateNumber[params[index].id];
 
 			offset += branch_idx * branch_size[current_node] ;
 //			printf("branch_idx = %d, branch_size = %d\n", branch_idx, branch_size[current_node]);
@@ -138,7 +140,7 @@ extern "C"
 __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx, //constraint rule
 								int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
 								int *pattern_begin, int *pattern_length, int *pattern, //patterns
-								double *longitude, double *latitude, double *speed, // contexts
+								double *longitude, double *latitude, double *speed, int * plateNumber,// contexts
 								short *truth_values, int ccopy_num) {
 	
 	
@@ -149,7 +151,7 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 		int ccopy_root_offset = calc_offset(cunit_end, tid, params,
 											parent, left_child, right_child, node_type, pattern_idx,
 											pattern_begin, pattern_length, pattern,
-											longitude, latitude, speed,
+											longitude, latitude, speed, plateNumber,
 											branch_size);
 //#ifdef DEBUG
 //		printf("root = %d, ccopynum = %d, offset = %d\n",cunit_end, ccopy_num, ccopy_root_offset);
@@ -215,7 +217,7 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
  __global__ void gen_links(int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx, //constraint rule
 	 int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
 	 int *pattern_begin, int *pattern_length, int *pattern, //patterns
-	 double *longitude, double *latitude, double *speed, // contexts
+	 double *longitude, double *latitude, double *speed,int *plateNumber,// contexts
 	 short *truth_values,
 	 Links *links, int *link_result, int *link_num,
 	 int last_cunit_root,
@@ -232,7 +234,7 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 		 int ccopy_root_offset = calc_offset(cunit_end, tid, params,
 			 parent, left_child, right_child, node_type, pattern_idx,
 			 pattern_begin, pattern_length, pattern,
-			 longitude, latitude, speed,
+			 longitude, latitude, speed, plateNumber,
 			 branch_size);
 
 		 for (int node = cunit_begin; node <= cunit_end; node++) {
@@ -264,7 +266,7 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 			 }
 			 else if (type == Type::IMPLIES_NODE) {
 				 //!left || right
-				 bool left = truth_values[offset - (branch_size[right_child[node]] + 1)];
+/*				 bool left = truth_values[offset - (branch_size[right_child[node]] + 1)];
 				 bool right = truth_values[offset - 1];
 
 				 if ((!left && right) || left && !right) {
@@ -276,6 +278,14 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 				 }
 				 else if (left && right) {
 					 linkHelper(cur_links, &(links[offset - (branch_size[right_child[node]] + 1)]));
+				 }*/
+
+				 if(truth_values[offset]) {
+                    linkHelper(cur_links, &(links[offset - 1]));
+                    linkHelper(cur_links, &(links[offset - (branch_size[right_child[node]] + 1)]));
+				 }
+				 else {
+				    linkHelper(cur_links, &(links[offset - 1]));
 				 }
 			 }
 			 else if (type == Type::NOT_NODE) {

@@ -178,7 +178,7 @@ public class GAINChecker extends Checker {
                     .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
                             deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
                             gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                             gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(),
+                             gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(), gpuContextMemory.getPlateNumber(),
                             deviceTruthValue,
                             ccopyNum);
 
@@ -187,7 +187,7 @@ public class GAINChecker extends Checker {
                     .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
                             deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
                             gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                            gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(),
+                            gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(), gpuContextMemory.getPlateNumber(),
                             deviceTruthValue,
                             deviceLinks, deviceLinkResult, deviceLinkNum,
                             cunits.get(0),
