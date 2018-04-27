@@ -15,7 +15,6 @@ import jcuda.Pointer;
 import jcuda.Sizeof;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdeviceptr;
-import jcuda.driver.JCudaDriver;
 import jcuda.runtime.dim3;
 import jcuda.utils.KernelLauncher;
 
@@ -244,15 +243,11 @@ public class GAINChecker extends Checker {
             return false;
         }
         assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
-        cuCtxPushCurrent(cuContext);
-        updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
-                   .call(1, patternIdMap.get(patternId),
-                        gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                        context.getId());
-
-        cuCtxPopCurrent(cuContext);
+        updateGPUPattern(1, patternIdMap.get(patternId), context.getId());
         return true;
     }
+
+
 
     @Override
     public synchronized boolean delete(String patternId, String timestamp) {
@@ -260,14 +255,17 @@ public class GAINChecker extends Checker {
             return false;
         }
         assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
+        updateGPUPattern(0, patternIdMap.get(patternId), 0);
+        return true;
+    }
+
+    public synchronized void updateGPUPattern(int op, int patternIndex, int id) {
         cuCtxPushCurrent(cuContext);
         updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
-                .call(0,patternIdMap.get(patternId),
+                .call(op, patternIndex,
                         gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                        0);
-
+                        id);
         cuCtxPopCurrent(cuContext);
-        return true;
     }
 
     private int computeSTSize(STNode root) {

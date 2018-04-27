@@ -7,6 +7,7 @@ import jcuda.Sizeof;
 import jcuda.driver.CUdeviceptr;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GPUPatternMemory {
 
@@ -16,7 +17,7 @@ public class GPUPatternMemory {
 
     private CUdeviceptr contexts = new CUdeviceptr();
 
-    private Map<String, Integer> indexMap = new HashMap<>();
+    private Map<String, Integer> indexMap = new ConcurrentHashMap<>();
 
     private static GPUPatternMemory gpuPatternMemory;
 
