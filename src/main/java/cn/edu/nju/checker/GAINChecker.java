@@ -156,6 +156,7 @@ public class GAINChecker extends Checker {
     public synchronized boolean doCheck() {
        // assert false:"Something is being to do.";
         long start = System.nanoTime();
+        checkTimes++;
         computeRTTBranchSize(this.stRoot);
         int cctSize = branchSize[stSize - 1];
 
