@@ -17,7 +17,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         super(configFilePath);
     }
 
-    @Override
+//    @Override
     public void run() {
         List<String> contextList;
         if("time".equals(this.changeHandlerType.split("-")[1])) {

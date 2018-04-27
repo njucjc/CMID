@@ -73,7 +73,7 @@ public class Client implements Runnable{
             long diff = (endTime - startTime) - totalTime * 1000000;
             totalTime += sleepMillis;
 
-            assert diff >= 0 : "TIme error !";
+//            assert diff >= 0 : "Time error !";
 
             sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 0;
 

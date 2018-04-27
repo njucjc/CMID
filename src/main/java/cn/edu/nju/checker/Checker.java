@@ -217,7 +217,7 @@ public abstract class Checker {
     }
 
 
-    private synchronized boolean affected(String contextSetName) {
+    protected synchronized boolean affected(String contextSetName) {
         return stMap.containsKey(contextSetName);
     }
 
@@ -614,6 +614,10 @@ public abstract class Checker {
         for(String s : incDelSet) {
             System.out.println(s);
         }
+    }
+
+    public void reset() {
+
     }
 
 }

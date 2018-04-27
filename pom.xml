@@ -71,6 +71,13 @@
             <artifactId>jcudnn</artifactId>
             <version>0.8.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>jcudaUtils-0.0.4</groupId>
+            <artifactId>jcudaUtils-0.0.4</artifactId>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/jcudaUtils-0.0.4.jar</systemPath>
+        </dependency>
     </dependencies>
 
 

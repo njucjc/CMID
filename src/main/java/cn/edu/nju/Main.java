@@ -12,6 +12,8 @@ public class Main  {
             Thread checkerThread = new Thread(new CheckerBuilder(args[0]));
             checkerThread.setPriority(Thread.MAX_PRIORITY);
             checkerThread.start();
+//            CheckerBuilder builder = new CheckerBuilder(args[0]);
+//            builder.run();
         }
         else {
             System.out.println("Usage: java Main [configFilePath].");

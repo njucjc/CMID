@@ -8,6 +8,8 @@ public class STNode extends TreeNode implements NodeType{
 
     private String contextSetName;
 
+    private int nodeNum = 0;
+
     public STNode(String nodeName, int nodeType) {
         super(nodeName);
         this.nodeType = nodeType;
@@ -39,6 +41,14 @@ public class STNode extends TreeNode implements NodeType{
     @Override
     public int getNodeType() {
         return nodeType;
+    }
+
+    public int getNodeNum() {
+        return nodeNum;
+    }
+
+    public void setNodeNum(int nodeNum) {
+        this.nodeNum = nodeNum;
     }
 
     @Override
