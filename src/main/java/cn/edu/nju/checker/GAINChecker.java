@@ -159,6 +159,8 @@ public class GAINChecker extends Checker {
         computeRTTBranchSize(this.stRoot);
         int cctSize = branchSize[stSize - 1];
 
+        assert cctSize <= Config.MAX_CCT_SIZE:"CCT size overflow.";
+
         cuCtxPushCurrent(cuContext);
         cuMemcpyHtoD(this.deviceBranchSize, Pointer.to(branchSize), stSize * Sizeof.INT);
 
@@ -223,8 +225,8 @@ public class GAINChecker extends Checker {
         for(int i = 0; i < size; i++) {
             String link = "";
             for(int j = 0; j < Config.MAX_PARAN_NUM; j++) {
-                if(links[i + j] != -1) {
-                    link = link + "ctx_" + links[i + j] + " ";
+                if(links[i * Config.MAX_PARAN_NUM + j] != -1) {
+                    link = link + "ctx_" + links[i * Config.MAX_PARAN_NUM + j] + " ";
                 }
             }
             if(addIncLink(link)) {
@@ -240,6 +242,7 @@ public class GAINChecker extends Checker {
         if (!addContextToPattern(patternId, context)) {
             return false;
         }
+        assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
         cuCtxPushCurrent(cuContext);
         updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
                    .call(1, patternIdMap.get(patternId),
@@ -255,7 +258,7 @@ public class GAINChecker extends Checker {
         if(!deleteContextFromPattern(patternId, timestamp)) {
             return false;
         }
-
+        assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
         cuCtxPushCurrent(cuContext);
         updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
                 .call(0,patternIdMap.get(patternId),

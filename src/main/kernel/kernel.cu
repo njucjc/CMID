@@ -245,7 +245,7 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 				 int step = branch_size[left_child[node]];
 				 for (int i = 0; i < pattern_length[pattern_idx[node]]; i++) {
 					 if (truth_values[offset - (i * step + 1)] == value) {
-						 linkHelper(cur_links, &links[offset - (i * step + 1)]);
+						 linkHelper(cur_links, &(links[offset - (i * step + 1)]));
 					 }
 				 }
 //				 printf("length = %d\n", cur_links->length);
@@ -255,11 +255,11 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 			 }
 			 else if (type == Type::AND_NODE || type == Type::OR_NODE) {
 				 if (truth_values[offset - 1] == value) {
-					 linkHelper(cur_links, &links[offset - 1]);
+					 linkHelper(cur_links, &(links[offset - 1]));
 				 }
 
 				 if (truth_values[offset - (branch_size[right_child[node]] + 1)] == value) {
-					 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
+					 linkHelper(cur_links, &(links[offset - (branch_size[right_child[node]] + 1)]));
 				 }
 			 }
 			 else if (type == Type::IMPLIES_NODE) {
@@ -268,18 +268,18 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 				 bool right = truth_values[offset - 1];
 
 				 if ((!left && right) || left && !right) {
-					 linkHelper(cur_links, &links[offset - 1]);
-					 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
+					 linkHelper(cur_links, &(links[offset - 1]));
+					 linkHelper(cur_links, &(links[offset - (branch_size[right_child[node]] + 1)]));
 				 }
 				 else if(left && right){
-					 linkHelper(cur_links, &links[offset - 1]);
+					 linkHelper(cur_links, &(links[offset - 1]));
 				 }
 				 else if (left && right) {
-					 linkHelper(cur_links, &links[offset - (branch_size[right_child[node]] + 1)]);
+					 linkHelper(cur_links, &(links[offset - (branch_size[right_child[node]] + 1)]));
 				 }
 			 }
 			 else if (type == Type::NOT_NODE) {
-				 linkHelper(cur_links, &links[offset - 1]);
+				 linkHelper(cur_links, &(links[offset - 1]));
 			 }
 			 else if (type == Type::SAME
 				 || type == Type::SZ_SPD_CLOSE
@@ -295,11 +295,12 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 
 		 }
 
-		 if (last_cunit_root == cunit_end) {
+		 if (last_cunit_root == cunit_end && !truth_values[ccopy_root_offset]) {
          	*link_num = links[ccopy_root_offset].length;
          		for (int i = 0; i < *link_num; i++) {
-         			link_result[i] = links[ccopy_root_offset].link_pool[i][0];
-         			link_result[i + 1] = links[ccopy_root_offset].link_pool[i][1];
+                    for(int j = 0; j < MAX_PARAM_NUM; j++) {
+         			    link_result[MAX_PARAM_NUM * i + j] = links[ccopy_root_offset].link_pool[i][j];
+         			}
          		}
           }
 	 }
