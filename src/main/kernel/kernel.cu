@@ -111,7 +111,7 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 			int branch_idx = tmp % len;
 			tmp /= len;
 
-			params[index].id = (pattern + pattern_idx[parent[current_node]] * MAX_PATTERN_SIZE)[(branch_idx + pattern_begin[pattern_idx[parent[current_node]]]) % MAX_PATTERN_SIZE];
+			params[index].id = pattern[pattern_begin[pattern_idx[parent[current_node]]] + branch_idx];//(pattern + pattern_idx[parent[current_node]] * MAX_PATTERN_SIZE)[(branch_idx + pattern_begin[pattern_idx[parent[current_node]]]) % MAX_PATTERN_SIZE];
 			params[index].latitude = latitude[params[index].id];
 			params[index].longitude = longitude[params[index].id];
 			params[index].speed = speed[params[index].id];
@@ -317,7 +317,7 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 
   }
 
-extern "C"
+/*extern "C"
 __global__ void update_pattern(int op, int pattern_idx,
 							   int *pattern_begin, int *pattern_length, int *pattern,
 							   int id) {
@@ -331,4 +331,4 @@ __global__ void update_pattern(int op, int pattern_idx,
 
 	}
 
-}
+}*/

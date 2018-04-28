@@ -19,27 +19,24 @@ public class GPUPatternMemory {
 
     private Map<String, Integer> indexMap = new ConcurrentHashMap<>();
 
-    private static GPUPatternMemory gpuPatternMemory;
+    private Map<Integer, String> nameMap = new ConcurrentHashMap<>();
 
-    private GPUPatternMemory(Set<String> keySet) {
+    int patternNum;
+
+    public GPUPatternMemory(Set<String> keySet) {
         int index = 0;
         for(String key : keySet) {
             indexMap.put(key, index);
+            nameMap.put(index, key);
             index++;
         }
 
-        int num = keySet.size();
-        int [] hostData = new int[num];
-        for(int i = 0; i < num; i++) {
-            hostData[i] = 0;
-        }
-        cuMemAlloc(this.begin, num * Sizeof.INT);
-        cuMemcpyHtoD(this.begin, Pointer.to(hostData), num * Sizeof.INT);
+        this.patternNum = keySet.size();
+        cuMemAlloc(this.begin, patternNum * Sizeof.INT);
 
-        cuMemAlloc(this.length, num * Sizeof.INT);
-        cuMemcpyHtoD(this.length, Pointer.to(hostData), num * Sizeof.INT);
+        cuMemAlloc(this.length, patternNum * Sizeof.INT);
 
-        cuMemAlloc(this.contexts, num * Config.MAX_PATTERN_SIZE * Sizeof.INT);
+        cuMemAlloc(this.contexts, patternNum * Config.MAX_PATTERN_SIZE * Sizeof.INT);
     }
 
     public CUdeviceptr getBegin() {
@@ -58,17 +55,22 @@ public class GPUPatternMemory {
         return this.indexMap;
     }
 
-    public synchronized void free() {
-//        cuMemFree(this.begin);
-//        cuMemFree(this.length);
-//        cuMemFree(this.contexts);
+    public Map<Integer, String> getNameMap() {
+        return nameMap;
     }
 
-    public static synchronized GPUPatternMemory getInstance(Set<String> keySet) {
-        if(gpuPatternMemory == null) {
-            gpuPatternMemory = new GPUPatternMemory(keySet);
-        }
-        return gpuPatternMemory;
+    public void update(int [] begin, int [] length, int [] contexts) {
+        cuMemcpyHtoD(this.begin, Pointer.to(begin), this.patternNum * Sizeof.INT);
+        cuMemcpyHtoD(this.length, Pointer.to(length),patternNum * Sizeof.INT );
+
+        assert contexts.length <= patternNum * Config.MAX_PATTERN_SIZE:"size overflow.";
+        cuMemcpyHtoD(this.contexts, Pointer.to(contexts), contexts.length * Sizeof.INT);
+    }
+
+    public synchronized void free() {
+        cuMemFree(this.begin);
+        cuMemFree(this.length);
+        cuMemFree(this.contexts);
     }
 
 }

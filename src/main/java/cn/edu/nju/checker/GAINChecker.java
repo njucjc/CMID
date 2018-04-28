@@ -36,8 +36,6 @@ public class GAINChecker extends Checker {
 
     private KernelLauncher genLinks;
 
-    private KernelLauncher updatePattern;
-
     private GPUContextMemory gpuContextMemory;
 
     private GPUPatternMemory gpuPatternMemory;
@@ -60,7 +58,7 @@ public class GAINChecker extends Checker {
 
 
     public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap,
-                       KernelLauncher genTruthValue, KernelLauncher genLinks, KernelLauncher updatePattern,
+                       String kernelFilePath,
                        List<String> contexts, CUcontext cuContext) {
         super(name, stRoot, patternMap, stMap);
         this.stSize = computeSTSize(stRoot);
@@ -75,18 +73,43 @@ public class GAINChecker extends Checker {
         cunits.add(-1);
         //将语法树信息拷贝到GPU
 
-        this.genTruthValue = genTruthValue;
-        this.genLinks = genLinks;
-        this.updatePattern = updatePattern;
+        this.genTruthValue = KernelLauncher.load(kernelFilePath, "gen_truth_value");
+        this.genLinks = KernelLauncher.load(kernelFilePath, "gen_links");
 
         this.gpuContextMemory = GPUContextMemory.getInstance(contexts);
-        this.gpuPatternMemory = GPUPatternMemory.getInstance(patternMap.keySet());
+        this.gpuPatternMemory = new GPUPatternMemory(stMap.keySet());
 
         this.patternIdMap = gpuPatternMemory.getIndexMap();
+
         initGPURuleMemory();
         this.cuContext = cuContext;
     }
 
+    private void updateGPUPatternMemory() {
+        int size = 0;
+        for(String key : stMap.keySet()) {
+            size += patternMap.get(key).getContextList().size();
+        }
+
+
+
+        Map<Integer, String> nameMap = gpuPatternMemory.getNameMap();
+        int curBegin = 0;
+        int [] contexts = new int[size];
+        int [] begin = new int[nameMap.keySet().size()];
+        int [] length = new int[nameMap.keySet().size()];
+        for(int i = 0; i < nameMap.keySet().size();i++) {
+            List<Context> contextList = patternMap.get(nameMap.get(i)).getContextList();
+            length[i] = contextList.size();
+            begin[i] = curBegin;
+            for(int j = curBegin; j < curBegin + length[i]; j++) {
+                contexts[j] = contextList.get(j - curBegin).getId();
+            }
+            curBegin = curBegin + length[i];
+        }
+
+        gpuPatternMemory.update(begin, length, contexts);
+    }
 
     private void initGPURuleMemory() {
 
@@ -162,6 +185,8 @@ public class GAINChecker extends Checker {
         assert cctSize <= Config.MAX_CCT_SIZE:"CCT size overflow.";
 
         cuCtxPushCurrent(cuContext);
+
+        updateGPUPatternMemory();
         cuMemcpyHtoD(this.deviceBranchSize, Pointer.to(branchSize), stSize * Sizeof.INT);
 
         for(int i = cunits.size() - 2; i >= 0; i--) {
@@ -243,7 +268,6 @@ public class GAINChecker extends Checker {
             return false;
         }
         assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
-        updateGPUPattern(1, patternIdMap.get(patternId), context.getId());
         return true;
     }
 
@@ -255,18 +279,9 @@ public class GAINChecker extends Checker {
             return false;
         }
         assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
-        updateGPUPattern(0, patternIdMap.get(patternId), 0);
         return true;
     }
 
-    public synchronized void updateGPUPattern(int op, int patternIndex, int id) {
-        cuCtxPushCurrent(cuContext);
-        updatePattern.setup(new dim3(1,1,1), new dim3(1,1,1))
-                .call(op, patternIndex,
-                        gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                        id);
-        cuCtxPopCurrent(cuContext);
-    }
 
     private int computeSTSize(STNode root) {
         if(root == null) {
@@ -369,7 +384,7 @@ public class GAINChecker extends Checker {
         cuMemFree(this.deviceLinks);
         cuMemFree(this.deviceLinkResult);
         cuMemFree(this.deviceLinkNum);
-        this.gpuContextMemory.free();
+        this.gpuPatternMemory.free();
         super.reset();
     }
 }
