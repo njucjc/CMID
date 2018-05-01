@@ -66,11 +66,7 @@ public abstract class AbstractCheckerBuilder {
 
     protected String changeHandlerType;
 
-    private KernelLauncher genTruthValue;
-
-    private KernelLauncher genLinks;
-
-    private KernelLauncher updatePattern;
+    private String kernelFilePath;
 
     private CUcontext cuContext;
 
@@ -142,7 +138,7 @@ public abstract class AbstractCheckerBuilder {
 
            // initGPUMemory();
             contexts = fileReader(this.dataFilePath);
-            loadKernelFunction(cudaSourceFilePath);
+            compileKernelFunction(cudaSourceFilePath);
         }
 
         //rule
@@ -264,7 +260,7 @@ public abstract class AbstractCheckerBuilder {
                     checker = new ConChecker(idNode.getTextContent(), root, this.patternMap, stMap, taskNum, checkExecutorService);
                 } else if(checkType == GAIN_TYPE) {
                     checker = new GAINChecker(idNode.getTextContent(), root, this.patternMap, stMap,
-                            genTruthValue, genLinks, updatePattern, //kernel function
+                            kernelFilePath, //kernel function
                             contexts, cuContext); //GPU memory
                 }
 
@@ -342,23 +338,19 @@ public abstract class AbstractCheckerBuilder {
         }
     }
 
-    private void loadKernelFunction(String cudaSourceFilePath) {
-        String ptxFile = null;
+    private void compileKernelFunction(String cudaSourceFilePath) {
+
         try {
-            ptxFile = PTXFileHelper.preparePtxFile(cudaSourceFilePath);
+            this.kernelFilePath = PTXFileHelper.preparePtxFile(cudaSourceFilePath);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-        this.genTruthValue = KernelLauncher.load(ptxFile ,"gen_truth_value");
-        this.genLinks = KernelLauncher.load(ptxFile , "gen_links");
-        this.updatePattern = KernelLauncher.load(ptxFile , "update_pattern");
     }
 
     public void shutdown() {
         checkExecutorService.shutdown();
         if(checkType == GAIN_TYPE) {
-            GPUPatternMemory.getInstance(patternMap.keySet()).free();
             GPUContextMemory.getInstance(contexts).free();
             for (Checker checker : checkerList) {
                 checker.reset();

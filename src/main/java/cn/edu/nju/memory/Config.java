@@ -9,6 +9,6 @@ public interface Config {
 
     public static final int MAX_PARAN_NUM = 2;
 
-    public static final int MAX_LINK_SIZE = 40;
+    public static final int MAX_LINK_SIZE = 20;
 
 }

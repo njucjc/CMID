@@ -20,7 +20,7 @@ enum Type {
 
 #define MAX_PARAM_NUM 2
 #define MAX_PATTERN_SIZE 500
-#define MAX_LINK_SIZE 40
+#define MAX_LINK_SIZE 20
 #define DEBUG
 
 struct Context{
@@ -77,6 +77,9 @@ __device__ void linkHelper(Links *left, Links *right) {
 	int left_len = left->length;
 	int right_len = right->length;
 
+    if(left_len + right_len > MAX_LINK_SIZE) {
+        return ;
+    }
 
 	for (int i = 0; i < right_len; i++) {
 		int j;
@@ -111,7 +114,7 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 			int branch_idx = tmp % len;
 			tmp /= len;
 
-			params[index].id = (pattern + pattern_idx[parent[current_node]] * MAX_PATTERN_SIZE)[(branch_idx + pattern_begin[pattern_idx[parent[current_node]]]) % MAX_PATTERN_SIZE];
+			params[index].id = pattern[pattern_begin[pattern_idx[parent[current_node]]] + branch_idx];//(pattern + pattern_idx[parent[current_node]] * MAX_PATTERN_SIZE)[(branch_idx + pattern_begin[pattern_idx[parent[current_node]]]) % MAX_PATTERN_SIZE];
 			params[index].latitude = latitude[params[index].id];
 			params[index].longitude = longitude[params[index].id];
 			params[index].speed = speed[params[index].id];
@@ -317,7 +320,7 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 
   }
 
-extern "C"
+/*extern "C"
 __global__ void update_pattern(int op, int pattern_idx,
 							   int *pattern_begin, int *pattern_length, int *pattern,
 							   int id) {
@@ -331,4 +334,4 @@ __global__ void update_pattern(int op, int pattern_idx,
 
 	}
 
-}
+}*/
