@@ -32,9 +32,11 @@ public class GAINChecker extends Checker {
 
     private GPURuleMemory gpuRuleMemory;
 
-    private KernelLauncher genTruthValue;
+    //private KernelLauncher genTruthValue;
 
-    private KernelLauncher genLinks;
+   // private KernelLauncher genLinks;
+
+    private  KernelLauncher evaluation;
 
     private GPUContextMemory gpuContextMemory;
 
@@ -73,8 +75,9 @@ public class GAINChecker extends Checker {
         cunits.add(-1);
         //将语法树信息拷贝到GPU
 
-        this.genTruthValue = KernelLauncher.load(kernelFilePath, "gen_truth_value");
-        this.genLinks = KernelLauncher.load(kernelFilePath, "gen_links");
+        //this.genTruthValue = KernelLauncher.load(kernelFilePath, "gen_truth_value");
+        //this.genLinks = KernelLauncher.load(kernelFilePath, "gen_links");
+        this.evaluation = KernelLauncher.load(kernelFilePath, "evaluation");
 
         this.gpuContextMemory = GPUContextMemory.getInstance(contexts);
         this.gpuPatternMemory = new GPUPatternMemory(stMap.keySet());
@@ -199,16 +202,8 @@ public class GAINChecker extends Checker {
             dim3 gridSize = new dim3(threadPerBlock, 1, 1);
             dim3 blockSize = new dim3((ccopyNum + threadPerBlock - 1) / threadPerBlock,1, 1);
 
-            genTruthValue.setup(gridSize, blockSize)
-                    .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
-                            deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
-                            gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                             gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(), gpuContextMemory.getPlateNumber(),
-                            deviceTruthValue,
-                            ccopyNum);
-
-
-            genLinks.setup(gridSize, blockSize)
+            //gen truth value and links
+            evaluation.setup(gridSize, blockSize)
                     .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
                             deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
                             gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),

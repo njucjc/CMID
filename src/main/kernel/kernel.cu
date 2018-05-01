@@ -320,18 +320,187 @@ __global__ void gen_truth_value(int *parent, int *left_child, int *right_child, 
 
   }
 
-/*extern "C"
-__global__ void update_pattern(int op, int pattern_idx,
-							   int *pattern_begin, int *pattern_length, int *pattern,
-							   int id) {
-	if (op == 0) { //-
-		pattern_begin[pattern_idx] = (pattern_begin[pattern_idx] + 1) % MAX_PATTERN_SIZE;
-		pattern_length[pattern_idx]--;
-	}
-	else if (op == 1) {//+
-		(pattern + pattern_idx * MAX_PATTERN_SIZE)[(pattern_begin[pattern_idx] + pattern_length[pattern_idx]) % MAX_PATTERN_SIZE] = id;
-		pattern_length[pattern_idx]++;
+extern "C"
+__global__ void evaluation(int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx, //constraint rule
+                          	 int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
+                          	 int *pattern_begin, int *pattern_length, int *pattern, //patterns
+                          	 double *longitude, double *latitude, double *speed,int *plateNumber,// contexts
+                          	 short *truth_values,
+                          	 Links *links, int *link_result, int *link_num,
+                          	 int last_cunit_root,
+                          	 int ccopy_num) {
+	
+	
+	int tid = threadIdx.x + blockDim.x * blockIdx.x;
+	if(tid < ccopy_num) {
 
+		Context params[MAX_PARAM_NUM];
+		for (int i = 0; i < MAX_PARAM_NUM; i++) {
+            params[i].id = -1;
+         }
+		int ccopy_root_offset = calc_offset(cunit_end, tid, params,
+											parent, left_child, right_child, node_type, pattern_idx,
+											pattern_begin, pattern_length, pattern,
+											longitude, latitude, speed, plateNumber,
+											branch_size);
+
+//#ifdef DEBUG
+//		printf("root = %d, ccopynum = %d, offset = %d\n",cunit_end, ccopy_num, ccopy_root_offset);
+//#endif
+		for (int node = cunit_begin; node <= cunit_end; node++) {
+			int offset = ccopy_root_offset - (cunit_end - node);
+			int type = node_type[node];
+			bool value;
+
+			Links* cur_links = &links[offset];
+			cur_links->length = 0;
+
+			switch(type) {
+				case Type::UNIVERSAL_NODE: {
+					int step = branch_size[left_child[node]];
+					value = true;
+					bool first = true;
+					for (int i = 0; i < pattern_length[pattern_idx[node]]; i++) {
+						value = value && truth_values[offset - (i * step + 1)];
+						if(!truth_values[offset - (i * step + 1)]) {
+							if(first) {
+								cur_links->length = 0;
+								first = false;
+							}
+							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
+						}
+						else if(value) {
+							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
+						}
+					}
+
+					break;
+				}
+
+				case Type::EXISTENTIAL_NODE: {
+					int step = branch_size[left_child[node]];
+					value = false;
+					bool first = true;
+					for (int i = 0; i < pattern_length[pattern_idx[node]]; i++) {
+						value = value || truth_values[offset - (i * step + 1)];
+						if(truth_values[offset - (i * step + 1)]) {
+							if(first) {
+								cur_links->length = 0;
+								first = false;
+							}
+							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
+						}
+						else if(!value) {
+							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
+						}
+					}
+					break;
+				}
+
+				case Type::AND_NODE: {
+					//right && left
+					value = truth_values[offset - 1] && truth_values[offset - (branch_size[right_child[node]] + 1)];
+
+					if (truth_values[offset - 1] == value) {
+						linkHelper(cur_links, &(links[offset - 1]));
+					}
+
+					if (truth_values[offset - (branch_size[right_child[node]] + 1)] == value) {
+						linkHelper(cur_links, &(links[offset - (branch_size[right_child[node]] + 1)]));
+					}
+
+					break;
+				}
+				case Type::OR_NODE: {
+					//right || left
+					value = truth_values[offset - 1] || truth_values[offset - (branch_size[right_child[node]] + 1)];
+
+					if (truth_values[offset - 1] == value) {
+						linkHelper(cur_links, &(links[offset - 1]));
+					}
+
+					if (truth_values[offset - (branch_size[right_child[node]] + 1)] == value) {
+						linkHelper(cur_links, &(links[offset - (branch_size[right_child[node]] + 1)]));
+					}
+
+					break;
+				}
+
+				case Type::IMPLIES_NODE: {
+					//!left || right
+					value = !truth_values[offset - (branch_size[right_child[node]] + 1)] || truth_values[offset - 1];
+
+					if(value) {
+	                   linkHelper(cur_links, &(links[offset - 1]));
+	                   linkHelper(cur_links, &(links[offset - (branch_size[right_child[node]] + 1)]));
+					}
+					else {
+					   linkHelper(cur_links, &(links[offset - 1]));
+					}
+
+					break;
+				}
+
+				case Type::NOT_NODE: {
+					value = !truth_values[offset - 1];
+					linkHelper(cur_links, &(links[offset - 1]));
+					break;
+				}
+
+				default : { //BFUNC
+					switch(type) {
+						case Type::SAME: {
+							value = same(params[0], params[1]);
+							break;
+						}
+
+						case Type::SZ_SPD_CLOSE: {
+							value = sz_spd_close(params[0], params[1]);
+							break;
+						}
+
+						case Type::SZ_LOC_CLOSE: {
+							value = sz_loc_close(params[0], params[1]);
+							break;
+						}
+
+						case Type::SZ_LOC_DIST: {
+							value = sz_loc_dist(params[0], params[1]);
+							break;
+						}
+
+						case Type::SZ_LOC_DIST_NEQ: {
+							value = sz_loc_dist_neq(params[0], params[1]);
+							break;
+						}
+
+						case Type::SZ_LOC_RANGE: {
+							value = sz_loc_range(params[0]);
+							break;
+						}
+					}
+
+					cur_links->length = 1;
+					for (int i = 0; i < MAX_PARAM_NUM; i++) {
+						cur_links->link_pool[0][i] = params[i].id;
+					}
+					break;
+				}
+
+				
+			}
+
+			truth_values[offset] = value;
+		}
+
+		if (last_cunit_root == cunit_end && !truth_values[ccopy_root_offset]) {
+         	*link_num = links[ccopy_root_offset].length;
+         	for (int i = 0; i < *link_num; i++) {
+                for(int j = 0; j < MAX_PARAM_NUM; j++) {
+         			link_result[MAX_PARAM_NUM * i + j] = links[ccopy_root_offset].link_pool[i][j];
+         		}
+         	}
+        }
 	}
 
-}*/
+ }
