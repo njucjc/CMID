@@ -20,7 +20,7 @@ enum Type {
 
 #define MAX_PARAM_NUM 2
 #define MAX_PATTERN_SIZE 500
-#define MAX_LINK_SIZE 40
+#define MAX_LINK_SIZE 20
 #define DEBUG
 
 struct Context{
@@ -77,6 +77,9 @@ __device__ void linkHelper(Links *left, Links *right) {
 	int left_len = left->length;
 	int right_len = right->length;
 
+    if(left_len + right_len > MAX_LINK_SIZE) {
+        return ;
+    }
 
 	for (int i = 0; i < right_len; i++) {
 		int j;
