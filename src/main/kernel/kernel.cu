@@ -82,6 +82,7 @@ __device__ void linkHelper(Links *left, Links *right) {
     }
 
 	for (int i = 0; i < right_len; i++) {
+	/*
 		int j;
 		for (j = 0; j < left_len; j++) {
 			if (right->link_pool[i][0] == left->link_pool[j][0] && right->link_pool[i][1] == left->link_pool[j][1]) {
@@ -92,8 +93,10 @@ __device__ void linkHelper(Links *left, Links *right) {
 			left->link_pool[left->length][0] = right->link_pool[i][0];
 			left->link_pool[left->length][1] = right->link_pool[i][1];
 			left->length = (left->length + 1) % MAX_LINK_SIZE;
-		}
-
+		}*/
+        left->link_pool[left->length][0] = right->link_pool[i][0];
+        left->link_pool[left->length][1] = right->link_pool[i][1];
+        left->length = (left->length + 1) % MAX_LINK_SIZE;
 	}
 }
 
