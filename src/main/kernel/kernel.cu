@@ -20,7 +20,7 @@ enum Type {
 
 #define MAX_PARAM_NUM 2
 #define MAX_PATTERN_SIZE 500
-#define MAX_LINK_SIZE 20
+#define MAX_LINK_SIZE 10
 #define DEBUG
 
 struct Context{
@@ -325,7 +325,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
                           	 int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
                           	 int *pattern_begin, int *pattern_length, int *pattern, //patterns
                           	 double *longitude, double *latitude, double *speed,int *plateNumber,// contexts
-                          	 short *truth_values,
+                          	 short *truth_values, short *truth_value_result,
                           	 Links *links, int *link_result, int *link_num,
                           	 int last_cunit_root,
                           	 int ccopy_num) {
@@ -493,12 +493,15 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 			truth_values[offset] = value;
 		}
 
-		if (last_cunit_root == cunit_end && !truth_values[ccopy_root_offset]) {
-         	*link_num = links[ccopy_root_offset].length;
-         	for (int i = 0; i < *link_num; i++) {
-                for(int j = 0; j < MAX_PARAM_NUM; j++) {
-         			link_result[MAX_PARAM_NUM * i + j] = links[ccopy_root_offset].link_pool[i][j];
-         		}
+		if (last_cunit_root == cunit_end ) {
+		    *truth_value_result = truth_values[ccopy_root_offset];
+		    if(!truth_values[ccopy_root_offset]) {
+                *link_num = links[ccopy_root_offset].length;
+                for (int i = 0; i < *link_num; i++) {
+                    for(int j = 0; j < MAX_PARAM_NUM; j++) {
+                        link_result[MAX_PARAM_NUM * i + j] = links[ccopy_root_offset].link_pool[i][j];
+                    }
+                }
          	}
         }
 	}

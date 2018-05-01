@@ -48,6 +48,8 @@ public class GAINChecker extends Checker {
 
     private CUdeviceptr deviceTruthValue = new CUdeviceptr();
 
+    private CUdeviceptr deviceTruthValueResult = new CUdeviceptr();
+
     private CUdeviceptr deviceBranchSize = new CUdeviceptr();
 
     private CUdeviceptr deviceLinks = new CUdeviceptr();
@@ -117,6 +119,7 @@ public class GAINChecker extends Checker {
     private void initGPURuleMemory() {
 
         cuMemAlloc(this.deviceTruthValue, Config.MAX_CCT_SIZE * Sizeof.SHORT);
+        cuMemAlloc(this.deviceTruthValueResult, Sizeof.SHORT);
         cuMemAlloc(this.deviceBranchSize, stSize * Sizeof.INT);
         cuMemAlloc(this.deviceLinks, (1 + Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT * Config.MAX_CCT_SIZE);
         cuMemAlloc(this.deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
@@ -208,24 +211,24 @@ public class GAINChecker extends Checker {
                             deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
                             gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
                             gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(), gpuContextMemory.getPlateNumber(),
-                            deviceTruthValue,
+                            deviceTruthValue, deviceTruthValueResult,
                             deviceLinks, deviceLinkResult, deviceLinkNum,
                             cunits.get(0),
                             ccopyNum);
 
         }
 
-        short [] hostTruthValue = new short[cctSize];
-        cuMemcpyDtoH(Pointer.to(hostTruthValue), deviceTruthValue, cctSize * Sizeof.SHORT);
+        short [] hostTruthValueResult = new short[1];
+        cuMemcpyDtoH(Pointer.to(hostTruthValueResult), deviceTruthValueResult, Sizeof.SHORT);
 
-        boolean value = hostTruthValue[cctSize - 1] == 1;
+        boolean value = hostTruthValueResult[0] == 1;
 //        System.out.println(Arrays.toString(hostTruthValue));
-
-        int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
-        cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
 
         int [] hostLinkNum = new int[1];
         cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
+
+        int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
+        cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * hostLinkNum[0]) * Sizeof.INT);
 
         if(!value) {
  //           System.out.println(Arrays.toString(hostLinkResult));
@@ -375,6 +378,7 @@ public class GAINChecker extends Checker {
     @Override
     public void reset() {
         cuMemFree(this.deviceTruthValue);
+        cuMemFree(this.deviceTruthValueResult);
         cuMemFree(this.deviceBranchSize);
         cuMemFree(this.deviceLinks);
         cuMemFree(this.deviceLinkResult);
