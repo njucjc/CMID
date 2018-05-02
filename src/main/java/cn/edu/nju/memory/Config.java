@@ -5,10 +5,10 @@ public interface Config {
 
     public static final int MAX_CONTEXT_SIZE = 1600000;
 
-    public static final int MAX_CCT_SIZE = 100000;
+    public static final int MAX_CCT_SIZE = 250000;
 
     public static final int MAX_PARAN_NUM = 2;
 
-    public static final int MAX_LINK_SIZE = 10;
+    public static final int MAX_LINK_SIZE = 20;
 
 }

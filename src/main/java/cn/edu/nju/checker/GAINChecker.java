@@ -188,7 +188,7 @@ public class GAINChecker extends Checker {
         computeRTTBranchSize(this.stRoot);
         int cctSize = branchSize[stSize - 1];
 
-        assert cctSize <= Config.MAX_CCT_SIZE:"CCT size overflow.";
+        assert cctSize <= Config.MAX_CCT_SIZE:"CCT size overflow: " + cctSize;
 
         cuCtxPushCurrent(cuContext);
 

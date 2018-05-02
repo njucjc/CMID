@@ -20,7 +20,7 @@ enum Type {
 
 #define MAX_PARAM_NUM 2
 #define MAX_PATTERN_SIZE 500
-#define MAX_LINK_SIZE 10
+#define MAX_LINK_SIZE 20
 #define DEBUG
 
 struct Context{
