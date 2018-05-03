@@ -102,6 +102,11 @@ public class ConChecker extends EccChecker {
     }
 
     @Override
+    protected synchronized void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
+        clearCCTMap();
+    }
+
+    @Override
     public synchronized boolean doCheck() {
         boolean value = super.doCheck();
         findSplittingNode = false;

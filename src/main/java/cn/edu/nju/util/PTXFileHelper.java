@@ -39,7 +39,7 @@ public class PTXFileHelper {
         }
         String modelString = "-m"+System.getProperty("sun.arch.data.model");
         String command =
-                "nvcc " + modelString + " -ptx "+
+                "nvcc " + modelString +  " -O3" +" -ptx "+
                         cuFile.getPath()+" -o "+ptxFileName;
 
         System.out.println("Executing\n"+command);

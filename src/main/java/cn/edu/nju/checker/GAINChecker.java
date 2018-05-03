@@ -224,14 +224,14 @@ public class GAINChecker extends Checker {
         boolean value = hostTruthValueResult[0] == 1;
 //        System.out.println(Arrays.toString(hostTruthValue));
 
-        int [] hostLinkNum = new int[1];
-        cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
-
-        int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
-        cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * hostLinkNum[0]) * Sizeof.INT);
 
         if(!value) {
- //           System.out.println(Arrays.toString(hostLinkResult));
+            int [] hostLinkNum = new int[1];
+            cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
+
+            int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
+            cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * hostLinkNum[0]) * Sizeof.INT);
+            //           System.out.println(Arrays.toString(hostLinkResult));
             parseLink(hostLinkResult, hostLinkNum[0]);
         }
 
