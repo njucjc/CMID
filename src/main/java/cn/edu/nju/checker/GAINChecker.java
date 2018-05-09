@@ -32,9 +32,11 @@ public class GAINChecker extends Checker {
 
     private GPURuleMemory gpuRuleMemory;
 
-    private KernelLauncher genTruthValue;
+    //private KernelLauncher genTruthValue;
 
-    private KernelLauncher genLinks;
+   // private KernelLauncher genLinks;
+
+    private  KernelLauncher evaluation;
 
     private GPUContextMemory gpuContextMemory;
 
@@ -45,6 +47,8 @@ public class GAINChecker extends Checker {
     private static final int threadPerBlock = 32;
 
     private CUdeviceptr deviceTruthValue = new CUdeviceptr();
+
+    private CUdeviceptr deviceTruthValueResult = new CUdeviceptr();
 
     private CUdeviceptr deviceBranchSize = new CUdeviceptr();
 
@@ -73,8 +77,9 @@ public class GAINChecker extends Checker {
         cunits.add(-1);
         //将语法树信息拷贝到GPU
 
-        this.genTruthValue = KernelLauncher.load(kernelFilePath, "gen_truth_value");
-        this.genLinks = KernelLauncher.load(kernelFilePath, "gen_links");
+        //this.genTruthValue = KernelLauncher.load(kernelFilePath, "gen_truth_value");
+        //this.genLinks = KernelLauncher.load(kernelFilePath, "gen_links");
+        this.evaluation = KernelLauncher.load(kernelFilePath, "evaluation");
 
         this.gpuContextMemory = GPUContextMemory.getInstance(contexts);
         this.gpuPatternMemory = new GPUPatternMemory(stMap.keySet());
@@ -114,6 +119,7 @@ public class GAINChecker extends Checker {
     private void initGPURuleMemory() {
 
         cuMemAlloc(this.deviceTruthValue, Config.MAX_CCT_SIZE * Sizeof.SHORT);
+        cuMemAlloc(this.deviceTruthValueResult, Sizeof.SHORT);
         cuMemAlloc(this.deviceBranchSize, stSize * Sizeof.INT);
         cuMemAlloc(this.deviceLinks, (1 + Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT * Config.MAX_CCT_SIZE);
         cuMemAlloc(this.deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
@@ -182,7 +188,7 @@ public class GAINChecker extends Checker {
         computeRTTBranchSize(this.stRoot);
         int cctSize = branchSize[stSize - 1];
 
-        assert cctSize <= Config.MAX_CCT_SIZE:"CCT size overflow.";
+        assert cctSize <= Config.MAX_CCT_SIZE:"CCT size overflow: " + cctSize;
 
         cuCtxPushCurrent(cuContext);
 
@@ -199,41 +205,33 @@ public class GAINChecker extends Checker {
             dim3 gridSize = new dim3(threadPerBlock, 1, 1);
             dim3 blockSize = new dim3((ccopyNum + threadPerBlock - 1) / threadPerBlock,1, 1);
 
-            genTruthValue.setup(gridSize, blockSize)
-                    .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
-                            deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
-                            gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                             gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(), gpuContextMemory.getPlateNumber(),
-                            deviceTruthValue,
-                            ccopyNum);
-
-
-            genLinks.setup(gridSize, blockSize)
+            //gen truth value and links
+            evaluation.setup(gridSize, blockSize)
                     .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
                             deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
                             gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
                             gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(), gpuContextMemory.getPlateNumber(),
-                            deviceTruthValue,
+                            deviceTruthValue, deviceTruthValueResult,
                             deviceLinks, deviceLinkResult, deviceLinkNum,
                             cunits.get(0),
                             ccopyNum);
 
         }
 
-        short [] hostTruthValue = new short[cctSize];
-        cuMemcpyDtoH(Pointer.to(hostTruthValue), deviceTruthValue, cctSize * Sizeof.SHORT);
+        short [] hostTruthValueResult = new short[1];
+        cuMemcpyDtoH(Pointer.to(hostTruthValueResult), deviceTruthValueResult, Sizeof.SHORT);
 
-        boolean value = hostTruthValue[cctSize - 1] == 1;
+        boolean value = hostTruthValueResult[0] == 1;
 //        System.out.println(Arrays.toString(hostTruthValue));
 
-        int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
-        cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
-
-        int [] hostLinkNum = new int[1];
-        cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
 
         if(!value) {
- //           System.out.println(Arrays.toString(hostLinkResult));
+            int [] hostLinkNum = new int[1];
+            cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
+
+            int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
+            cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * hostLinkNum[0]) * Sizeof.INT);
+            //           System.out.println(Arrays.toString(hostLinkResult));
             parseLink(hostLinkResult, hostLinkNum[0]);
         }
 
@@ -380,6 +378,7 @@ public class GAINChecker extends Checker {
     @Override
     public void reset() {
         cuMemFree(this.deviceTruthValue);
+        cuMemFree(this.deviceTruthValueResult);
         cuMemFree(this.deviceBranchSize);
         cuMemFree(this.deviceLinks);
         cuMemFree(this.deviceLinkResult);
