@@ -9,6 +9,8 @@ import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.BatchScheduler;
 import cn.edu.nju.scheduler.GEASchduler;
 import cn.edu.nju.scheduler.Scheduler;
+import cn.edu.nju.switcher.SimpleSwitcher;
+import cn.edu.nju.switcher.Switcher;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.PTXFileHelper;
 import jcuda.driver.CUcontext;
@@ -35,12 +37,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import static jcuda.driver.JCudaDriver.*;
 
-public abstract class AbstractCheckerBuilder {
+public abstract class AbstractCheckerBuilder implements CheckerType{
 
-    public static final int ECC_TYPE = 0;
-    public static final int PCC_TYPE = 1; /*每一条rule的checker*/
-    public static final int CON_TYPE = 2;
-    public static final int GAIN_TYPE = 3;
+
 
     protected List<Checker> checkerList;
 
@@ -58,6 +57,9 @@ public abstract class AbstractCheckerBuilder {
 
     private int checkType = ECC_TYPE;
 
+    private int scheduleType;
+
+
     private int taskNum;
 
     private ExecutorService checkExecutorService;
@@ -71,6 +73,10 @@ public abstract class AbstractCheckerBuilder {
     private CUcontext cuContext;
 
     private List<String> contexts;
+
+    protected boolean onDemand;
+
+    protected Switcher switcher;
 
     public AbstractCheckerBuilder(String configFilePath) {
         parseConfigFile(configFilePath);
@@ -157,18 +163,33 @@ public abstract class AbstractCheckerBuilder {
         this.changeHandlerType = properties.getProperty("changeHandlerType");
         if(schedule.matches("[0-9]+")) {
             this.scheduler = new BatchScheduler(Integer.parseInt(schedule));
+            this.scheduleType = Integer.parseInt(schedule);
             System.out.println("[DEBUG] " + schedule);
         }
         else if ("GEAS".equals(schedule) && ("dynamic-change-based".equals(changeHandlerType) || "static-change-based".equals(changeHandlerType))) {
             this.scheduler = new GEASchduler(this.checkerList);
+            this.scheduleType = 0;
             System.out.println("[DEBUG] " + schedule);
         }
         else {
+            this.scheduleType = -1;
             assert false:"[DEBUG] Schedule error: " + schedule;
         }
 
-        //change handler
+        //change handle
+        configChangeHandler();
 
+        String onDemandStr = properties.getProperty("on-demand");
+        if("on".equals(onDemandStr)) {
+            this.onDemand = true;
+        }
+        else {
+            this.onDemand = false;
+        }
+        this.switcher = new SimpleSwitcher(10);
+    }
+
+    private void configChangeHandler() {
         if("static-time-based".equals(changeHandlerType)) {
             this.changeHandler = new StaticTimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
@@ -181,8 +202,6 @@ public abstract class AbstractCheckerBuilder {
         else if("dynamic-change-based".equals(changeHandlerType)) {
             this.changeHandler = new DynamicChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
-
-
     }
 
     private void parsePatternFile(String patternFilePath) {
@@ -355,6 +374,62 @@ public abstract class AbstractCheckerBuilder {
             for (Checker checker : checkerList) {
                 checker.reset();
             }
+        }
+    }
+
+    protected void update(int checkType, int scheduleType) {
+        boolean isUpdate = false;
+
+        //update checkers
+        if(this.checkType != checkType) {
+            isUpdate = true;
+            List<Checker> curList = new CopyOnWriteArrayList<>();
+            Map<String, Checker> curMap = new ConcurrentHashMap();
+
+            for(Checker checker : checkerList) {
+
+                Checker c = null;
+                if(checkType == PCC_TYPE) {
+                    c = new PccChecker(checker);
+                }
+                else if(checkType == ECC_TYPE) {
+                    c = new EccChecker(checker);
+                }
+                else if(checkType == CON_TYPE) {
+                    c = new ConChecker(checker, taskNum, checkExecutorService);
+                }
+                else {
+                    assert false:"Type Error.";
+                }
+
+                curList.add(c);
+
+                Map<String, STNode> stMap = checker.getStMap();
+                for(String key : stMap.keySet()) {
+                    curMap.put(stMap.get(key).getContextSetName(), c);
+                }
+                checker.reset();
+            }
+            this.checkType = checkType;
+            this.checkerList = curList;
+            this.checkerMap = curMap;
+        }
+
+        //update scheduler
+        if(scheduleType != this.scheduleType) {
+            isUpdate = true;
+            if(scheduleType == 0) {
+                this.scheduler = new GEASchduler(this.checkerList);
+            }
+            else {
+                this.scheduler = new BatchScheduler(scheduleType);
+            }
+
+            this.scheduleType = scheduleType;
+        }
+
+        if(isUpdate) {
+            configChangeHandler();
         }
     }
 }

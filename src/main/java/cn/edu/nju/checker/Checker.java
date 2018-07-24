@@ -73,6 +73,8 @@ public abstract class Checker {
     public Checker(Checker checker) {
         this.name = checker.name;
         this.stRoot = checker.stRoot;
+        this.cctRoot = checker.cctRoot;
+
         this.patternMap = checker.patternMap;
         this.incLinkSet = checker.incLinkSet;
         this.checkTimes = checker.checkTimes;
@@ -82,6 +84,7 @@ public abstract class Checker {
 
         this.incAddSet = checker.incAddSet;
         this.incDelSet = checker.incDelSet;
+        this.timeCount = checker.timeCount;
     }
 
     protected Checker() {}
@@ -633,4 +636,7 @@ public abstract class Checker {
 
     }
 
+    public Map<String, STNode> getStMap() {
+        return stMap;
+    }
 }
