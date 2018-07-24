@@ -186,7 +186,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         else {
             this.onDemand = false;
         }
-        this.switcher = new SimpleSwitcher(10);
+        this.switcher = new SimpleSwitcher(100);
     }
 
     private void configChangeHandler() {
@@ -377,7 +377,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
     }
 
-    protected void update(int checkType, int scheduleType) {
+    protected synchronized void update(int checkType, int scheduleType) {
         boolean isUpdate = false;
 
         //update checkers
@@ -396,7 +396,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                     c = new EccChecker(checker);
                 }
                 else if(checkType == CON_TYPE) {
-                    c = new ConChecker(checker, taskNum, checkExecutorService);
+                    c = new ConChecker(checker, taskNum, Executors.newFixedThreadPool(taskNum));
                 }
                 else {
                     assert false:"Type Error.";

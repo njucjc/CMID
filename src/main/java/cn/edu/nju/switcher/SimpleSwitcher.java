@@ -26,7 +26,7 @@ public class SimpleSwitcher implements Switcher {
 
     @Override
     public int getCheckerType() {
-        return r.nextInt(3);
+        return r.nextInt(2);
     }
 
     @Override

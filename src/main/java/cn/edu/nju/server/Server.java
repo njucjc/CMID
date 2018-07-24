@@ -53,6 +53,9 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                     running = false;
                     break;
                 }
+                if(onDemand && switcher.isSwitch(msg)) {
+                    update(switcher.getCheckerType(), switcher.getSchedulerType());
+                }
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
                 msg = msg.substring(msg.indexOf(",") + 1);
                 changeHandler.doContextChange(num, msg);
