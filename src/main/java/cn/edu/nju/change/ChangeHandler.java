@@ -85,6 +85,10 @@ public abstract class ChangeHandler {
 
     public void shutdown() {}
 
-
+    public synchronized void update(Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
+        this.checkerMap = checkerMap;
+        this.scheduler = scheduler;
+        this.checkerList = checkerList;
+    }
 
 }

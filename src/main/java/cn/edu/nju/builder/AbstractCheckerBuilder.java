@@ -396,7 +396,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                     c = new EccChecker(checker);
                 }
                 else if(checkType == CON_TYPE) {
-                    c = new ConChecker(checker, taskNum, Executors.newFixedThreadPool(taskNum));
+                    c = new ConChecker(checker, taskNum, this.checkExecutorService);
                 }
                 else {
                     assert false:"Type Error.";
@@ -429,7 +429,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
 
         if(isUpdate) {
-            configChangeHandler();
+            this.changeHandler.update(this.checkerMap,this.scheduler, this.checkerList);
         }
     }
 }
