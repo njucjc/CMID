@@ -73,7 +73,7 @@ public abstract class Checker {
     public Checker(Checker checker) {
         this.name = checker.name;
         this.stRoot = checker.stRoot;
-        this.cctRoot = checker.cctRoot;
+//        this.cctRoot = checker.cctRoot;
 
         this.patternMap = checker.patternMap;
         this.incLinkSet = checker.incLinkSet;
@@ -85,6 +85,9 @@ public abstract class Checker {
         this.incAddSet = checker.incAddSet;
         this.incDelSet = checker.incDelSet;
         this.timeCount = checker.timeCount;
+
+        this.cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
+        buildCCT(stRoot, this.cctRoot);
     }
 
     protected Checker() {}
