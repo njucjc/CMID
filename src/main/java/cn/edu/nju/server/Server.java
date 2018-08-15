@@ -42,6 +42,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         running = true;
 
         long count = 0;
+        long switchTimeCount = 0;
         long startTime = System.nanoTime();
         try {
             while (running) {
@@ -54,7 +55,10 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                     break;
                 }
                 if(onDemand && switcher.isSwitch(msg)) {
+                    long start = System.nanoTime();
                     update(switcher.getCheckerType(), switcher.getSchedulerType());
+                    long end = System.nanoTime();
+                    switchTimeCount += end - start;
                 }
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
                 msg = msg.substring(msg.indexOf(",") + 1);
@@ -83,6 +87,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("Receive: " + count );
         LogFileHelper.getLogger().info("check time: " + time / 1000000 + " ms");
         LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
+        LogFileHelper.getLogger().info("Switch Time: " + switchTimeCount + " ns = " + switchTimeCount / 1000000 +" ms");
         shutdown();
     }
 
