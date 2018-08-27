@@ -1,36 +1,46 @@
 package cn.edu.nju.switcher;
 
-import cn.edu.nju.context.Context;
+
+import cn.edu.nju.checker.CheckerType;
 
 /**
  * Created by njucjc at 2018/7/24
  */
 public class SimpleSwitcher implements Switcher {
 
-    private int batch;
+    private int checkerType;
 
-    private int count;
+    private int schedulerType;
 
-    private  java.util.Random r = new java.util.Random();
-
-    public SimpleSwitcher(int batch) {
-        this.batch = batch;
-        this.count = 0;
+    public SimpleSwitcher(int checkerType, int schedulerType) {
+        this.checkerType = checkerType;
+        this.schedulerType = schedulerType;
     }
 
     @Override
-    public boolean isSwitch(String context) {
-        count = (count + 1) % batch;
-        return count == 0;
+    public synchronized boolean isSwitch(int workload) {
+        boolean needSwitch = false;
+
+        switch (checkerType) {
+            case CheckerType.ECC_TYPE: {
+                if(workload > 1000) {
+                    needSwitch = true;
+                    checkerType = CheckerType.PCC_TYPE;
+                }
+                break;
+            }
+
+        }
+        return needSwitch;
     }
 
     @Override
-    public int getCheckerType() {
-        return r.nextInt(2);
+    public synchronized int getCheckerType() {
+        return checkerType;
     }
 
     @Override
-    public int getSchedulerType() {
-        return r.nextInt(2);//0:GEAS 1:ImmedSched
+    public synchronized int getSchedulerType() {
+        return schedulerType;
     }
 }

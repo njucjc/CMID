@@ -642,4 +642,30 @@ public abstract class Checker {
     public Map<String, STNode> getStMap() {
         return stMap;
     }
+
+    private int calcTreeSize(STNode root) {
+        assert root != null:"root is null.";
+        int type = root.getNodeType();
+        if(type == STNode.UNIVERSAL_NODE || type == STNode.EXISTENTIAL_NODE) {
+            return 1 + patternMap.get(root.getContextSetName()).getContextList().size() * calcTreeSize((STNode) root.getFirstChild());
+        }
+        else if(type == STNode.NOT_NODE) {
+            return  1 + calcTreeSize((STNode)root.getFirstChild());
+        }
+        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE) {
+            return  1 + calcTreeSize((STNode)root.getFirstChild()) + calcTreeSize((STNode)root.getLastChild());
+        }
+        else if(type == STNode.BFUNC_NODE){
+            return  1;
+        }
+        else {
+            assert false:"Type error.";
+            return 0;
+        }
+
+    }
+
+    public int getWorkload() {
+        return calcTreeSize(this.stRoot);
+    }
 }

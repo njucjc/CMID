@@ -54,7 +54,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                     running = false;
                     break;
                 }
-                if(onDemand && switcher.isSwitch(msg)) {
+                if(onDemand && switcher.isSwitch(computeWorkload())) {
                     long start = System.nanoTime();
                     update(switcher.getCheckerType(), switcher.getSchedulerType());
                     long end = System.nanoTime();

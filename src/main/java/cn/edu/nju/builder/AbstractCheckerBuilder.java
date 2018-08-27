@@ -186,7 +186,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         else {
             this.onDemand = false;
         }
-        this.switcher = new SimpleSwitcher(100);
+        this.switcher = new SimpleSwitcher(this.checkType, this.scheduleType);
     }
 
     private void configChangeHandler() {
@@ -431,5 +431,14 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         if(isUpdate) {
             this.changeHandler.update(this.checkerMap,this.scheduler, this.checkerList);
         }
+    }
+
+
+    protected int computeWorkload() {
+        int workload = 0;
+        for(Checker checker: checkerList) {
+            workload += checker.getWorkload();
+        }
+        return  workload;
     }
 }
