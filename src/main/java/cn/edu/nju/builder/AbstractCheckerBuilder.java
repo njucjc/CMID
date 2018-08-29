@@ -434,7 +434,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
 
-    protected int computeWorkload() {
+    protected synchronized int computeWorkload() {
         int workload = 0;
         for(Checker checker: checkerList) {
             workload += checker.getWorkload();

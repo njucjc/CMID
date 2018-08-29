@@ -23,7 +23,15 @@ public class SimpleSwitcher implements Switcher {
 
         switch (checkerType) {
             case CheckerType.ECC_TYPE: {
-                if(workload > 1000) {
+                if(workload > 30000) {
+                    needSwitch = true;
+                    checkerType = CheckerType.CON_TYPE;
+                }
+                break;
+            }
+
+            case CheckerType.CON_TYPE: {
+                if(workload > 60000) {
                     needSwitch = true;
                     checkerType = CheckerType.PCC_TYPE;
                 }
