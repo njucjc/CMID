@@ -38,35 +38,42 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         List<Long> switchPoint = new ArrayList<>();
 
 
-        int maxWorkload = 0;
         long count = 0;
         long switchTimeCount = 0;
+        long delay = 0;
+        long maxDelay = 0;
         long startTime = System.nanoTime();
         try {
             while (running) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 serverSocket.receive(packet);
+
+                long startDelay = System.nanoTime();
                 String msg = new String(packet.getData(),0, packet.getLength());
                 if ("exit".equals(msg)) {
                     System.out.println("Good bye! Server closed at " + new Date());
                     running = false;
                     break;
                 }
-               // int workload = computeWorkload();
-              //  maxWorkload = workload > maxWorkload ? workload : maxWorkload;
-                if(onDemand && switcher.isSwitch(computeWorkload())) {
+
+                if(onDemand && switcher.isSwitch(delay / 1000000)) {
 
                     switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
 
-                    long start = System.nanoTime();
+                    long startUpdate = System.nanoTime();
                     update(switcher.getCheckerType(), switcher.getSchedulerType());
-                    long end = System.nanoTime();
-                    switchTimeCount += end - start;
+                    long endUpdate = System.nanoTime();
+                    switchTimeCount += endUpdate - startUpdate;
                 }
+
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
                 msg = msg.substring(msg.indexOf(",") + 1);
                 changeHandler.doContextChange(num, msg);
                 count++;
+
+                long endDelay = System.nanoTime();
+                delay = endDelay - startDelay;
+                maxDelay = maxDelay > delay ? maxDelay : delay;
 
             }
             scheduler.reset();
@@ -92,7 +99,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("check time: " + time / 1000000 + " ms");
         LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
         LogFileHelper.getLogger().info("Switch Time: " + switchTimeCount + " ns = " + switchTimeCount / 1000000 +" ms");
-        LogFileHelper.getLogger().info("Max workload: " + maxWorkload);
+        LogFileHelper.getLogger().info("Max Delay: " + maxDelay / 1000000 + " ms");
         for(long timePoint : switchPoint) {
             LogFileHelper.getLogger().info("Switch at: " + timePoint + " ms");
         }

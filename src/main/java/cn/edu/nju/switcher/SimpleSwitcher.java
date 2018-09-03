@@ -12,18 +12,21 @@ public class SimpleSwitcher implements Switcher {
 
     private int schedulerType;
 
+ //   private int count;
+
     public SimpleSwitcher(int checkerType, int schedulerType) {
         this.checkerType = checkerType;
         this.schedulerType = schedulerType;
+    //    this.count = 0;
     }
 
     @Override
-    public synchronized boolean isSwitch(int workload) {
+    public synchronized boolean isSwitch(long delay) {
         boolean needSwitch = false;
 
         switch (checkerType) {
             case CheckerType.ECC_TYPE: {
-                if(workload > 30000) {
+                if(delay> 300) {
                     needSwitch = true;
                     checkerType = CheckerType.CON_TYPE;
                 }
@@ -31,7 +34,7 @@ public class SimpleSwitcher implements Switcher {
             }
 
             case CheckerType.CON_TYPE: {
-                if(workload > 60000) {
+                if(delay > 300) {
                     needSwitch = true;
                     checkerType = CheckerType.PCC_TYPE;
                 }
