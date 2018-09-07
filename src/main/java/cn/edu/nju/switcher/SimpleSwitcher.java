@@ -8,7 +8,7 @@ import cn.edu.nju.checker.CheckerType;
  */
 public class SimpleSwitcher implements Switcher {
 
-    private final static int THRESHOLD = 400;
+    private final static int THRESHOLD = 50;
 
     private final static int STEP = 5;
 
@@ -31,8 +31,10 @@ public class SimpleSwitcher implements Switcher {
     public synchronized boolean isSwitch(long delay) {
         boolean needSwitch = false;
 
-        count = (count + 1) % STEP;
-        totalDelay += delay;
+        if(delay != 0) {
+            count = (count + 1) % STEP;
+            totalDelay += delay;
+        }
 
         if(count == 0) {
 

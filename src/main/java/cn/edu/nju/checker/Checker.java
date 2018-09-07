@@ -86,6 +86,8 @@ public abstract class Checker {
         this.incDelSet = checker.incDelSet;
         this.timeCount = checker.timeCount;
 
+        clearCCTMap();
+
         this.cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
         buildCCT(stRoot, this.cctRoot);
     }
