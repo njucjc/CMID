@@ -121,9 +121,10 @@ public class Pattern {
         }
 
        if(!"any".equals(site)) {
-            int num1 = Integer.parseInt(site.substring(site.length() - 1));
-            int num2 = Integer.parseInt(plateNumber.substring(plateNumber.length() - 1));
-            belong = belong && (num1 == num2);
+//            int num1 = Integer.parseInt(site.substring(site.length() - 1));
+//            int num2 = Integer.parseInt(plateNumber.substring(plateNumber.length() - 1));
+//            belong = belong && (num1 == num2);
+            belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() -2));
         }
 
         return  belong;
