@@ -23,12 +23,22 @@ public abstract class ChangeHandler {
 
     protected ContextParser contextParser;
 
+    private String schedulerName;
+
+    private String checkerName;
+
     public ChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
         this.patternMap = patternMap;
         this.checkerMap = checkerMap;
         this.scheduler = scheduler;
         this.checkerList = checkerList;
         this.contextParser = new ContextParser();
+        this.schedulerName = getClassString(scheduler.getClass().toString());
+        this.checkerName = getClassString(checkerList.get(0).getClass().toString());
+    }
+
+    private String getClassString(String str) {
+        return str.substring(str.lastIndexOf(".") + 1);
     }
 
     protected Context parseContext(int num, String change) {
@@ -53,9 +63,9 @@ public abstract class ChangeHandler {
             if(scheduler.schedule(checker.getName())) {
                 boolean value = checker.doCheck();
                 if (value) {
-                    System.out.println("[rule] " + checker.getName() + ": Pass!");
+                    System.out.println("[" + checkerName + " + " + schedulerName + "] " + checker.getName() + ": Pass!");
                 } else {
-                    System.out.println("[rule] " + checker.getName() + ": Failed!");
+                    System.out.println("[" + checkerName + " + " + schedulerName + "] " + checker.getName() + ": Failed!");
                 }
                 hasCheck = true;
             }
