@@ -2,9 +2,14 @@ package cn.edu.nju.switcher;
 
 
 import cn.edu.nju.checker.CheckerType;
+import cn.edu.nju.util.LogFileHelper;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.RuntimeMXBean;
+import java.lang.management.ThreadMXBean;
 import java.util.Properties;
 
 /**
@@ -15,9 +20,25 @@ public class SimpleSwitcher implements Switcher {
 //    private final static int THRESHOLD = 70;
 //
 //    private final static int STEP = 5;
+    private ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+
+    private RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
+
+    private OperatingSystemMXBean osMxBean = ManagementFactory.getOperatingSystemMXBean();
+
+    private long initUpTime = runtimeMXBean.getUptime();
+
+    private long initCPUTime = threadMXBean.getCurrentThreadCpuTime();
+
+    private int nrCPUs = osMxBean.getAvailableProcessors();
+
     private int maxDelay;
 
-    private  int step;
+    private int step;
+
+    private float cpuUsageLow;
+
+    private float cpuUsageHigh;
 
     private int checkerType;
 
@@ -48,6 +69,8 @@ public class SimpleSwitcher implements Switcher {
 
         this.maxDelay = Integer.parseInt(properties.getProperty("maxDelay"));
         this.step = Integer.parseInt(properties.getProperty("step"));
+        this.cpuUsageLow = Float.parseFloat(properties.getProperty("cpuUsageLow"));
+        this.cpuUsageHigh = Float.parseFloat(properties.getProperty("cpuUsageHigh"));
     }
 
     @Override
@@ -74,6 +97,36 @@ public class SimpleSwitcher implements Switcher {
                     if (totalDelay / step > maxDelay) {
                         needSwitch = true;
                         checkerType = CheckerType.PCC_TYPE;
+                    }
+                    break;
+                }
+
+                case CheckerType.PCC_TYPE: {
+                    long elapsedCPUTime = threadMXBean.getCurrentThreadCpuTime() - initCPUTime;
+                    long elapsedUpTime = runtimeMXBean.getUptime() - initUpTime;
+
+                    float cpuUsage = elapsedCPUTime * 100 / (elapsedUpTime * 1000000F * nrCPUs);
+
+                    if(cpuUsage < cpuUsageLow) {
+                        needSwitch = true;
+                        if(schedulerType == 0) {
+                           schedulerType = 1;
+                        }
+                        else {
+                            checkerType = CheckerType.ECC_TYPE;
+                        }
+                    }
+                    else if(cpuUsage > cpuUsageHigh) {
+                        if (schedulerType == 1) {
+                            needSwitch = true;
+                            schedulerType = 0;//GEAS
+                        }
+                    }
+                    else {
+                        if(schedulerType == 0) {
+                            needSwitch = true;
+                            schedulerType = 1;//ImmedSched
+                        }
                     }
                     break;
                 }
