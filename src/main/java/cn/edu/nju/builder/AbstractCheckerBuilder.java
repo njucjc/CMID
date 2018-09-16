@@ -186,7 +186,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         else {
             this.onDemand = false;
         }
-        this.switcher = new SimpleSwitcher(this.checkType, this.scheduleType);
+
+        String paramFilePath = properties.getProperty("paramFilePath");
+        this.switcher = new SimpleSwitcher(paramFilePath ,this.checkType, this.scheduleType);
     }
 
     private void configChangeHandler() {

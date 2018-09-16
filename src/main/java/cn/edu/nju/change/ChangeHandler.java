@@ -99,6 +99,8 @@ public abstract class ChangeHandler {
         this.checkerMap = checkerMap;
         this.scheduler = scheduler;
         this.checkerList = checkerList;
+        this.checkerName = getClassString(checkerList.get(0).getClass().toString());
+        this.schedulerName = getClassString(scheduler.getClass().toString());
     }
 
 }
