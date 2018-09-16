@@ -4,8 +4,10 @@ import cn.edu.nju.checker.Checker;
 
 import java.util.Map;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Created by njucjc at 2018/3/19
@@ -15,7 +17,7 @@ public class GEASchduler implements Scheduler{
 
     private Map<String, Boolean> scheduleMap;
 
-    private Map<String, List<String>> currentBatchMap;
+    private Map<String, Set<String>> currentBatchMap;
 
 //     for(String key : stMap.keySet()) {
 //        cctMap.put(key, new CopyOnWriteArrayList<>());
@@ -31,7 +33,7 @@ public class GEASchduler implements Scheduler{
         for(Checker checker : checkerList) {
             String name = checker.getName();
             scheduleMap.put(name, false);
-            currentBatchMap.put(name, new CopyOnWriteArrayList<>());
+            currentBatchMap.put(name, new CopyOnWriteArraySet<>());
         }
     }
 
@@ -54,7 +56,7 @@ public class GEASchduler implements Scheduler{
     }
 
     private boolean suspPairMatch(Checker checker, String change) {
-        List<String> currentBatch = currentBatchMap.get(checker.getName());
+        Set<String> currentBatch = currentBatchMap.get(checker.getName());
 
         boolean result = false;
         String tmp = change.substring(0, change.indexOf(",", 2));
