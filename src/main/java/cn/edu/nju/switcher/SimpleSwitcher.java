@@ -38,7 +38,7 @@ public class SimpleSwitcher implements Switcher {
 
     private float cpuUsageLow;
 
-    private float cpuUsageHigh;
+    //private float cpuUsageHigh;
 
     private int checkerType;
 
@@ -70,7 +70,7 @@ public class SimpleSwitcher implements Switcher {
         this.maxDelay = Integer.parseInt(properties.getProperty("maxDelay"));
         this.step = Integer.parseInt(properties.getProperty("step"));
         this.cpuUsageLow = Float.parseFloat(properties.getProperty("cpuUsageLow"));
-        this.cpuUsageHigh = Float.parseFloat(properties.getProperty("cpuUsageHigh"));
+       /// this.cpuUsageHigh = Float.parseFloat(properties.getProperty("cpuUsageHigh"));
     }
 
     @Override
@@ -107,33 +107,36 @@ public class SimpleSwitcher implements Switcher {
 
                     float cpuUsage = elapsedCPUTime * 100 / (elapsedUpTime * 1000000F * nrCPUs);
 
-                    if(cpuUsage < cpuUsageLow) {
-                        needSwitch = true;
-                        if(schedulerType == 0) {
-                           schedulerType = 1;
-                        }
-                        else {
-                            checkerType = CheckerType.ECC_TYPE;
-                        }
-                    }
-                    else if(cpuUsage > cpuUsageHigh) {
-                        if (schedulerType == 1) {
+                    if (totalDelay / step > maxDelay) {
+                        if(schedulerType == 1) {
                             needSwitch = true;
-                            schedulerType = 0;//GEAS
+                            schedulerType = 0;
                         }
                     }
-                    else {
-                        if(schedulerType == 0) {
+                    else { //Delay normal
+                        if (cpuUsage < cpuUsageLow) {
                             needSwitch = true;
-                            schedulerType = 1;//ImmedSched
+                            if (schedulerType == 0) {
+                                schedulerType = 1;
+                            } else {
+                                checkerType = CheckerType.ECC_TYPE;
+                            }
                         }
                     }
+
                     break;
                 }
 
             }
             totalDelay = 0;
         }
+
+        if(needSwitch) {
+            //calculate cpu time
+            initUpTime = runtimeMXBean.getUptime();
+            initCPUTime = threadMXBean.getCurrentThreadCpuTime();
+        }
+
         return needSwitch;
     }
 
