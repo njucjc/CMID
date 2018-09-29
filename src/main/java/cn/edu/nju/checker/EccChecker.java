@@ -20,6 +20,10 @@ public class EccChecker extends Checker{
         super(name, stRoot, patternMap, stMap);
     }
 
+    public EccChecker(Checker checker) {
+        super(checker);
+    }
+
     protected EccChecker() {}
     /**
      *

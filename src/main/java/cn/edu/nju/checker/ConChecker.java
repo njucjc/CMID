@@ -26,6 +26,12 @@ public class ConChecker extends EccChecker {
         this.checkExecutorService = checkExecutorService;//Executors.newFixedThreadPool(taskNum);
     }
 
+    public ConChecker(Checker checker, int taskNum, ExecutorService checkExecutorService) {
+        super(checker);
+        this.taskNum = taskNum;
+        this.findSplittingNode = false;
+        this.checkExecutorService = checkExecutorService;
+    }
 
     @Override
     protected synchronized boolean evaluation(CCTNode cctRoot, List<Context> param) {

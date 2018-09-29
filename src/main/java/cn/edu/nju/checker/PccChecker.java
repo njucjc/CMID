@@ -19,6 +19,9 @@ public class PccChecker extends Checker{
         super(name, stRoot, patternMap, stMap);
     }
 
+    public  PccChecker(Checker checker) {
+        super(checker);
+    }
     /**
      *
      * @return violated link

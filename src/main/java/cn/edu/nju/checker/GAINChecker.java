@@ -65,16 +65,25 @@ public class GAINChecker extends Checker {
                        String kernelFilePath,
                        List<String> contexts, CUcontext cuContext) {
         super(name, stRoot, patternMap, stMap);
-        this.stSize = computeSTSize(stRoot);
- //       System.out.println(name + ": " + stSize);
+        init(kernelFilePath, contexts, cuContext);
+    }
 
-        this.branchSize = new int[stSize];
+    public GAINChecker(Checker checker, String kernelFilePath, List<String> contexts, CUcontext cuContext){
+        super(checker);
+        init(kernelFilePath, contexts, cuContext);
+    }
+
+    private void init(String kernelFilePath, List<String> contexts, CUcontext cuContext) {
+        this.stSize = computeSTSize(this.stRoot);
+        //       System.out.println(name + ": " + stSize);
+
+        this.branchSize = new int[this.stSize];
 
         //计算cunit以及为语法树重排序(前序遍历)
-        this.constraintNodes = new STNode[stSize];
+        this.constraintNodes = new STNode[this.stSize];
         this.cunits = new ArrayList<>();
-        split(stRoot);
-        cunits.add(-1);
+        split(this.stRoot);
+        this.cunits.add(-1);
         //将语法树信息拷贝到GPU
 
         //this.genTruthValue = KernelLauncher.load(kernelFilePath, "gen_truth_value");
@@ -82,7 +91,7 @@ public class GAINChecker extends Checker {
         this.evaluation = KernelLauncher.load(kernelFilePath, "evaluation");
 
         this.gpuContextMemory = GPUContextMemory.getInstance(contexts);
-        this.gpuPatternMemory = new GPUPatternMemory(stMap.keySet());
+        this.gpuPatternMemory = new GPUPatternMemory(this.stMap.keySet());
 
         this.patternIdMap = gpuPatternMemory.getIndexMap();
 
