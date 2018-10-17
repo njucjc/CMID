@@ -29,10 +29,9 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         int count = 0;
         long startTime = System.nanoTime();
         for(String change : contextList) {
-            if(onDemand && switcher.isSwitch(computeWorkload())) {
-                update(switcher.getCheckerType(), switcher.getSchedulerType());
-            }
-
+//            if(onDemand && switcher.isSwitch(computeWorkload())) {
+//                update(switcher.getCheckerType(), switcher.getSchedulerType());
+//            }
             changeHandler.doContextChange(count, change);
             count++;
         }

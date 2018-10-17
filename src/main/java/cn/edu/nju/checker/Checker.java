@@ -238,7 +238,7 @@ public abstract class Checker {
     }
 
 
-    protected synchronized boolean affected(String contextSetName) {
+    public synchronized boolean affected(String contextSetName) {
         return stMap.containsKey(contextSetName);
     }
 

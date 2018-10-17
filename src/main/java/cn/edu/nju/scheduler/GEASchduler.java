@@ -39,9 +39,13 @@ public class GEASchduler implements Scheduler{
 
     @Override
     public synchronized void update(String change) {
+        String [] elements = change.split(",");
+
         for(Checker checker : checkerList) {
-            if(suspPairMatch(checker, change)) {
-                scheduleMap.put(checker.getName(), true);
+            if(checker.affected(elements[1])) {
+                if (suspPairMatch(checker, elements[0] + "," + elements[1])) {
+                    scheduleMap.put(checker.getName(), true);
+                }
             }
         }
     }
@@ -59,10 +63,10 @@ public class GEASchduler implements Scheduler{
         Set<String> currentBatch = currentBatchMap.get(checker.getName());
 
         boolean result = false;
-        String tmp = change.substring(0, change.indexOf(",", 2));
+       // String tmp = change.substring(0, change.indexOf(",", 2));
 
         for(String c : currentBatch) {
-            if(checker.isInIncAddSet(c) && checker.isInIncDelSet(tmp)) {
+            if(checker.isInIncAddSet(c) && checker.isInIncDelSet(change)) {
                 result = true;
                 break;
             }
@@ -71,7 +75,7 @@ public class GEASchduler implements Scheduler{
         if (result) { //make batch empty
             currentBatch.clear();
         }
-        currentBatch.add(tmp);
+        currentBatch.add(change);
 
         return result;
     }
