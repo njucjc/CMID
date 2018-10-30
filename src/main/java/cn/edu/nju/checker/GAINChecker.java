@@ -41,7 +41,7 @@ public class GAINChecker extends Checker {
 
     private Map<String, Integer> patternIdMap;
 
-    private static final int threadPerBlock = 32;
+    private static final int threadPerBlock = 512;
 
     private CUdeviceptr deviceTruthValue;
 

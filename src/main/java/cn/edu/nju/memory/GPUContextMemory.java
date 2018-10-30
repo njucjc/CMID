@@ -72,13 +72,13 @@ public class GPUContextMemory {
 
     private int parseInt(String str) {
         int res = 0;
-        for(int i = 0; i < str.length(); i++) {
+        for(int i = 0; i < str.length() - 1; i++) {
             char c = str.charAt(i);
             if(c >= '0' && c <= '9') {
                 res = (res + (c - '0')) * 36;
             }
             else {
-                res = (res + (c - 'A')) * 36;
+                res = (res + (c - 'A' + 10)) * 36;
             }
         }
         return res;
