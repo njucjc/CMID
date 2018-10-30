@@ -19,8 +19,8 @@ enum Type {
 };
 
 #define MAX_PARAM_NUM 2
-#define MAX_PATTERN_SIZE 1000
-#define MAX_LINK_SIZE 30
+#define MAX_CCT_SIZE 3000000
+#define MAX_LINK_SIZE 500
 #define DEBUG
 
 struct Context{
@@ -31,10 +31,14 @@ struct Context{
 	int plateNumber;
 };
 
-struct Links {
-	int length;
-	int link_pool[MAX_LINK_SIZE][MAX_PARAM_NUM];
+struct Node {
+	Node *next;
+	int params[MAX_PARAM_NUM];
 };
+
+
+__device__ bool truth_values[MAX_CCT_SIZE];
+__device__ Node links[MAX_CCT_SIZE];
 
 extern "C"
 __device__ bool same(Context c1, Context c2){
@@ -73,30 +77,44 @@ __device__ bool sz_loc_range(Context c){
 }
 
 extern "C"
-__device__ void linkHelper(Links *left, Links *right) {
-	int left_len = left->length;
-	int right_len = right->length;
+__device__ void linkHelper(Node *link1, Node *link2) {
+	//inital and assumpt that link1 != null;
 
-    if(left_len + right_len > MAX_LINK_SIZE) {
-        return ;
-    }
+	if (link2 == NULL) {
+		return;
+	}
 
-	for (int i = 0; i < right_len; i++) {
-	/*
-		int j;
-		for (j = 0; j < left_len; j++) {
-			if (right->link_pool[i][0] == left->link_pool[j][0] && right->link_pool[i][1] == left->link_pool[j][1]) {
+	Node *tail = link1;
+	int len = 1;
+	while(tail->next != NULL){
+		tail = tail->next;
+		len++;
+	}
+
+	for(Node *cur = link2; cur != NULL; ) {
+		Node *p = link1;
+		int i;
+		for(i = 0; i < len; i++) {
+			if(p->params[0] == cur->params[0] && p->params[1] == cur->params[1]) {
 				break;
 			}
+			else {
+				p = p->next;
+			}
 		}
-		if (j == left_len) {
-			left->link_pool[left->length][0] = right->link_pool[i][0];
-			left->link_pool[left->length][1] = right->link_pool[i][1];
-			left->length = (left->length + 1) % MAX_LINK_SIZE;
-		}*/
-        left->link_pool[left->length][0] = right->link_pool[i][0];
-        left->link_pool[left->length][1] = right->link_pool[i][1];
-        left->length = (left->length + 1) % MAX_LINK_SIZE;
+
+		if(i == len) {
+			q = cur;
+			cur = cur->next;
+
+			tail->next = q;
+			q->next = NULL;
+			tail = q;
+		}
+		else {
+			cur = cur->next;
+		}
+
 	}
 }
 
@@ -145,8 +163,8 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
                           	 int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
                           	 int *pattern_begin, int *pattern_length, int *pattern, //patterns
                           	 double *longitude, double *latitude, double *speed,int *plateNumber,// contexts
-                          	 short *truth_values, short *truth_value_result,
-                          	 Links *links, int *link_result, int *link_num,
+                          	 short *truth_value_result,
+                          	 int *link_result, int *link_num, int *cur_link_size,
                           	 int last_cunit_root,
                           	 int ccopy_num) {
 	
@@ -172,8 +190,8 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 			int type = node_type[node];
 			bool value;
 
-			Links* cur_links = &links[offset];
-			cur_links->length = 0;
+			Node* cur_links = &links[offset];
+			cur_links->next = NULL;
 
 			switch(type) {
 				case Type::UNIVERSAL_NODE: {
@@ -184,7 +202,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 						value = value && truth_values[offset - (i * step + 1)];
 						if(!truth_values[offset - (i * step + 1)]) {
 							if(first) {
-								cur_links->length = 0;
+								cur_links->next = NULL;
 								first = false;
 							}
 							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
@@ -205,7 +223,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 						value = value || truth_values[offset - (i * step + 1)];
 						if(truth_values[offset - (i * step + 1)]) {
 							if(first) {
-								cur_links->length = 0;
+								cur_links->next= NULL;
 								first = false;
 							}
 							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
@@ -300,9 +318,9 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 						}
 					}
 
-					cur_links->length = 1;
+					cur_links->next = NULL;
 					for (int i = 0; i < MAX_PARAM_NUM; i++) {
-						cur_links->link_pool[0][i] = params[i].id;
+						cur_links->params[i] = params[i].id;
 					}
 					break;
 				}
@@ -316,12 +334,21 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 		if (last_cunit_root == cunit_end ) {
 		    *truth_value_result = truth_values[ccopy_root_offset];
 		    if(!truth_values[ccopy_root_offset]) {
-                *link_num = links[ccopy_root_offset].length;
-                for (int i = 0; i < *link_num; i++) {
-                    for(int j = 0; j < MAX_PARAM_NUM; j++) {
-                        link_result[MAX_PARAM_NUM * i + j] = links[ccopy_root_offset].link_pool[i][j];
-                    }
+            
+         		int len = 0;
+                for(Node *head = &links[ccopy_root_offset]; head != NULL; head = head ->next) {
+                
+                	if(len < MAX_LINK_SIZE) {
+	                	for(int j = 0; j < MAX_PARAM_NUM; j++) {
+	                         link_result[MAX_PARAM_NUM * len + j] = links[ccopy_root_offset].params[j];
+	                    }
+                	}
+
+                    len++;
                 }
+                
+                *cur_link_size = len;
+                *link_num = len > MAX_LINK_SIZE ? MAX_LINK_SIZE : len;
          	}
         }
 	}
