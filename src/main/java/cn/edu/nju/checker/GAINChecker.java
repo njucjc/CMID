@@ -3,10 +3,7 @@ package cn.edu.nju.checker;
 import static jcuda.driver.JCudaDriver.*;
 
 import cn.edu.nju.context.Context;
-import cn.edu.nju.memory.Config;
-import cn.edu.nju.memory.GPUContextMemory;
-import cn.edu.nju.memory.GPUPatternMemory;
-import cn.edu.nju.memory.GPURuleMemory;
+import cn.edu.nju.memory.*;
 import cn.edu.nju.node.NodeType;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
@@ -46,34 +43,34 @@ public class GAINChecker extends Checker {
 
     private static final int threadPerBlock = 32;
 
-    private CUdeviceptr deviceTruthValue = new CUdeviceptr();
+    private CUdeviceptr deviceTruthValue;
 
-    private CUdeviceptr deviceTruthValueResult = new CUdeviceptr();
+    private CUdeviceptr deviceTruthValueResult;
 
     private CUdeviceptr deviceBranchSize = new CUdeviceptr();
 
-    private CUdeviceptr deviceLinks = new CUdeviceptr();
+    private CUdeviceptr deviceLinks;
 
-    private CUdeviceptr deviceLinkResult = new CUdeviceptr();
+    private CUdeviceptr deviceLinkResult;
 
-    private CUdeviceptr deviceLinkNum = new CUdeviceptr();
+    private CUdeviceptr deviceLinkNum;
 
     private CUcontext cuContext;
 
 
     public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap,
                        String kernelFilePath,
-                       List<String> contexts, CUcontext cuContext) {
+                       List<String> contexts, CUcontext cuContext, GPUResult gpuResult) {
         super(name, stRoot, patternMap, stMap);
-        init(kernelFilePath, contexts, cuContext);
+        init(kernelFilePath, contexts, cuContext, gpuResult);
     }
 
-    public GAINChecker(Checker checker, String kernelFilePath, List<String> contexts, CUcontext cuContext){
+    public GAINChecker(Checker checker, String kernelFilePath, List<String> contexts, CUcontext cuContext, GPUResult gpuResult){
         super(checker);
-        init(kernelFilePath, contexts, cuContext);
+        init(kernelFilePath, contexts, cuContext, gpuResult);
     }
 
-    private void init(String kernelFilePath, List<String> contexts, CUcontext cuContext) {
+    private void init(String kernelFilePath, List<String> contexts, CUcontext cuContext, GPUResult gpuResult) {
         this.stSize = computeSTSize(this.stRoot);
         //       System.out.println(name + ": " + stSize);
 
@@ -95,7 +92,7 @@ public class GAINChecker extends Checker {
 
         this.patternIdMap = gpuPatternMemory.getIndexMap();
 
-        initGPURuleMemory();
+        initGPURuleMemory(gpuResult);
         this.cuContext = cuContext;
     }
 
@@ -125,14 +122,14 @@ public class GAINChecker extends Checker {
         gpuPatternMemory.update(begin, length, contexts);
     }
 
-    private void initGPURuleMemory() {
+    private void initGPURuleMemory(GPUResult gpuResult) {
 
-        cuMemAlloc(this.deviceTruthValue, Config.MAX_CCT_SIZE * Sizeof.SHORT);
-        cuMemAlloc(this.deviceTruthValueResult, Sizeof.SHORT);
+        this.deviceTruthValue = gpuResult.getDeviceTruthValue();
+        this.deviceTruthValueResult = gpuResult.getDeviceTruthValueResult();
+        this.deviceLinks = gpuResult.getDeviceLinks();
+        this.deviceLinkResult = gpuResult.getDeviceLinkResult();
+        this.deviceLinkNum = gpuResult.getDeviceLinkNum();
         cuMemAlloc(this.deviceBranchSize, stSize * Sizeof.INT);
-        cuMemAlloc(this.deviceLinks, (1 + Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT * Config.MAX_CCT_SIZE);
-        cuMemAlloc(this.deviceLinkResult, (Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE) * Sizeof.INT);
-        cuMemAlloc(this.deviceLinkNum, Sizeof.INT);
 
 
         int [] parent = new int[stSize];
@@ -386,12 +383,7 @@ public class GAINChecker extends Checker {
 
     @Override
     public void reset() {
-        cuMemFree(this.deviceTruthValue);
-        cuMemFree(this.deviceTruthValueResult);
         cuMemFree(this.deviceBranchSize);
-        cuMemFree(this.deviceLinks);
-        cuMemFree(this.deviceLinkResult);
-        cuMemFree(this.deviceLinkNum);
         this.gpuPatternMemory.free();
         super.reset();
     }
