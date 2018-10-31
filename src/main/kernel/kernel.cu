@@ -78,7 +78,11 @@ __device__ bool sz_loc_range(Context c){
 
 extern "C"
 __device__ void linkHelper(Node *link1, Node *link2) {
-	//inital and assumpt that link1 != null;
+	//inital and assumpt that link1 != null, links != null
+	if (link1->next == NULL) {
+		*(link1) = *(link2);
+		link2 = link2->next;
+	}
 
 	if (link2 == NULL) {
 		return;
