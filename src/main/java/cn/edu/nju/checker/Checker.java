@@ -42,6 +42,9 @@ public abstract class Checker {
 
     private Set<String> incDelSet;
 
+
+    protected int maxLinkSize = 0;
+
 //    private Set<String> incUnpreSet;
 
 
@@ -85,6 +88,7 @@ public abstract class Checker {
         this.incAddSet = checker.incAddSet;
         this.incDelSet = checker.incDelSet;
         this.timeCount = checker.timeCount;
+        this.maxLinkSize = checker.maxLinkSize;
 
         clearCCTMap();
 
@@ -670,4 +674,10 @@ public abstract class Checker {
     public int getWorkload() {
         return calcTreeSize(this.stRoot);
     }
+
+
+    public int getMaxLinkSize() {
+        return maxLinkSize;
+    }
+
 }

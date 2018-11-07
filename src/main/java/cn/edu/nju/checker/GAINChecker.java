@@ -43,17 +43,15 @@ public class GAINChecker extends Checker {
 
     private static final int threadPerBlock = 512;
 
-    private CUdeviceptr deviceTruthValue;
-
     private CUdeviceptr deviceTruthValueResult;
 
     private CUdeviceptr deviceBranchSize = new CUdeviceptr();
 
-    private CUdeviceptr deviceLinks;
-
     private CUdeviceptr deviceLinkResult;
 
     private CUdeviceptr deviceLinkNum;
+
+    private CUdeviceptr deviceMaxLinkSize;
 
     private CUcontext cuContext;
 
@@ -124,11 +122,11 @@ public class GAINChecker extends Checker {
 
     private void initGPURuleMemory(GPUResult gpuResult) {
 
-        this.deviceTruthValue = gpuResult.getDeviceTruthValue();
         this.deviceTruthValueResult = gpuResult.getDeviceTruthValueResult();
-        this.deviceLinks = gpuResult.getDeviceLinks();
         this.deviceLinkResult = gpuResult.getDeviceLinkResult();
         this.deviceLinkNum = gpuResult.getDeviceLinkNum();
+        this.deviceMaxLinkSize = gpuResult.getDeviceMaxLinkSize();
+
         cuMemAlloc(this.deviceBranchSize, stSize * Sizeof.INT);
 
 
@@ -217,8 +215,8 @@ public class GAINChecker extends Checker {
                             deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
                             gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
                             gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(), gpuContextMemory.getPlateNumber(),
-                            deviceTruthValue, deviceTruthValueResult,
-                            deviceLinks, deviceLinkResult, deviceLinkNum,
+                            deviceTruthValueResult,
+                            deviceLinkResult, deviceLinkNum, deviceMaxLinkSize,
                             cunits.get(0),
                             ccopyNum);
 
@@ -234,6 +232,11 @@ public class GAINChecker extends Checker {
         if(!value) {
             int [] hostLinkNum = new int[1];
             cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
+
+            int [] hostMaxLinkSize = new int[1];
+            cuMemcpyDtoH(Pointer.to(hostMaxLinkSize), deviceMaxLinkSize, Sizeof.INT);
+
+            this.maxLinkSize = this.maxLinkSize > hostMaxLinkSize[0] ? this.maxLinkSize : hostMaxLinkSize[0];
 
             int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
             cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * hostLinkNum[0]) * Sizeof.INT);
