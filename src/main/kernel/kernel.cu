@@ -20,7 +20,7 @@ enum Type {
 
 #define MAX_PARAM_NUM 2
 #define MAX_CCT_SIZE 3000000
-#define MAX_LINK_SIZE 500
+#define MAX_LINK_SIZE 5000
 #define DEBUG
 
 struct Context{
@@ -33,6 +33,7 @@ struct Context{
 
 struct Node {
 	Node *next;
+	Node *tail;
 	int params[MAX_PARAM_NUM];
 };
 
@@ -79,58 +80,45 @@ __device__ bool sz_loc_range(Context c){
 extern "C"
 __device__ void init_node(Node *n){
 	n->next = NULL;
-	for (int i = 0; i < MAX_PARAM_NUM; ++i)
-	{
+	n->tail = n;
+	for (int i = 0; i < MAX_PARAM_NUM; i++) {
 		n->params[i] = -1;
 	}
+}
+
+extern "C"
+__device__ bool is_null_node(Node *n){
+	bool res = true;
+	for (int i = 0; i < MAX_PARAM_NUM; i++) {
+		res = res && (n->params[i] == -1);
+	}
+	return res;
 }
 
 
 extern "C"
 __device__ void linkHelper(Node *link1, Node *link2) {
 	//inital and assumpt that link1 != null, links != null
-	if (link1->params[0] == -1 && link1->params[1] == -1) {
-		*(link1) = *(link2);
+	if (is_null_node(link1)) {
+		for (int i = 0; i < MAX_PARAM_NUM; i++) {
+			link1->params[i] = link2->params[i];
+		}
 		link1->next = NULL;
+		link1->tail = link1;
+
+		
+		if(link2->next != NULL) {
+			link2->next->tail = link2->tail;
+		}
+		link2 = link2->next;
 	}
 
-	if (link2->next == NULL) {
+	if (link2 == NULL) {
 		return;
 	}
 
-	Node *tail = link1;
-	int len = 1;
-	while(tail->next != NULL){
-		tail = tail->next;
-		len++;
-	}
-
-	Node *pre = link2;
-	for(Node *cur = link2->next; cur != NULL;) {
-		Node *p = link1;
-		int i;
-		for(i = 0; i < len; i++) {
-			if(p->params[0] == cur->params[0] && p->params[1] == cur->params[1]) {
-				break;
-			}
-			p = p->next;
-		}
-
-		if(i == len) {
-			Node *q = cur;
-			cur = cur->next;
-			pre->next = cur;
-
-			tail->next = q;
-			q->next = NULL;
-			tail = q;
-		}
-		else {
-			pre = pre->next;
-			cur = cur->next;
-		}
-
-	}
+	link1->tail->next = link2;
+	link1->tail = link2->tail;
 }
 
 extern "C"
@@ -355,7 +343,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
                 
                 	if(len < MAX_LINK_SIZE) {
 	                	for(int j = 0; j < MAX_PARAM_NUM; j++) {
-	                         link_result[MAX_PARAM_NUM * len + j] = links[ccopy_root_offset].params[j];
+	                         link_result[MAX_PARAM_NUM * len + j] = head->params[j];
 	                    }
                 	}
 
