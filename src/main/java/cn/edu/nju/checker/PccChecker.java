@@ -36,11 +36,14 @@ public class PccChecker extends Checker{
 
         boolean value = true;
         if (!cctRoot.getNodeValue()) {
-            for(String link : LinkHelper.splitLinks(cctRoot.getLink())) {
+            String [] links = LinkHelper.splitLinks(cctRoot.getLink());
+            for(String link : links) {
                 if(addIncLink(link)) {
                     LogFileHelper.getLogger().info(getName() + " " + link);
                 }
             }
+
+            this.maxLinkSize = this.maxLinkSize < links.length ? links.length : this.maxLinkSize;
             value = false;
         }
 

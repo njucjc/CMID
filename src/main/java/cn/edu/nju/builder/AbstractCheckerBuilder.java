@@ -4,6 +4,7 @@ import cn.edu.nju.change.*;
 import cn.edu.nju.checker.*;
 import cn.edu.nju.memory.GPUContextMemory;
 import cn.edu.nju.memory.GPUPatternMemory;
+import cn.edu.nju.memory.GPUResult;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.BatchScheduler;
@@ -71,6 +72,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     private String kernelFilePath;
 
     private CUcontext cuContext;
+
+    private GPUResult gpuResult;
 
     private List<String> contexts;
 
@@ -144,6 +147,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
            // initGPUMemory();
             contexts = fileReader(this.dataFilePath);
+            gpuResult = new GPUResult();
             compileKernelFunction(cudaSourceFilePath);
         }
 
@@ -282,7 +286,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 } else if(checkType == GAIN_TYPE) {
                     checker = new GAINChecker(idNode.getTextContent(), root, this.patternMap, stMap,
                             kernelFilePath, //kernel function
-                            contexts, cuContext); //GPU memory
+                            contexts, cuContext, gpuResult); //GPU memory
                 }
 
                 checkerList.add(checker);

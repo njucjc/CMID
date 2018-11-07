@@ -34,8 +34,8 @@ public class EccChecker extends Checker{
         long start = System.nanoTime();
 
         checkTimes++;
-       // clearCCTMap();
-        removeCriticalNode(stRoot, cctRoot);
+        clearCCTMap();
+        //removeCriticalNode(stRoot, cctRoot);
         cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
         buildCCT(stRoot, cctRoot);
         List<Context> param = new CopyOnWriteArrayList<>();
@@ -43,11 +43,14 @@ public class EccChecker extends Checker{
 
         boolean value = true;
         if (!cctRoot.getNodeValue()) {
-            for(String link : LinkHelper.splitLinks(cctRoot.getLink())) {
+            String [] links = LinkHelper.splitLinks(cctRoot.getLink());
+            for(String link : links) {
                 if(addIncLink(link)) {
                     LogFileHelper.getLogger().info(getName() + " " + link);
                 }
             }
+
+            this.maxLinkSize = this.maxLinkSize > links.length ? this.maxLinkSize : links.length;
             value = false;
         }
 
