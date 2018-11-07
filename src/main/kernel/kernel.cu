@@ -77,14 +77,24 @@ __device__ bool sz_loc_range(Context c){
 }
 
 extern "C"
+__device__ void init_node(Node *n){
+	n->next = NULL;
+	for (int i = 0; i < MAX_PARAM_NUM; ++i)
+	{
+		n->params[i] = -1;
+	}
+}
+
+
+extern "C"
 __device__ void linkHelper(Node *link1, Node *link2) {
 	//inital and assumpt that link1 != null, links != null
-	if (link1->next == NULL) {
+	if (link1->params[0] == -1 && link1->params[1] == -1) {
 		*(link1) = *(link2);
-		link2 = link2->next;
+		link1->next = NULL;
 	}
 
-	if (link2 == NULL) {
+	if (link2->next == NULL) {
 		return;
 	}
 
@@ -95,27 +105,28 @@ __device__ void linkHelper(Node *link1, Node *link2) {
 		len++;
 	}
 
-	for(Node *cur = link2; cur != NULL; ) {
+	Node *pre = link2;
+	for(Node *cur = link2->next; cur != NULL;) {
 		Node *p = link1;
 		int i;
 		for(i = 0; i < len; i++) {
 			if(p->params[0] == cur->params[0] && p->params[1] == cur->params[1]) {
 				break;
 			}
-			else {
-				p = p->next;
-			}
+			p = p->next;
 		}
 
 		if(i == len) {
-			q = cur;
+			Node *q = cur;
 			cur = cur->next;
+			pre->next = cur;
 
 			tail->next = q;
 			q->next = NULL;
 			tail = q;
 		}
 		else {
+			pre = pre->next;
 			cur = cur->next;
 		}
 
@@ -195,7 +206,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 			bool value;
 
 			Node* cur_links = &links[offset];
-			cur_links->next = NULL;
+			init_node(cur_links);
 
 			switch(type) {
 				case Type::UNIVERSAL_NODE: {
@@ -206,7 +217,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 						value = value && truth_values[offset - (i * step + 1)];
 						if(!truth_values[offset - (i * step + 1)]) {
 							if(first) {
-								cur_links->next = NULL;
+								init_node(cur_links);
 								first = false;
 							}
 							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
@@ -227,7 +238,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 						value = value || truth_values[offset - (i * step + 1)];
 						if(truth_values[offset - (i * step + 1)]) {
 							if(first) {
-								cur_links->next= NULL;
+								init_node(cur_links);
 								first = false;
 							}
 							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
@@ -322,7 +333,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 						}
 					}
 
-					cur_links->next = NULL;
+			
 					for (int i = 0; i < MAX_PARAM_NUM; i++) {
 						cur_links->params[i] = params[i].id;
 					}
