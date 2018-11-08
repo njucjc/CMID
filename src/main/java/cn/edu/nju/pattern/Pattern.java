@@ -121,10 +121,12 @@ public class Pattern {
         }
 
        if(!"any".equals(site)) {
-//            int num1 = Integer.parseInt(site.substring(site.length() - 1));
-//            int num2 = Integer.parseInt(plateNumber.substring(plateNumber.length() - 1));
-//            belong = belong && (num1 == num2);
-            belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() -2));
+            if(plateNumber.matches("[0-9]+")) { //旧数据的判断条件（车牌为纯数字）
+                belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() - 1));
+            }
+            else { //新数据的判断条件
+                belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() - 2));
+            }
         }
 
         return  belong;
