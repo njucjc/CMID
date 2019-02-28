@@ -1,6 +1,6 @@
 #include "device_launch_parameters.h"
 #include <stdio.h>
-
+/*
 enum Type {
 	NOT_NODE = 0,
 	AND_NODE,
@@ -16,7 +16,22 @@ enum Type {
 	SZ_LOC_DIST_NEQ ,
 	SZ_LOC_RANGE,
 	OR_NODE
-};
+};*/
+
+#define NOT_NODE 0
+#define AND_NODE 1
+#define IMPLIES_NODE 2
+#define UNIVERSAL_NODE 3
+#define EXISTENTIAL_NODE 4
+#define BFUNC_NODE 5
+#define EMPTY_NODE 6
+#define SAME 7
+#define SZ_SPD_CLOSE 8
+#define SZ_LOC_CLOSE 9
+#define SZ_LOC_DIST 10
+#define SZ_LOC_DIST_NEQ 11
+#define SZ_LOC_RANGE 12
+#define OR_NODE 13
 
 #define MAX_PARAM_NUM 2
 #define MAX_CCT_SIZE 3000000
@@ -133,7 +148,7 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 	int index = 0, tmp = tid;
 	while (parent[current_node] != -1) {
 		int type = node_type[parent[current_node]];
-		if (type == Type::EXISTENTIAL_NODE || type == Type::UNIVERSAL_NODE) {
+		if (type == EXISTENTIAL_NODE || type == UNIVERSAL_NODE) {
 			int len = pattern_length[pattern_idx[parent[current_node]]];
 			int branch_idx = tmp % len;
 			tmp /= len;
@@ -148,7 +163,7 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 //			printf("branch_idx = %d, branch_size = %d\n", branch_idx, branch_size[current_node]);
 			index++;
 		}
-		else if (type == Type::AND_NODE || type == Type::IMPLIES_NODE || type == Type::OR_NODE) {
+		else if (type == AND_NODE || type == IMPLIES_NODE || type == OR_NODE) {
 			if (right_child[parent[current_node]] == current_node) {
 				offset += branch_size[left_child[parent[current_node]]];
 			}
@@ -197,7 +212,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 			init_node(cur_links);
 
 			switch(type) {
-				case Type::UNIVERSAL_NODE: {
+				case UNIVERSAL_NODE: {
 					int step = branch_size[left_child[node]];
 					value = true;
 					bool first = true;
@@ -218,7 +233,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 					break;
 				}
 
-				case Type::EXISTENTIAL_NODE: {
+				case EXISTENTIAL_NODE: {
 					int step = branch_size[left_child[node]];
 					value = false;
 					bool first = true;
@@ -238,7 +253,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 					break;
 				}
 
-				case Type::AND_NODE: {
+				case AND_NODE: {
 					//right && left
 					value = truth_values[offset - 1] && truth_values[offset - (branch_size[right_child[node]] + 1)];
 
@@ -252,7 +267,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 
 					break;
 				}
-				case Type::OR_NODE: {
+				case OR_NODE: {
 					//right || left
 					value = truth_values[offset - 1] || truth_values[offset - (branch_size[right_child[node]] + 1)];
 
@@ -267,7 +282,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 					break;
 				}
 
-				case Type::IMPLIES_NODE: {
+				case IMPLIES_NODE: {
 					//!left || right
 					value = !truth_values[offset - (branch_size[right_child[node]] + 1)] || truth_values[offset - 1];
 
@@ -282,7 +297,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 					break;
 				}
 
-				case Type::NOT_NODE: {
+				case NOT_NODE: {
 					value = !truth_values[offset - 1];
 					linkHelper(cur_links, &(links[offset - 1]));
 					break;
@@ -290,32 +305,32 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 
 				default : { //BFUNC
 					switch(type) {
-						case Type::SAME: {
+						case SAME: {
 							value = same(params[0], params[1]);
 							break;
 						}
 
-						case Type::SZ_SPD_CLOSE: {
+						case SZ_SPD_CLOSE: {
 							value = sz_spd_close(params[0], params[1]);
 							break;
 						}
 
-						case Type::SZ_LOC_CLOSE: {
+						case SZ_LOC_CLOSE: {
 							value = sz_loc_close(params[0], params[1]);
 							break;
 						}
 
-						case Type::SZ_LOC_DIST: {
+						case SZ_LOC_DIST: {
 							value = sz_loc_dist(params[0], params[1]);
 							break;
 						}
 
-						case Type::SZ_LOC_DIST_NEQ: {
+						case SZ_LOC_DIST_NEQ: {
 							value = sz_loc_dist_neq(params[0], params[1]);
 							break;
 						}
 
-						case Type::SZ_LOC_RANGE: {
+						case SZ_LOC_RANGE: {
 							value = sz_loc_range(params[0]);
 							break;
 						}
