@@ -3,7 +3,6 @@ package cn.edu.nju.builder;
 import cn.edu.nju.change.*;
 import cn.edu.nju.checker.*;
 import cn.edu.nju.memory.GPUContextMemory;
-import cn.edu.nju.memory.GPUPatternMemory;
 import cn.edu.nju.memory.GPUResult;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
@@ -17,7 +16,6 @@ import cn.edu.nju.util.PTXFileHelper;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdevice;
 import jcuda.driver.JCudaDriver;
-import jcuda.utils.KernelLauncher;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -170,7 +168,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             this.scheduleType = Integer.parseInt(schedule);
             System.out.println("[DEBUG] " + schedule);
         }
-        else if ("GEAS".equals(schedule) && ("dynamic-change-based".equals(changeHandlerType) || "static-change-based".equals(changeHandlerType))) {
+        else if ("GEAS".equals(schedule) && this.changeHandlerType.contains("change-based")) {
             this.scheduler = new GEASchduler(this.checkerList);
             this.scheduleType = 0;
             System.out.println("[DEBUG] " + schedule);
@@ -196,17 +194,11 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
     private void configChangeHandler() {
-        if("static-time-based".equals(changeHandlerType)) {
-            this.changeHandler = new StaticTimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+        if(this.changeHandlerType.contains("time-based")) {
+            this.changeHandler = new TimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
-        else if("dynamic-time-based".equals(changeHandlerType)) {
-            this.changeHandler = new DynamicTimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
-        }
-        else if("static-change-based".equals(changeHandlerType)) {
-            this.changeHandler = new StaticChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
-        }
-        else if("dynamic-change-based".equals(changeHandlerType)) {
-            this.changeHandler = new DynamicChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+        else if(this.changeHandlerType.contains("change-based")) {
+            this.changeHandler = new ChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
     }
 
