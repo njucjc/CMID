@@ -2,6 +2,7 @@ package cn.edu.nju.checker;
 
 import cn.edu.nju.context.Context;
 import cn.edu.nju.node.CCTNode;
+import cn.edu.nju.node.NodeType;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.node.TreeNode;
 import cn.edu.nju.pattern.Pattern;
@@ -669,6 +670,45 @@ public abstract class Checker {
             return 0;
         }
 
+    }
+
+    public List<Boolean> calcSubTree(String patternId, Context c) {
+        List<Boolean> result = new ArrayList<>();
+        STNode node = stMap.get(patternId);
+
+        String p = null;
+        if (stMap.keySet().size() == 2) {
+            for (String s : stMap.keySet()) {
+                if (!s.equals(patternId)) {
+                    p = s;
+                }
+            }
+        }
+        Queue<STNode> queue = new LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            STNode n = queue.poll();
+
+            if (n.getNodeType() == NodeType.BFUNC_NODE) {
+
+                if (p == null) {
+                    Boolean b1 = BFuncHelper.bfun(n.getNodeName(), c, null);
+                    result.add(b1);
+                }
+                else {
+                    for (Context c1 : patternMap.get(p).getContextList()) {
+                        Boolean b1 = BFuncHelper.bfun(n.getNodeName(), c, c1);
+                        result.add(b1);
+                    }
+                }
+            }
+
+            for (TreeNode t : n.getChildTreeNodes()) {
+                queue.add((STNode)t);
+            }
+
+        }
+        return result;
     }
 
     public int getWorkload() {
