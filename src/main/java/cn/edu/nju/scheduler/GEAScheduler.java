@@ -13,7 +13,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by njucjc at 2018/3/19
  */
-public class GEASchduler implements Scheduler{
+public class GEAScheduler implements Scheduler{
     private List<Checker> checkerList;
 
     private Map<String, Boolean> scheduleMap;
@@ -23,7 +23,7 @@ public class GEASchduler implements Scheduler{
     protected ContextParser parser = new ContextParser();
 
 
-    public GEASchduler(List<Checker> checkerList) {
+    public GEAScheduler(List<Checker> checkerList) {
         this.checkerList = checkerList;
         this.scheduleMap = new ConcurrentHashMap<>();
         this.currentBatchMap = new ConcurrentHashMap<>();
@@ -76,7 +76,7 @@ public class GEASchduler implements Scheduler{
                 currentBatch.add(change);
             }
             else {
-                //TODO:
+                currentBatch.remove(index);
             }
         }
 

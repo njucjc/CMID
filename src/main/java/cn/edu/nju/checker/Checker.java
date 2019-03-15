@@ -43,6 +43,8 @@ public abstract class Checker {
 
     private Set<String> incDelSet;
 
+    private Set<String> criticalSet;
+
 
     protected int maxLinkSize = 0;
 
@@ -63,6 +65,8 @@ public abstract class Checker {
         this.incDelSet = ConcurrentHashMap.newKeySet();
         this.incAddSet.addAll(calcIncAddSet(this.stRoot));
         this.incDelSet.addAll(calcIncDelSet(this.stRoot));
+
+        this.criticalSet = ConcurrentHashMap.newKeySet();
 
         //初始化
         for(String key : stMap.keySet()) {
@@ -88,6 +92,9 @@ public abstract class Checker {
 
         this.incAddSet = checker.incAddSet;
         this.incDelSet = checker.incDelSet;
+
+        this.criticalSet = checker.criticalSet;
+
         this.timeCount = checker.timeCount;
         this.maxLinkSize = checker.maxLinkSize;
 
@@ -709,6 +716,75 @@ public abstract class Checker {
 
         }
         return result;
+    }
+
+    public boolean allEqual(String patternId, Context c1, Context c2) {
+        STNode node = stMap.get(patternId);
+
+        boolean result = true;
+        String p = null;
+        if (stMap.keySet().size() == 2) {
+            for (String s : stMap.keySet()) {
+                if (!s.equals(patternId)) {
+                    p = s;
+                }
+            }
+        }
+
+        Queue<STNode> queue = new LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            STNode n = queue.poll();
+
+            boolean flag = false;
+            if (n.getNodeType() == NodeType.BFUNC_NODE) {
+                if (p == null) {
+                    boolean b1 = BFuncHelper.bfun(n.getNodeName(), c1, null);
+                    boolean b2 = BFuncHelper.bfun(n.getNodeName(), c2, null);
+
+                    if (b1 != b2) {
+                        result = false;
+                        break;
+                    }
+                }
+                else {
+                    for (Context c : patternMap.get(p).getContextList()) {
+                        boolean b1 = BFuncHelper.bfun(n.getNodeName(), c1, c);
+                        boolean b2 = BFuncHelper.bfun(n.getNodeName(), c2, c);
+
+                        if(b1 != b2) {
+                            result = false;
+                            flag = true;
+                        }
+                    }
+                }
+            }
+
+            if (flag) {
+                break;
+            }
+
+            for (TreeNode t : n.getChildTreeNodes()) {
+                queue.add((STNode)t);
+            }
+
+        }
+
+        return result;
+    }
+
+    public boolean inCriticalSet(String id) {
+        return criticalSet.contains("ctx_" + id);
+    }
+
+    protected void addCriticalSet(String link) {
+        String [] contexts = link.split(" ");
+        criticalSet.addAll(Arrays.asList(contexts));
+
+    }
+
+    protected void clearCriticalSet() {
+        criticalSet.clear();
     }
 
     public int getWorkload() {

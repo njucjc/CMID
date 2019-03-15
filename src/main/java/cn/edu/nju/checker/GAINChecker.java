@@ -254,6 +254,9 @@ public class GAINChecker extends Checker {
     }
 
     private void parseLink(int [] links, int size) {
+
+        clearCriticalSet();
+
         for(int i = 0; i < size; i++) {
             String link = "";
             for(int j = 0; j < Config.MAX_PARAN_NUM; j++) {
@@ -261,6 +264,9 @@ public class GAINChecker extends Checker {
                     link = link + "ctx_" + links[i * Config.MAX_PARAN_NUM + j] + " ";
                 }
             }
+
+            addCriticalSet(link);
+
             if(addIncLink(link)) {
                 LogFileHelper.getLogger().info(getName() + " " + link);
             }

@@ -35,10 +35,16 @@ public class PccChecker extends Checker{
         evaluation(cctRoot, param); //PCC计算
 
         boolean value = true;
+
+        clearCriticalSet();
+
         if (!cctRoot.getNodeValue()) {
             String [] links = LinkHelper.splitLinks(cctRoot.getLink());
-            for(String link : links) {
-                if(addIncLink(link)) {
+            for (String link : links) {
+
+                addCriticalSet(link);
+
+                if (addIncLink(link)) {
                     LogFileHelper.getLogger().info(getName() + " " + link);
                 }
             }

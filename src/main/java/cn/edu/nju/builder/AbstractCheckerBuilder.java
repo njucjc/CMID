@@ -7,7 +7,8 @@ import cn.edu.nju.memory.GPUResult;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.BatchScheduler;
-import cn.edu.nju.scheduler.GEASchduler;
+import cn.edu.nju.scheduler.GEASOptScheduler;
+import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
 import cn.edu.nju.switcher.SimpleSwitcher;
 import cn.edu.nju.switcher.Switcher;
@@ -169,8 +170,13 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.out.println("[DEBUG] " + schedule);
         }
         else if ("GEAS".equals(schedule) && this.changeHandlerType.contains("change-based")) {
-            this.scheduler = new GEASchduler(this.checkerList);
+            this.scheduler = new GEAScheduler(this.checkerList);
             this.scheduleType = 0;
+            System.out.println("[DEBUG] " + schedule);
+        }
+        else if ("GEAS-opt".equals(schedule) && this.changeHandlerType.contains("change-based")) {
+            this.scheduler = new GEASOptScheduler(this.checkerList);
+            this.scheduleType = -2;
             System.out.println("[DEBUG] " + schedule);
         }
         else {
@@ -417,7 +423,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         if(scheduleType != this.scheduleType) {
             isUpdate = true;
             if(scheduleType == 0) {
-                this.scheduler = new GEASchduler(this.checkerList);
+                this.scheduler = new GEAScheduler(this.checkerList);
             }
             else {
                 this.scheduler = new BatchScheduler(scheduleType);
