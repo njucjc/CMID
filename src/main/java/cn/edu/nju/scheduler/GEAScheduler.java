@@ -104,7 +104,18 @@ public class GEAScheduler implements Scheduler{
     protected List<Boolean> calcSubTree(Checker checker, String patternId, Context c){
         List<Boolean> tmp = checker.calcSubTree(patternId, c);
         for(String c1 : currentBatchMap.get(checker.getName())) {
-            checker.calcSubTree(patternId, parser.parseChangeContext(c1.split(",")));
+            List<Boolean> l1 = checker.calcSubTree(patternId, parser.parseChangeContext(c1.split(",")));
+            int i;
+            for (i = 0; i < tmp.size(); i++) {
+                if (tmp.get(i) != l1.get(i)) {
+                    break;
+                }
+            }
+
+            if(i == tmp.size()) {
+                return l1;
+            }
+
         }
         return tmp;
     }
