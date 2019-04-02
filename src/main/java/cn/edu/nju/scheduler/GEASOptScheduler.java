@@ -31,6 +31,7 @@ public class GEASOptScheduler extends GEAScheduler {
 
             if (checker.allEqual(e[1], c1, c2)) {
                 result = i;
+                break;
             }
         }
 
