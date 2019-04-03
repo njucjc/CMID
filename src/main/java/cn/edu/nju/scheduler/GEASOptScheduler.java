@@ -12,8 +12,8 @@ public class GEASOptScheduler extends GEAScheduler {
     }
 
     @Override
-    protected int cCondition(Checker checker, List<String> currentBatch, String[] elements, List<Boolean> subTree) {
-        int result = -1;
+    protected String cCondition(Checker checker, List<String> currentBatch, String[] elements, List<Boolean> subTree) {
+
 
         for (int i = 0; i < currentBatch.size(); i++) {
             String c = currentBatch.get(i);
@@ -30,12 +30,11 @@ public class GEASOptScheduler extends GEAScheduler {
             Context c2 = parser.parseChangeContext(e);
 
             if (checker.allEqual(e[1], c1, c2)) {
-                result = i;
-                break;
+                return c;
             }
         }
 
-        return result;
+        return null;
     }
 
     @Override

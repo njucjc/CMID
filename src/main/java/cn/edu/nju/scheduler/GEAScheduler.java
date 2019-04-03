@@ -4,10 +4,7 @@ import cn.edu.nju.checker.Checker;
 import cn.edu.nju.context.Context;
 import cn.edu.nju.context.ContextParser;
 
-import java.util.Map;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 
 
 /**
@@ -25,14 +22,14 @@ public class GEAScheduler implements Scheduler{
 
     public GEAScheduler(List<Checker> checkerList) {
         this.checkerList = checkerList;
-        this.scheduleMap = new ConcurrentHashMap<>();
-        this.currentBatchMap = new ConcurrentHashMap<>();
+        this.scheduleMap = new HashMap<>();
+        this.currentBatchMap = new HashMap<>();
 
 
         for(Checker checker : checkerList) {
             String name = checker.getName();
             scheduleMap.put(name, false);
-            currentBatchMap.put(name, new CopyOnWriteArrayList<>());
+            currentBatchMap.put(name, new ArrayList<>());
         }
     }
 
@@ -71,12 +68,12 @@ public class GEAScheduler implements Scheduler{
         if (result) { //make batch empty
             currentBatch.clear();
         } else {
-            int index = cCondition(checker, currentBatch, elements, subTree);
-            if (index == -1) {
+            String c = cCondition(checker, currentBatch, elements, subTree);
+            if (c == null) {
                 currentBatch.add(change);
             }
             else {
-                currentBatch.remove(index);
+                currentBatch.remove(c);
             }
         }
 
@@ -97,23 +94,19 @@ public class GEAScheduler implements Scheduler{
         return result;
     }
 
-    protected int cCondition(Checker checker, List<String> currentBatch, String [] elements, List<Boolean> subTree) {
-        return -1;
+    protected String cCondition(Checker checker, List<String> currentBatch, String [] elements, List<Boolean> subTree) {
+        return null;
     }
 
     protected List<Boolean> calcSubTree(Checker checker, String patternId, Context c){
         List<Boolean> tmp = checker.calcSubTree(patternId, c);
         for(String c1 : currentBatchMap.get(checker.getName())) {
             List<Boolean> l1 = checker.calcSubTree(patternId, parser.parseChangeContext(c1.split(",")));
-            int i;
-            for (i = 0; i < tmp.size(); i++) {
-                if (tmp.get(i) != l1.get(i)) {
-                    break;
-                }
-            }
 
-            if(i == tmp.size()) {
-                return l1;
+            for (int i = 0; i < tmp.size(); i++) {
+                if (tmp.get(i) == l1.get(i)) {
+                    continue;
+                }
             }
 
         }
