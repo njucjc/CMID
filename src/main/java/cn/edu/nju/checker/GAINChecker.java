@@ -187,7 +187,6 @@ public class GAINChecker extends Checker {
     @Override
     public synchronized boolean doCheck() {
        // assert false:"Something is being to do.";
-        long start = System.nanoTime();
         checkTimes++;
         computeRTTBranchSize(this.stRoot);
         int cctSize = branchSize[stSize - 1];
@@ -247,8 +246,6 @@ public class GAINChecker extends Checker {
 
         cuCtxPopCurrent(cuContext);
 
-        long end = System.nanoTime();
-        this.timeCount += (end - start);
 
         return value;
     }

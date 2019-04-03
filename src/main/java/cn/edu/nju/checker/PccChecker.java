@@ -28,7 +28,6 @@ public class PccChecker extends Checker{
      */
     @Override
     public synchronized boolean doCheck() {
-        long start = System.nanoTime();
 
         checkTimes++;
         List<Context> param = new CopyOnWriteArrayList<>();
@@ -52,9 +51,6 @@ public class PccChecker extends Checker{
             this.maxLinkSize = this.maxLinkSize < links.length ? links.length : this.maxLinkSize;
             value = false;
         }
-
-        long end = System.nanoTime();
-        timeCount = timeCount + (end - start);
 
         return value;
     }

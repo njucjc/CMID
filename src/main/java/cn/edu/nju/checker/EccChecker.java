@@ -31,7 +31,6 @@ public class EccChecker extends Checker{
      */
     @Override
     public synchronized boolean doCheck() {
-        long start = System.nanoTime();
 
         checkTimes++;
         clearCCTMap();
@@ -59,9 +58,6 @@ public class EccChecker extends Checker{
             this.maxLinkSize = this.maxLinkSize > links.length ? this.maxLinkSize : links.length;
             value = false;
         }
-
-        long end = System.nanoTime();
-        timeCount = timeCount + (end - start);
 
         return value;
 
