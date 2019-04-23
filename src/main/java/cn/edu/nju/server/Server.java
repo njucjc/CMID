@@ -96,7 +96,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }
         LogFileHelper.getLogger().info("Total Inc: " + inc);
         LogFileHelper.getLogger().info("Receive: " + count );
-        LogFileHelper.getLogger().info("check time: " + time / 1000000 + " ms");
+        LogFileHelper.getLogger().info("check time: " +  changeHandler.timeCount / 1000000 + " ms");
         LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
         LogFileHelper.getLogger().info("Switch Time: " + switchTimeCount + " ns = " + switchTimeCount / 1000000 +" ms");
         LogFileHelper.getLogger().info("Max Delay: " + maxDelay / 1000000 + " ms");
