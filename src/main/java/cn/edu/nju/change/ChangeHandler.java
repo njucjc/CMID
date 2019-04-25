@@ -27,6 +27,8 @@ public abstract class ChangeHandler {
 
     private String checkerName;
 
+    public long timeCount = 0L;
+
     public ChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
         this.patternMap = patternMap;
         this.checkerMap = checkerMap;
@@ -58,6 +60,7 @@ public abstract class ChangeHandler {
         }
     }
     public void doCheck() {
+        long start = System.nanoTime();
         boolean hasCheck = false;
         for(Checker checker : checkerList) {
             if(scheduler.schedule(checker.getName())) {
@@ -73,6 +76,8 @@ public abstract class ChangeHandler {
         if (hasCheck) {
             System.out.println("============================================================================================");
         }
+        long end = System.nanoTime();
+        timeCount += (end -start);
     }
 
     protected final void deleteChange(String timestamp, String  patternId) {

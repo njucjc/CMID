@@ -31,7 +31,6 @@ public class EccChecker extends Checker{
      */
     @Override
     public synchronized boolean doCheck() {
-        long start = System.nanoTime();
 
         checkTimes++;
         clearCCTMap();
@@ -42,10 +41,16 @@ public class EccChecker extends Checker{
         evaluation(cctRoot, param);
 
         boolean value = true;
+
+        clearCriticalSet();
+
         if (!cctRoot.getNodeValue()) {
             String [] links = LinkHelper.splitLinks(cctRoot.getLink());
-            for(String link : links) {
-                if(addIncLink(link)) {
+            for (String link : links) {
+
+                addCriticalSet(link);
+
+                if (addIncLink(link)) {
                     LogFileHelper.getLogger().info(getName() + " " + link);
                 }
             }
@@ -53,9 +58,6 @@ public class EccChecker extends Checker{
             this.maxLinkSize = this.maxLinkSize > links.length ? this.maxLinkSize : links.length;
             value = false;
         }
-
-        long end = System.nanoTime();
-        timeCount = timeCount + (end - start);
 
         return value;
 

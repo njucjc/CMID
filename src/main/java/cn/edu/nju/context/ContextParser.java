@@ -15,4 +15,15 @@ public class ContextParser {
 
         return new Context(id, timestamp, plateNumber, longitude, latitude, speed, status);
     }
+
+    public synchronized Context parseChangeContext(String [] elements) {
+
+        return new Context(Integer.parseInt(elements[2]),
+                elements[3],
+                elements[4],
+                Double.parseDouble(elements[5]),
+                Double.parseDouble(elements[6]),
+                Double.parseDouble(elements[7]),
+                Integer.parseInt(elements[8]));
+    }
 }

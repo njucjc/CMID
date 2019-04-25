@@ -187,7 +187,6 @@ public class GAINChecker extends Checker {
     @Override
     public synchronized boolean doCheck() {
        // assert false:"Something is being to do.";
-        long start = System.nanoTime();
         checkTimes++;
         computeRTTBranchSize(this.stRoot);
         int cctSize = branchSize[stSize - 1];
@@ -247,13 +246,14 @@ public class GAINChecker extends Checker {
 
         cuCtxPopCurrent(cuContext);
 
-        long end = System.nanoTime();
-        this.timeCount += (end - start);
 
         return value;
     }
 
     private void parseLink(int [] links, int size) {
+
+        clearCriticalSet();
+
         for(int i = 0; i < size; i++) {
             String link = "";
             for(int j = 0; j < Config.MAX_PARAN_NUM; j++) {
@@ -261,6 +261,9 @@ public class GAINChecker extends Checker {
                     link = link + "ctx_" + links[i * Config.MAX_PARAN_NUM + j] + " ";
                 }
             }
+
+            addCriticalSet(link);
+
             if(addIncLink(link)) {
                 LogFileHelper.getLogger().info(getName() + " " + link);
             }
