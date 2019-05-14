@@ -518,7 +518,7 @@ public abstract class Checker {
             if(t instanceof CCTNode) {
                 Context c = ((CCTNode) t).getContext();
                 if(c != null) {
-                    System.out.print("(" + c.getPlateNumber() + ") ");
+                    System.out.print("(" + c.getId() + ") ");
                 }
                 else {
                     System.out.print(" ");

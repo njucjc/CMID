@@ -49,7 +49,7 @@ public abstract class ChangeHandler {
             int len = strs[0].length() + strs[1].length() + strs[2].length();
             return new Context(Integer.parseInt(strs[2]),
                     strs[3],
-                    strs[4],
+                    Double.parseDouble(strs[4]),
                     Double.parseDouble(strs[5]),
                     Double.parseDouble(strs[6]),
                     Double.parseDouble(strs[7]),

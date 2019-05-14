@@ -6,18 +6,18 @@ package cn.edu.nju.context;
 public class Context {
     private int id;
     private String timestamp;
-    private String plateNumber;
-    private double longitude;
-    private double latitude;
+    private double v;
+    private double i;
+    private double power;
     private double speed;
     private int status;
 
-    public Context(int id, String timestamp, String plateNumber, double longitude, double latitude, double speed, int status) {
+    public Context(int id, String timestamp, double v, double i, double power, double speed, int status) {
         this.id = id;
         this.timestamp = timestamp;
-        this.plateNumber = plateNumber;
-        this.longitude = longitude;
-        this.latitude = latitude;
+        this.v = v;
+        this.i = i;
+        this.power = power;
         this.speed = speed;
         this.status = status;
     }
@@ -38,30 +38,6 @@ public class Context {
         this.timestamp = timestamp;
     }
 
-    public String getPlateNumber() {
-        return plateNumber;
-    }
-
-    public void setPlateNumber(String plateNumber) {
-        this.plateNumber = plateNumber;
-    }
-
-    public double getLongitude() {
-        return longitude;
-    }
-
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    public double getLatitude() {
-        return latitude;
-    }
-
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
     public double getSpeed() {
         return speed;
     }
@@ -78,9 +54,33 @@ public class Context {
         this.status = status;
     }
 
+    public double getV() {
+        return v;
+    }
+
+    public void setV(double v) {
+        this.v = v;
+    }
+
+    public double getI() {
+        return i;
+    }
+
+    public void setI(double i) {
+        this.i = i;
+    }
+
+    public double getPower() {
+        return power;
+    }
+
+    public void setPower(double power) {
+        this.power = power;
+    }
+
     public String allForString() {
-        return id + "," + timestamp + "," + plateNumber + ","
-                + longitude + "," + latitude + "," + speed + "," + status;
+        return id + "," + timestamp + "," + v + ","
+                + i + "," + power + "," + speed + "," + status;
     }
 
     @Override
@@ -88,18 +88,18 @@ public class Context {
         return "ctx_" + id;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Context context = (Context) o;
-
-        return plateNumber != null ? plateNumber.equals(context.plateNumber) : context.plateNumber == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return plateNumber != null ? plateNumber.hashCode() : 0;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Context context = (Context) o;
+//
+//        return plateNumber != null ? plateNumber.equals(context.plateNumber) : context.plateNumber == null;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return plateNumber != null ? plateNumber.hashCode() : 0;
+//    }
 }

@@ -13,13 +13,14 @@ public class BFuncHelper {
      * @return
      */
     public static boolean szLocRange(Context context) {
-        double longitude = context.getLongitude();
-        double latitude = context.getLatitude();
-
-        return  Double.compare(longitude, 112.0) >= 0 &&
-                Double.compare(longitude, 116.0) <= 0 &&
-                Double.compare(latitude, 20.0) >= 0   &&
-                Double.compare(latitude,24.0) <= 0;
+//        double longitude = context.getLongitude();
+//        double latitude = context.getLatitude();
+//
+//        return  Double.compare(longitude, 112.0) >= 0 &&
+//                Double.compare(longitude, 116.0) <= 0 &&
+//                Double.compare(latitude, 20.0) >= 0   &&
+//                Double.compare(latitude,24.0) <= 0;
+        return true;
     }
 
     /**
@@ -88,12 +89,13 @@ public class BFuncHelper {
      * @return
      */
     private static double getDistance(Context context1, Context context2) {
-        double longitude1 = context1.getLongitude();
+        /*double longitude1 = context1.getLongitude();
         double latitude1 = context1.getLatitude();
         double longitude2 = context2.getLongitude();
         double latitude2 = context2.getLatitude();
 
-        return LocationHelper.getDistance(longitude1, latitude1, longitude2, latitude2);
+        return LocationHelper.getDistance(longitude1, latitude1, longitude2, latitude2);*/
+        return 0.0;
     }
 
     public static boolean bfun(String name, Context context1, Context context2) {

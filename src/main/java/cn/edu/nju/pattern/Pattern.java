@@ -100,7 +100,7 @@ public class Pattern {
      * @return
      */
     public boolean isBelong(Context context) {
-        int status = context.getStatus();
+       /* int status = context.getStatus();
         String plateNumber = context.getPlateNumber();
 
         boolean belong = false;
@@ -138,6 +138,8 @@ public class Pattern {
         }
 
         return  belong;
+        */
+       return true;
     }
 
     /**

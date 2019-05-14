@@ -13,13 +13,13 @@ import java.util.*;
 
 public class GPUContextMemory {
 
-    private CUdeviceptr longitude = new CUdeviceptr();
+    private CUdeviceptr v = new CUdeviceptr();
 
-    private CUdeviceptr latitude = new CUdeviceptr();
+    private CUdeviceptr i = new CUdeviceptr();
 
     private CUdeviceptr speed = new CUdeviceptr();
 
-    private CUdeviceptr plateNumber = new CUdeviceptr();
+    private CUdeviceptr power = new CUdeviceptr();
 
 
     private static GPUContextMemory gpuContextMemory;
@@ -28,31 +28,31 @@ public class GPUContextMemory {
         int size = contextStrList.size();
 
         ContextParser parser = new ContextParser();
-        double [] longitudeRaw = new double[size];
-        double [] latitudeRaw = new double[size];
+        double [] vRaw = new double[size];
+        double [] iRaw = new double[size];
         double [] speedRaw = new double[size];
 
-        int [] plateNumberRaw = new int[size];
+        double [] powerRaw = new double[size];
 
         for(int i = 0; i < size; i++) {
             Context c = parser.parseContext(i,contextStrList.get(i));
-            longitudeRaw[i] = c.getLongitude();
-            latitudeRaw[i] = c.getLatitude();
+            vRaw[i] = c.getV();
+            iRaw[i] = c.getI();
             speedRaw[i] = c.getSpeed();
-            plateNumberRaw[i] = parseInt(c.getPlateNumber());//Integer.parseInt(c.getPlateNumber());
+            powerRaw[i] = c.getPower();//Integer.parseInt(c.getPlateNumber());
         }
 
-        cuMemAlloc(this.longitude, size * Sizeof.DOUBLE);
-        cuMemcpyHtoD(this.longitude, Pointer.to(longitudeRaw), size * Sizeof.DOUBLE);
+        cuMemAlloc(this.v, size * Sizeof.DOUBLE);
+        cuMemcpyHtoD(this.v, Pointer.to(vRaw), size * Sizeof.DOUBLE);
 
-        cuMemAlloc(this.latitude, size * Sizeof.DOUBLE);
-        cuMemcpyHtoD(this.latitude, Pointer.to(latitudeRaw), size * Sizeof.DOUBLE);
+        cuMemAlloc(this.i, size * Sizeof.DOUBLE);
+        cuMemcpyHtoD(this.i, Pointer.to(iRaw), size * Sizeof.DOUBLE);
 
         cuMemAlloc(this.speed, size * Sizeof.DOUBLE);
         cuMemcpyHtoD(this.speed, Pointer.to(speedRaw), size * Sizeof.DOUBLE);
 
-        cuMemAlloc(this.plateNumber, size * Sizeof.INT);
-        cuMemcpyHtoD(this.plateNumber, Pointer.to(plateNumberRaw), size * Sizeof.INT);
+        cuMemAlloc(this.power, size * Sizeof.DOUBLE);
+        cuMemcpyHtoD(this.power, Pointer.to(powerRaw), size * Sizeof.DOUBLE);
 
     }
 
@@ -84,19 +84,19 @@ public class GPUContextMemory {
         return res;
     }
 
-    public CUdeviceptr getLongitude() {
-        return longitude;
+    public CUdeviceptr getV() {
+        return v;
     }
 
-    public CUdeviceptr getLatitude() {
-        return latitude;
+    public CUdeviceptr getI() {
+        return i;
     }
 
     public CUdeviceptr getSpeed() {
         return speed;
     }
 
-    public CUdeviceptr getPlateNumber() {
-        return plateNumber;
+    public CUdeviceptr getPower() {
+        return power;
     }
 }
