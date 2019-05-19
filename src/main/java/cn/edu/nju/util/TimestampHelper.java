@@ -7,7 +7,7 @@ import java.text.SimpleDateFormat;
  * Created by njucjc on 2017/10/23.
  */
 public class TimestampHelper {
-    private static SimpleDateFormat dfs = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+    private static SimpleDateFormat dfs = new SimpleDateFormat("HH:mm:ss");
     /**
      *返回两个时间戳对应时间差的毫秒数
      * @param timestamp1
@@ -75,9 +75,9 @@ public class TimestampHelper {
 
 
     public static void main(String[] args) {
-        System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:057"));
-        System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:228"));
-        System.out.println(timestampDiff("2007-10-26 11:00:00:057","2007-10-26 11:00:00:228"));
-        System.out.println(plusMillis("2007-10-26 11:00:00:057", 100));
+        System.out.println(timestampDiff("11:00:0","11:00:01"));
+        System.out.println(timestampDiff("11:00:00","11:00:05"));
+        System.out.println(timestampDiff("1:00:00","11:00:00"));
+        System.out.println(plusMillis("11:00:00", 1000));
     }
 }
