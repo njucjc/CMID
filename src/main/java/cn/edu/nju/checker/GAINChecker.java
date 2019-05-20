@@ -173,6 +173,21 @@ public class GAINChecker extends Checker {
                 else if("sz_loc_dist_neq".equals(name)) {
                     nodeType[i] = NodeType.SZ_LOC_DIST_NEQ;
                 }
+                else if("sz_electric_range".equals(name)) {
+                    nodeType[i] = NodeType.SZ_ELECTRIC_RANGE;
+                }
+                else if("sz_voltage_range".equals(name)) {
+                    nodeType[i] = NodeType.SZ_VOLTAGE_RANGE;
+                }
+                else if("sz_power_range".equals(name)) {
+                    nodeType[i] = NodeType.SZ_POWER_RANGE;
+                }
+                else if("sz_speed_range".equals(name)) {
+                    nodeType[i] = NodeType.SZ_SPEED_RANGE;
+                }
+                else if("sz_acc_range".equals(name)) {
+                    nodeType[i] = NodeType.SZ_ACC_RANGE;
+                }
                 else {
                     assert false:"BFunc type error.";
                 }

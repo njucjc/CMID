@@ -18,6 +18,11 @@ public interface NodeType {
     public static final int SZ_LOC_DIST = 10;
     public static final int SZ_LOC_DIST_NEQ = 11;
     public static final int SZ_LOC_RANGE = 12;
+    public static final int SZ_ELECTRIC_RANGE = 13;
+    public static final int SZ_VOLTAGE_RANGE = 14;
+    public static final int SZ_POWER_RANGE = 15;
+    public static final int SZ_SPEED_RANGE = 16;
+    public static final int SZ_ACC_RANGE = 17;
 
     int getNodeType();
     void setNodeType(int nodeType);
