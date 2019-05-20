@@ -121,7 +121,7 @@ public class BFuncHelper {
             return true;
         }
         else {
-            return v / t <= 1.0;
+            return v / t <= 2.0;
         }
 
     }
