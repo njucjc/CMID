@@ -6,15 +6,17 @@ package cn.edu.nju.context;
 public class Context {
     private int id;
     private String timestamp;
+    private String plateNumber;
     private double v;
     private double i;
     private double power;
     private double speed;
     private int status;
 
-    public Context(int id, String timestamp, double v, double i, double power, double speed, int status) {
+    public Context(int id, String timestamp, String plateNumber, double v, double i, double power, double speed, int status) {
         this.id = id;
         this.timestamp = timestamp;
+        this.plateNumber = plateNumber;
         this.v = v;
         this.i = i;
         this.power = power;
@@ -78,8 +80,16 @@ public class Context {
         this.power = power;
     }
 
+    public String getPlateNumber() {
+        return plateNumber;
+    }
+
+    public void setPlateNumber(String plateNumber) {
+        this.plateNumber = plateNumber;
+    }
+
     public String allForString() {
-        return id + "," + timestamp + "," + v + ","
+        return id + "," + timestamp + "," + plateNumber +"," + v + ","
                 + i + "," + power + "," + speed + "," + status;
     }
 
@@ -88,18 +98,18 @@ public class Context {
         return "ctx_" + id;
     }
 
-//    @Override
-//    public boolean equals(Object o) {
-//        if (this == o) return true;
-//        if (o == null || getClass() != o.getClass()) return false;
-//
-//        Context context = (Context) o;
-//
-//        return plateNumber != null ? plateNumber.equals(context.plateNumber) : context.plateNumber == null;
-//    }
-//
-//    @Override
-//    public int hashCode() {
-//        return plateNumber != null ? plateNumber.hashCode() : 0;
-//    }
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Context context = (Context) o;
+
+        return plateNumber != null ? plateNumber.equals(context.plateNumber) : context.plateNumber == null;
+    }
+
+    @Override
+    public int hashCode() {
+        return plateNumber != null ? plateNumber.hashCode() : 0;
+    }
 }
