@@ -115,13 +115,13 @@ public class BFuncHelper {
     }
 
     private static boolean szAccRange(Context context1, Context context2) {
-        long t = (Math.abs(TimestampHelper.timestampDiff(context1.getTimestamp(),context2.getTimestamp())) / 1000);
+        double t = (Math.abs(TimestampHelper.timestampDiff(context1.getTimestamp(),context2.getTimestamp())) / 1000.0);
         double v =  Math.abs(context1.getSpeed() - context2.getSpeed()) / 3.6;
         if (t == 0) {
             return true;
         }
         else {
-            return v / t <= 2.0;
+            return v / t <= 1.2;
         }
 
     }
