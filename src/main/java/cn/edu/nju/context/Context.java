@@ -6,21 +6,21 @@ package cn.edu.nju.context;
 public class Context {
     private int id;
     private String timestamp;
-    private String plateNumber;
-    private double v;
+    private double u;
     private double i;
-    private double power;
-    private double speed;
+    private double p;
+    private double v;
+    private double a;
     private int status;
 
-    public Context(int id, String timestamp, String plateNumber, double v, double i, double power, double speed, int status) {
+    public Context(int id, String timestamp, double u, double i, double p, double v, double a, int status) {
         this.id = id;
         this.timestamp = timestamp;
-        this.plateNumber = plateNumber;
-        this.v = v;
+        this.u = u;
         this.i = i;
-        this.power = power;
-        this.speed = speed;
+        this.p = p;
+        this.v = v;
+        this.a = a;
         this.status = status;
     }
 
@@ -40,28 +40,12 @@ public class Context {
         this.timestamp = timestamp;
     }
 
-    public double getSpeed() {
-        return speed;
+    public double getU() {
+        return u;
     }
 
-    public void setSpeed(double speed) {
-        this.speed = speed;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public double getV() {
-        return v;
-    }
-
-    public void setV(double v) {
-        this.v = v;
+    public void setU(double u) {
+        this.u = u;
     }
 
     public double getI() {
@@ -72,25 +56,41 @@ public class Context {
         this.i = i;
     }
 
-    public double getPower() {
-        return power;
+    public double getP() {
+        return p;
     }
 
-    public void setPower(double power) {
-        this.power = power;
+    public void setP(double p) {
+        this.p = p;
     }
 
-    public String getPlateNumber() {
-        return plateNumber;
+    public double getV() {
+        return v;
     }
 
-    public void setPlateNumber(String plateNumber) {
-        this.plateNumber = plateNumber;
+    public void setV(double v) {
+        this.v = v;
+    }
+
+    public double getA() {
+        return a;
+    }
+
+    public void setA(double a) {
+        this.a = a;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     public String allForString() {
-        return id + "," + timestamp + "," + plateNumber +"," + v + ","
-                + i + "," + power + "," + speed + "," + status;
+        return id + "," + timestamp  +"," + u + ","
+                + i + "," + p + "," + v + "," + a + "," + status;
     }
 
     @Override
@@ -98,18 +98,18 @@ public class Context {
         return "ctx_" + id;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Context context = (Context) o;
-
-        return plateNumber != null ? plateNumber.equals(context.plateNumber) : context.plateNumber == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return plateNumber != null ? plateNumber.hashCode() : 0;
-    }
+//    @Override
+//    public boolean equals(Object o) {
+//        if (this == o) return true;
+//        if (o == null || getClass() != o.getClass()) return false;
+//
+//        Context context = (Context) o;
+//
+//        return plateNumber != null ? plateNumber.equals(context.plateNumber) : context.plateNumber == null;
+//    }
+//
+//    @Override
+//    public int hashCode() {
+//        return plateNumber != null ? plateNumber.hashCode() : 0;
+//    }
 }

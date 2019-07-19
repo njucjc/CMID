@@ -13,13 +13,17 @@ import java.util.*;
 
 public class GPUContextMemory {
 
-    private CUdeviceptr v = new CUdeviceptr();
+    private CUdeviceptr u = new CUdeviceptr();
 
     private CUdeviceptr i = new CUdeviceptr();
 
-    private CUdeviceptr speed = new CUdeviceptr();
+    private CUdeviceptr p = new CUdeviceptr();
 
-    private CUdeviceptr power = new CUdeviceptr();
+    private CUdeviceptr v = new CUdeviceptr();
+
+    private CUdeviceptr a = new CUdeviceptr();
+
+    private CUdeviceptr status = new CUdeviceptr();
 
 
     private static GPUContextMemory gpuContextMemory;
@@ -28,31 +32,40 @@ public class GPUContextMemory {
         int size = contextStrList.size();
 
         ContextParser parser = new ContextParser();
-        double [] vRaw = new double[size];
+        double [] uRaw = new double[size];
         double [] iRaw = new double[size];
-        double [] speedRaw = new double[size];
-
         double [] powerRaw = new double[size];
+        double [] speedRaw = new double[size];
+        double [] aRaw = new double[size];
+        int [] statusRaw = new int[size];
 
         for(int i = 0; i < size; i++) {
             Context c = parser.parseContext(i,contextStrList.get(i));
-            vRaw[i] = c.getV();
+            uRaw[i] = c.getU();
             iRaw[i] = c.getI();
-            speedRaw[i] = c.getSpeed();
-            powerRaw[i] = c.getPower();//Integer.parseInt(c.getPlateNumber());
+            powerRaw[i] = c.getP();//Integer.parseInt(c.getPlateNumber());
+            speedRaw[i] = c.getV();
+            aRaw[i] = c.getA();
+            statusRaw[i] = c.getStatus();
         }
 
-        cuMemAlloc(this.v, size * Sizeof.DOUBLE);
-        cuMemcpyHtoD(this.v, Pointer.to(vRaw), size * Sizeof.DOUBLE);
+        cuMemAlloc(this.u, size * Sizeof.DOUBLE);
+        cuMemcpyHtoD(this.u, Pointer.to(uRaw), size * Sizeof.DOUBLE);
 
         cuMemAlloc(this.i, size * Sizeof.DOUBLE);
         cuMemcpyHtoD(this.i, Pointer.to(iRaw), size * Sizeof.DOUBLE);
 
-        cuMemAlloc(this.speed, size * Sizeof.DOUBLE);
-        cuMemcpyHtoD(this.speed, Pointer.to(speedRaw), size * Sizeof.DOUBLE);
+        cuMemAlloc(this.p, size * Sizeof.DOUBLE);
+        cuMemcpyHtoD(this.p, Pointer.to(powerRaw), size * Sizeof.DOUBLE);
 
-        cuMemAlloc(this.power, size * Sizeof.DOUBLE);
-        cuMemcpyHtoD(this.power, Pointer.to(powerRaw), size * Sizeof.DOUBLE);
+        cuMemAlloc(this.v, size * Sizeof.DOUBLE);
+        cuMemcpyHtoD(this.v, Pointer.to(speedRaw), size * Sizeof.DOUBLE);
+
+        cuMemAlloc(this.a, size * Sizeof.DOUBLE);
+        cuMemcpyHtoD(this.a, Pointer.to(aRaw), size * Sizeof.DOUBLE);
+
+        cuMemAlloc(this.status, size * Sizeof.INT);
+        cuMemcpyHtoD(this.status, Pointer.to(statusRaw), size * Sizeof.INT);
 
     }
 
@@ -84,19 +97,27 @@ public class GPUContextMemory {
         return res;
     }
 
-    public CUdeviceptr getV() {
-        return v;
+    public CUdeviceptr getU() {
+        return u;
     }
 
     public CUdeviceptr getI() {
         return i;
     }
 
-    public CUdeviceptr getSpeed() {
-        return speed;
+    public CUdeviceptr getP() {
+        return p;
     }
 
-    public CUdeviceptr getPower() {
-        return power;
+    public CUdeviceptr getV() {
+        return v;
+    }
+
+    public CUdeviceptr getA() {
+        return a;
+    }
+
+    public CUdeviceptr getStatus() {
+        return status;
     }
 }
