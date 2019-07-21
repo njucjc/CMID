@@ -27,7 +27,7 @@ public class BFuncHelper {
 
     private static boolean accRateRange(Context c1, Context c2) {
 
-        boolean res = false;
+        boolean res = true;
         double t = (Math.abs(TimestampHelper.timestampDiff(c1.getTimestamp(),c2.getTimestamp())) / 1000.0);
         double a = Math.abs(c1.getA() - c2.getA());
 
