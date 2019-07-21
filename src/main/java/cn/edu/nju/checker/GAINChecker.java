@@ -155,38 +155,29 @@ public class GAINChecker extends Checker {
             }
             else {
                 String name = constraintNodes[i].getNodeName();
-                if("sz_loc_range".equals(name)) {
-                    nodeType[i] = NodeType.SZ_LOC_RANGE;
+                if("electric_range".equals(name)) {
+                    nodeType[i] = NodeType.ELECTRIC_RANGE;
                 }
-                else if("same".equals(name)) {
-                    nodeType[i] = NodeType.SAME;
+                else if("voltage_range".equals(name)) {
+                    nodeType[i] = NodeType.VOLTAGE_RANGE;
                 }
-                else if("sz_loc_close".equals(name)) {
-                    nodeType[i] = NodeType.SZ_LOC_CLOSE;
+                else if("acc_range".equals(name)) {
+                    nodeType[i] = NodeType.ACC_RANG;
                 }
-                else if("sz_spd_close".equals(name)) {
-                    nodeType[i] = NodeType.SZ_SPD_CLOSE;
+                else if("acc_rate_range".equals(name)) {
+                    nodeType[i] = NodeType.ACC_RATE_RANG;
                 }
-                else if("sz_loc_dist".equals(name)) {
-                    nodeType[i] = NodeType.SZ_LOC_DIST;
+                else if("max_speed".equals(name)) {
+                    nodeType[i] = NodeType.MAX_SPEED;
                 }
-                else if("sz_loc_dist_neq".equals(name)) {
-                    nodeType[i] = NodeType.SZ_LOC_DIST_NEQ;
+                else if("min_speed".equals(name)) {
+                    nodeType[i] = NodeType.MIN_SPEED;
                 }
-                else if("sz_electric_range".equals(name)) {
-                    nodeType[i] = NodeType.SZ_ELECTRIC_RANGE;
+                else if("trans_to_brake".equals(name)) {
+                    nodeType[i] = NodeType.TRANS_TO_BRAKE;
                 }
-                else if("sz_voltage_range".equals(name)) {
-                    nodeType[i] = NodeType.SZ_VOLTAGE_RANGE;
-                }
-                else if("sz_power_range".equals(name)) {
-                    nodeType[i] = NodeType.SZ_POWER_RANGE;
-                }
-                else if("sz_speed_range".equals(name)) {
-                    nodeType[i] = NodeType.SZ_SPEED_RANGE;
-                }
-                else if("sz_acc_range".equals(name)) {
-                    nodeType[i] = NodeType.SZ_ACC_RANGE;
+                else if("trans_to_traction".equals(name)) {
+                    nodeType[i] = NodeType.TRANS_TO_TRACTION;
                 }
                 else {
                     assert false:"BFunc type error.";

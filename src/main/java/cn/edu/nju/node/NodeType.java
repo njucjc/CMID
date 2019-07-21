@@ -12,17 +12,14 @@ public interface NodeType {
     public static final int BFUNC_NODE = 5;
     public static final int EMPTY_NODE = 6;
 
-    public static final int SAME = 7;
-    public static final int SZ_SPD_CLOSE = 8;
-    public static final int SZ_LOC_CLOSE = 9;
-    public static final int SZ_LOC_DIST = 10;
-    public static final int SZ_LOC_DIST_NEQ = 11;
-    public static final int SZ_LOC_RANGE = 12;
-    public static final int SZ_ELECTRIC_RANGE = 13;
-    public static final int SZ_VOLTAGE_RANGE = 14;
-    public static final int SZ_POWER_RANGE = 15;
-    public static final int SZ_SPEED_RANGE = 16;
-    public static final int SZ_ACC_RANGE = 17;
+    public static final int ELECTRIC_RANGE = 13;
+    public static final int VOLTAGE_RANGE = 14;
+    public static final int ACC_RANG = 15;
+    public static final int ACC_RATE_RANG = 16;
+    public static final int MAX_SPEED = 17;
+    public static final int MIN_SPEED = 18;
+    public static final int TRANS_TO_BRAKE = 19;
+    public static final int TRANS_TO_TRACTION = 20;
 
     int getNodeType();
     void setNodeType(int nodeType);
