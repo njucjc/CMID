@@ -321,7 +321,7 @@ public abstract class Checker {
             else {
                 int size = param.size();
                 assert size >= 1:"[DEBUG] Param error";
-                value = BFuncHelper.bfun(cctRoot.getNodeName(), param.get(size - 1), param.get(size >= 2 ? size - 2:size - 1));
+                value = BFuncHelper.bfun(cctRoot.getNodeName(), param.get(size >= 2 ? size - 2:size - 1), param.get(size - 1));
             }
             //设置本结点布尔值
             cctRoot.setNodeValue(value);
