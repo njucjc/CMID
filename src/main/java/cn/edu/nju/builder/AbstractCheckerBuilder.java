@@ -227,9 +227,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 String subject = childNodes.item(7).getTextContent();
                 String predicate = childNodes.item(9).getTextContent();
                 String object = childNodes.item(11).getTextContent();
-                String site = childNodes.item(13).getTextContent();
+                String state = childNodes.item(13).getTextContent();
 
-                patternMap.put(id, new Pattern(id, freshness, category, subject, predicate, object, site));
+                patternMap.put(id, new Pattern(id, freshness, category, subject, predicate, object, state));
             }
 
             for(String key : patternMap.keySet()) {

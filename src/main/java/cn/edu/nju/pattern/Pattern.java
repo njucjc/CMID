@@ -16,7 +16,7 @@ public class Pattern {
     private String subject;
     private String predicate;
     private String object;
-    private String site;
+    private String state;
 
     private List<Context> contextList;
 
@@ -26,14 +26,14 @@ public class Pattern {
                    String subject,
                    String predicate,
                    String object,
-                   String site) {
+                   String state) {
         this.id = id;
         this.freshness = freshness;
         this.category = category;
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;
-        this.site = site;
+        this.state = state;
 
         this.contextList = new CopyOnWriteArrayList<>();
     }
@@ -82,12 +82,12 @@ public class Pattern {
         this.object = object;
     }
 
-    public String getSite() {
-        return site;
+    public String getState() {
+        return state;
     }
 
-    public void setSite(String site) {
-        this.site = site;
+    public void setState(String state) {
+        this.state = state;
     }
 
     public List<Context> getContextList() {
@@ -100,46 +100,20 @@ public class Pattern {
      * @return
      */
     public boolean isBelong(Context context) {
-       /* int status = context.getStatus();
-        String plateNumber = context.getPlateNumber();
-
-        boolean belong = false;
-        if (status == 0) {
-            if("run_with_service".equals(predicate)) {
-                belong = false;
+        if(!"any".equals(state)) {
+            String status = Integer.toString(context.getStatus());
+            String [] set = state.split("_");
+            for (String s : set) {
+                if (status.equals(s)) {
+                    return true;
+                }
             }
-            else {
-                belong = true;
-            }
+            return false;
         }
         else {
-            if("run_without_service".equals(predicate)) {
-                belong = false;
-            }
-            else {
-                belong = true;
-            }
+            return true;
         }
 
-       if(!"any".equals(site)) {
-            if(plateNumber.matches("[0-9]+")) { //旧数据的判断条件（车牌为纯数字）
-                String [] elem = site.split("_");
-                if (elem[1].matches("[0-9]")) {
-                    belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() - 1));
-                }
-                else {
-                    belong = belong && HotAreaHelper.inArea(elem[1], context.getLatitude(), context.getLongitude());
-                }
-
-            }
-            else { //新数据的判断条件
-                belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() - 2));
-            }
-        }
-
-        return  belong;
-        */
-       return true;
     }
 
     /**
@@ -202,7 +176,7 @@ public class Pattern {
                 ", subject=" + subject +
                 ", predicate=" + predicate +
                 ", object=" + object +
-                ", site=" + site +
+                ", site=" + state +
                 '}';
     }
 }
