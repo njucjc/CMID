@@ -1,6 +1,5 @@
 package cn.edu.nju.pattern;
 import cn.edu.nju.context.Context;
-import cn.edu.nju.util.HotAreaHelper;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.util.*;
@@ -16,7 +15,7 @@ public class Pattern {
     private String subject;
     private String predicate;
     private String object;
-    private String state;
+    private String site;
 
     private List<Context> contextList;
 
@@ -26,14 +25,14 @@ public class Pattern {
                    String subject,
                    String predicate,
                    String object,
-                   String state) {
+                   String site) {
         this.id = id;
         this.freshness = freshness;
         this.category = category;
         this.subject = subject;
         this.predicate = predicate;
         this.object = object;
-        this.state = state;
+        this.site = site;
 
         this.contextList = new CopyOnWriteArrayList<>();
     }
@@ -82,12 +81,12 @@ public class Pattern {
         this.object = object;
     }
 
-    public String getState() {
-        return state;
+    public String getSite() {
+        return site;
     }
 
-    public void setState(String state) {
-        this.state = state;
+    public void setSitee(String site) {
+        this.site = site;
     }
 
     public List<Context> getContextList() {
@@ -100,9 +99,9 @@ public class Pattern {
      * @return
      */
     public boolean isBelong(Context context) {
-        if(!"any".equals(state)) {
+        if(!"any".equals(predicate)) {
             String status = Integer.toString(context.getStatus());
-            String [] set = state.split("_");
+            String [] set = predicate.split("_");
             for (String s : set) {
                 if (status.equals(s)) {
                     return true;
@@ -176,7 +175,7 @@ public class Pattern {
                 ", subject=" + subject +
                 ", predicate=" + predicate +
                 ", object=" + object +
-                ", site=" + state +
+                ", site=" + site +
                 '}';
     }
 }
