@@ -9,8 +9,32 @@ import cn.edu.nju.context.State;
  */
 public class BFuncHelper {
 
-    private static boolean nextMoment(Context c1, Context c2) {
-        return c2.getId() - c1.getId() == 1;
+//    private static boolean nextMoment(Context c1, Context c2) {
+//        return c2.getId() - c1.getId() == 1;
+//    }
+
+    private static Context now(Context c1, Context c2) {
+        if (c1.getId() - c2.getId() == 1) {
+            return c2;
+        }
+        else if (c2.getId() - c1.getId() == 1){
+            return c1;
+        }
+        else {
+            return null;
+        }
+    }
+
+    private static Context next(Context c1, Context c2) {
+        if (c1.getId() - c2.getId() == 1) {
+            return c1;
+        }
+        else if (c2.getId() - c1.getId() == 1){
+            return c2;
+        }
+        else {
+            return null;
+        }
     }
 
     private static boolean electricRange(Context context) {
@@ -31,7 +55,7 @@ public class BFuncHelper {
         double t = (Math.abs(TimestampHelper.timestampDiff(c1.getTimestamp(),c2.getTimestamp())) / 1000.0);
         double a = Math.abs(c1.getA() - c2.getA());
 
-        if (t != 0 && nextMoment(c1, c2)) {
+        if (t != 0 && now(c1, c2) != null) {
             res = (a / t) <= 1.5;
         }
         return res;
@@ -39,24 +63,44 @@ public class BFuncHelper {
 
     private static boolean maxSpeed(Context c1, Context c2) {
         double max = 75.0;
-        return Math.abs(c1.getV()) >= (max * 1.1);
+        Context c = now(c1, c2);
+        if (c == null) {
+            return false;
+        }
+        if (c.getStatus() == State.COAST) {
+            return Math.abs(c.getV()) >= (max * 1.1);
+        }
+        else {
+            return false;
+        }
     }
 
     private static boolean minSpeed(Context c1, Context c2) {
-        double min = 45.0;
-        return Math.abs(c1.getV()) <= (min * 0.9);
+        double min = 25.0;
+        Context c = now(c1, c2);
+        if (c == null) {
+            return false;
+        }
+        if (c.getStatus() == State.COAST) {
+            return Math.abs(c.getV()) <= (min * 0.9);
+        }
+        else {
+            return false;
+        }
     }
 
     private static boolean transToBrake(Context c1, Context c2) {
-        if(nextMoment(c1, c2)) {
-            return c2.getStatus() == State.BRAKE;
+        Context c = next(c1, c2);
+        if(c != null) {
+            return c.getStatus() == State.BRAKE;
         }
         return true;
     }
 
     private static boolean transTotraction(Context c1, Context c2) {
-        if(nextMoment(c1, c2)) {
-            return c2.getStatus() == State.TRACTION;
+        Context c = next(c1, c2);
+        if(c != null) {
+            return c.getStatus() == State.TRACTION;
         }
         return true;
     }
