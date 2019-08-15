@@ -20,6 +20,8 @@ public interface NodeType {
     public static final int MIN_SPEED = 18;
     public static final int TRANS_TO_BRAKE = 19;
     public static final int TRANS_TO_TRACTION = 20;
+    public static final int IN_BRAKE_STATE = 21;
+    public static final int IN_TRACTION_STATE = 22;
 
     int getNodeType();
     void setNodeType(int nodeType);

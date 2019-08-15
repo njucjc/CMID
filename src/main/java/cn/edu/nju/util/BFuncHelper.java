@@ -97,12 +97,28 @@ public class BFuncHelper {
         return true;
     }
 
-    private static boolean transTotraction(Context c1, Context c2) {
+    private static boolean transToTraction(Context c1, Context c2) {
         Context c = next(c1, c2);
         if(c != null) {
             return c.getStatus() == State.TRACTION;
         }
         return true;
+    }
+
+    private static boolean inTractionState(Context c1, Context c2) {
+        Context c = now(c1, c2);
+        if(c != null) {
+            return  c.getStatus() == State.TRACTION;
+        }
+        return false;
+    }
+
+    private static boolean inBrakeState(Context c1, Context c2) {
+        Context c = now(c1, c2);
+        if(c != null) {
+            return  c.getStatus() == State.BRAKE;
+        }
+        return false;
     }
 
 
@@ -133,7 +149,13 @@ public class BFuncHelper {
                 break;
 
             case "trans_to_traction":
-                value = BFuncHelper.transTotraction(context1, context2);
+                value = BFuncHelper.transToTraction(context1, context2);
+                break;
+            case "in_traction_state":
+                value = BFuncHelper.inTractionState(context1, context2);
+                break;
+            case "in_brake_state":
+                value = BFuncHelper.inBrakeState(context1, context2);
                 break;
             default:
                 assert  false:"[DEBUG] Illegal bfunc: " + name;

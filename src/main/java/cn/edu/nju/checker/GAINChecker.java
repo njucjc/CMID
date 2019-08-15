@@ -179,6 +179,12 @@ public class GAINChecker extends Checker {
                 else if("trans_to_traction".equals(name)) {
                     nodeType[i] = NodeType.TRANS_TO_TRACTION;
                 }
+                else if("in_traction_state".equals(name)) {
+                    nodeType[i] = NodeType.IN_TRACTION_STATE;
+                }
+                else if("in_brake_state".equals(name)) {
+                    nodeType[i] = NodeType.IN_BRAKE_STATE;
+                }
                 else {
                     assert false:"BFunc type error.";
                 }
