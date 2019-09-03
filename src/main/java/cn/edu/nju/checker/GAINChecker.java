@@ -167,11 +167,11 @@ public class GAINChecker extends Checker {
                 else if("acc_rate_range".equals(name)) {
                     nodeType[i] = NodeType.ACC_RATE_RANG;
                 }
-                else if("max_speed".equals(name)) {
-                    nodeType[i] = NodeType.MAX_SPEED;
+                else if("all_in_brake_state".equals(name)) {
+                    nodeType[i] = NodeType.ALL_IN_BRAKE_STATE;
                 }
-                else if("min_speed".equals(name)) {
-                    nodeType[i] = NodeType.MIN_SPEED;
+                else if("all_in_traction_state".equals(name)) {
+                    nodeType[i] = NodeType.ALL_IN_TRACTION_STATE;
                 }
                 else if("trans_to_brake".equals(name)) {
                     nodeType[i] = NodeType.TRANS_TO_BRAKE;
