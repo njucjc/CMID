@@ -1,22 +1,5 @@
 #include "device_launch_parameters.h"
 #include <stdio.h>
-/*
-enum Type {
-	NOT_NODE = 0,
-	AND_NODE,
-	IMPLIES_NODE,
-	UNIVERSAL_NODE,
-	EXISTENTIAL_NODE,
-	BFUNC_NODE,
-	EMPTY_NODE,
-	SAME,
-	SZ_SPD_CLOSE,
-	SZ_LOC_CLOSE,
-	SZ_LOC_DIST,
-	SZ_LOC_DIST_NEQ ,
-	SZ_LOC_RANGE,
-	OR_NODE
-};*/
 
 #define NOT_NODE 0
 #define AND_NODE 1
@@ -36,6 +19,7 @@ enum Type {
 #define TRANS_TO_TRACTION 20
 #define IN_BRAKE_STATE 21
 #define IN_TRACTION_STATE 22
+#define OR_NODE 23
 
 #define MAX_PARAM_NUM 2
 #define MAX_CCT_SIZE 3000000
@@ -71,7 +55,7 @@ __device__ Node links[MAX_CCT_SIZE];
 
 
 extern "C"
-__device__ double abs(double num){
+__device__ double my_abs(double num){
 	if (num < 0) {
 		return -num;
 	}
@@ -81,7 +65,7 @@ __device__ double abs(double num){
 }
 
 extern "C"
-__device__ int now(Context c1, Context c, int diff){
+__device__ int now(Context c1, Context c2, int diff){
 	if (c1.id - c2.id == diff) {
 		return 2;
 	}
@@ -94,7 +78,7 @@ __device__ int now(Context c1, Context c, int diff){
 }
 
 extern "C"
-__device__ int next(Context c1, Context c, int diff){
+__device__ int next(Context c1, Context c2, int diff){
 	if (c1.id - c2.id == diff) {
 		return 1;
 	}
