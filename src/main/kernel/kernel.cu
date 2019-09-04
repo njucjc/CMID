@@ -458,7 +458,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 						}
 
 						case IN_TRACTION_STATE: {
-							value = in_brake_state(params[0], params[1]);
+							value = in_traction_state(params[0], params[1]);
 							break;
 						}
 
