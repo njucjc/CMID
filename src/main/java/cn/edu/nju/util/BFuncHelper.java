@@ -47,10 +47,10 @@ public class BFuncHelper {
 
     private static boolean accRange(Context c1, Context c2) {
         boolean res = true;
-        double t = (Math.abs(TimestampHelper.timestampDiff(c1.getTimestamp(),c2.getTimestamp())) / 1000.0);
+        double t = 5.0;
         double v = Math.abs(c1.getV() - c2.getV());
 
-        if (t != 0 && now(c1, c2, 50) != null) {
+        if (now(c1, c2, 50) != null) {
             res = (v / t) <= 1.0;
         }
         return res;
@@ -59,10 +59,10 @@ public class BFuncHelper {
     private static boolean accRateRange(Context c1, Context c2) {
 
         boolean res = true;
-        double t = (Math.abs(TimestampHelper.timestampDiff(c1.getTimestamp(),c2.getTimestamp())) / 1000.0);
+        double t = 5.0;
         double a = Math.abs(c1.getA() - c2.getA());
 
-        if (t != 0 && now(c1, c2, 50) != null) {
+        if (now(c1, c2, 50) != null) {
             res = (a / t) <= 1.5;
         }
         return res;
