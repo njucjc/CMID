@@ -225,7 +225,7 @@ public class GAINChecker extends Checker {
                     .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
                             deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
                             gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                            gpuContextMemory.getU(), gpuContextMemory.getI(), gpuContextMemory.getP(), gpuContextMemory.getV(), gpuContextMemory.getA(), gpuContextMemory.getStatus(),
+                            gpuContextMemory.getU(), gpuContextMemory.getI(), gpuContextMemory.getV(), gpuContextMemory.getP(), gpuContextMemory.getA(), gpuContextMemory.getStatus(),
                             deviceTruthValueResult,
                             deviceLinkResult, deviceLinkNum, deviceMaxLinkSize,
                             cunits.get(0),
