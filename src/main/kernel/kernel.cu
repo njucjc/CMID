@@ -15,8 +15,8 @@
 #define ACC_RATE_RANG 16
 #define ALL_IN_BRAKE_STATE 17
 #define ALL_IN_TRACTION_STATE 18
-#define TRANS_TO_BRAKE 19
-#define TRANS_TO_TRACTION 20
+#define NOT_TRANS_TO_BRAKE 19
+#define NOT_TRANS_TO_TRACTION 20
 #define IN_BRAKE_STATE 21
 #define IN_TRACTION_STATE 22
 #define OR_NODE 23
@@ -125,30 +125,30 @@ __device__ bool acc_rate_range(Context c1, Context c2){
 }
 
 extern "C"
-__device__ bool trans_to_brake(Context c1, Context c2){
+__device__ bool not_trans_to_brake(Context c1, Context c2){
 	int no = next(c1, c2, 1);
 	if (no == 1) {
-		return c1.status == BRAKE;
+		return c1.status != BRAKE;
 	}
 	else if (no == 2) {
-		return c2.status == BRAKE;
+		return c2.status != BRAKE;
 	}
 	else {
-		return true;
+		return false;
 	}
 }
 
 extern "C"
-__device__ bool trans_to_traction(Context c1, Context c2){
+__device__ bool not_trans_to_traction(Context c1, Context c2){
 	int no = next(c1, c2, 1);
 	if (no == 1) {
-		return c1.status == TRACTION;
+		return c1.status != TRACTION;
 	}
 	else if (no == 2) {
-		return c2.status == TRACTION;
+		return c2.status != TRACTION;
 	}
 	else {
-		return true;
+		return false;
 	}
 }
 
@@ -442,13 +442,13 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 							break;
 						}
 
-						case TRANS_TO_BRAKE: {
-							value = trans_to_brake(params[0], params[1]);
+						case NOT_TRANS_TO_BRAKE: {
+							value = not_trans_to_brake(params[0], params[1]);
 							break;
 						}
 
-						case TRANS_TO_TRACTION: {
-							value = trans_to_traction(params[0], params[1]);
+						case NOT_TRANS_TO_TRACTION: {
+							value = not_trans_to_traction(params[0], params[1]);
 							break;
 						}
 

@@ -173,11 +173,11 @@ public class GAINChecker extends Checker {
                 else if("all_in_traction_state".equals(name)) {
                     nodeType[i] = NodeType.ALL_IN_TRACTION_STATE;
                 }
-                else if("trans_to_brake".equals(name)) {
-                    nodeType[i] = NodeType.TRANS_TO_BRAKE;
+                else if("not_trans_to_brake".equals(name)) {
+                    nodeType[i] = NodeType.NOT_TRANS_TO_BRAKE;
                 }
-                else if("trans_to_traction".equals(name)) {
-                    nodeType[i] = NodeType.TRANS_TO_TRACTION;
+                else if("not_trans_to_traction".equals(name)) {
+                    nodeType[i] = NodeType.NOT_TRANS_TO_TRACTION;
                 }
                 else if("in_traction_state".equals(name)) {
                     nodeType[i] = NodeType.IN_TRACTION_STATE;

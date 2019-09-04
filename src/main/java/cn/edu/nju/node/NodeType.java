@@ -18,8 +18,8 @@ public interface NodeType {
     public static final int ACC_RATE_RANG = 16;
     public static final int ALL_IN_BRAKE_STATE = 17;
     public static final int ALL_IN_TRACTION_STATE = 18;
-    public static final int TRANS_TO_BRAKE = 19;
-    public static final int TRANS_TO_TRACTION = 20;
+    public static final int NOT_TRANS_TO_BRAKE = 19;
+    public static final int NOT_TRANS_TO_TRACTION = 20;
     public static final int IN_BRAKE_STATE = 21;
     public static final int IN_TRACTION_STATE = 22;
 

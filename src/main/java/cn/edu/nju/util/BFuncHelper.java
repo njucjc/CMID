@@ -69,20 +69,20 @@ public class BFuncHelper {
     }
 
 
-    private static boolean transToBrake(Context c1, Context c2) {
+    private static boolean notTransToBrake(Context c1, Context c2) {
         Context c = next(c1, c2, 1);
         if(c != null) {
-            return c.getStatus() == State.BRAKE;
+            return c.getStatus() != State.BRAKE;
         }
-        return true;
+        return false;
     }
 
-    private static boolean transToTraction(Context c1, Context c2) {
+    private static boolean notTransToTraction(Context c1, Context c2) {
         Context c = next(c1, c2,1);
         if(c != null) {
-            return c.getStatus() == State.TRACTION;
+            return c.getStatus() != State.TRACTION;
         }
-        return true;
+        return false;
     }
 
     private static boolean inTractionState(Context c1, Context c2) {
@@ -138,11 +138,11 @@ public class BFuncHelper {
             case "all_in_brake_state":
                 value = BFuncHelper.allInBrakeState(context1, context2);
                 break;
-            case "trans_to_brake":
-                value = BFuncHelper.transToBrake(context1, context2);
+            case "not_trans_to_brake":
+                value = BFuncHelper.notTransToBrake(context1, context2);
                 break;
-            case "trans_to_traction":
-                value = BFuncHelper.transToTraction(context1, context2);
+            case "not_trans_to_traction":
+                value = BFuncHelper.notTransToTraction(context1, context2);
                 break;
             case "in_traction_state":
                 value = BFuncHelper.inTractionState(context1, context2);
