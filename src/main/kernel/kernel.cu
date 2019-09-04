@@ -25,25 +25,38 @@ enum Type {
 #define EXISTENTIAL_NODE 4
 #define BFUNC_NODE 5
 #define EMPTY_NODE 6
-#define SAME 7
-#define SZ_SPD_CLOSE 8
-#define SZ_LOC_CLOSE 9
-#define SZ_LOC_DIST 10
-#define SZ_LOC_DIST_NEQ 11
-#define SZ_LOC_RANGE 12
-#define OR_NODE 13
+
+#define ELECTRIC_RANGE 13
+#define VOLTAGE_RANGE 14
+#define ACC_RANG 15
+#define ACC_RATE_RANG 16
+#define ALL_IN_BRAKE_STATE 17
+#define ALL_IN_TRACTION_STATE 18
+#define TRANS_TO_BRAKE 19
+#define TRANS_TO_TRACTION 20
+#define IN_BRAKE_STATE 21
+#define IN_TRACTION_STATE 22
 
 #define MAX_PARAM_NUM 2
 #define MAX_CCT_SIZE 3000000
 #define MAX_LINK_SIZE 5000
 #define DEBUG
 
+
+#define STOP 0
+#define START 1
+#define TRACTION 2
+#define COAST 3
+#define BRAKE 4
+
 struct Context{
 	int id;
-	double latitude;
-	double longitude;
-	double speed;
-	int plateNumber;
+	double u;
+	double i;
+	double p;
+	double v;
+	double a;
+	int status;
 };
 
 struct Node {
@@ -56,40 +69,148 @@ struct Node {
 __device__ bool truth_values[MAX_CCT_SIZE];
 __device__ Node links[MAX_CCT_SIZE];
 
+
 extern "C"
-__device__ bool same(Context c1, Context c2){
-	return (c1.plateNumber == c2.plateNumber);
+__device__ double abs(double num){
+	if (num < 0) {
+		return -num;
+	}
+	else {
+		return num;
+	}
 }
 
 extern "C"
-__device__ bool sz_spd_close(Context c1, Context c2){
-	return ((c1.speed - c2.speed) >= -50.0 && (c1.speed - c2.speed) <= 50.0);
+__device__ int now(Context c1, Context c, int diff){
+	if (c1.id - c2.id == diff) {
+		return 2;
+	}
+	else if (c2.id - c1.id == diff) {
+		return 1;
+	}
+	else {
+		return 0;
+	}
 }
 
 extern "C"
-__device__ bool sz_loc_close(Context c1, Context c2){
-	return ((c1.latitude - c2.latitude) * (c1.latitude - c2.latitude) + (c1.longitude - c2.longitude) * (c1.longitude - c2.longitude)) <= 0.000001;
+__device__ int next(Context c1, Context c, int diff){
+	if (c1.id - c2.id == diff) {
+		return 1;
+	}
+	else if (c2.id - c1.id == diff) {
+		return 2;
+	}
+	else {
+		return 0;
+	}
 }
 
 extern "C"
-__device__ bool sz_loc_dist(Context c1, Context c2){
-	return ((c1.latitude - c2.latitude) * (c1.latitude - c2.latitude) + (c1.longitude - c2.longitude) * (c1.longitude - c2.longitude)) <= 0.000625;
+__device__ bool electric_range(Context c){
+	return abs(c.i) <= 740.0;
 }
 
 extern "C"
-__device__ bool sz_loc_dist_neq(Context c1, Context c2){
-	double dist = ((c1.latitude - c2.latitude) * (c1.latitude - c2.latitude) + (c1.longitude - c2.longitude) * (c1.longitude - c2.longitude));
-	bool result = true;
-    if (dist > 0.000625 || dist == 0) {
-    	result = false;
-    }
-    return result;
-	//return (dist <= 0.000625) && (dist != 0);
+__device__ bool voltage_range(Context c){
+	return abs(c.u) >= 1450.0 && abs(c.u) <= 1800.0;
 }
 
 extern "C"
-__device__ bool sz_loc_range(Context c){
-	return c.longitude >= 112.0 && c.longitude <= 116.0 && c.latitude >=20.0 && c.latitude <= 24.0;
+__device__ bool acc_range(Context c1, Context c2){
+	bool res = true;
+	double t = 5.0;
+	double v = abs(c1.v - c2.v);
+
+	if (now(c1, c2, 50) != 0) {
+		res = (v / t) <= 1.0;
+	}
+	return res;
+}
+
+extern "C"
+__device__ bool acc_rate_range(Context c1, Context c2){
+	bool res = true;
+	double t = 5.0;
+	double a = abs(c1.a - c2.a);
+
+	if (now(c1, c2, 50) != 0) {
+		res = (a / t) <= 1.5;
+	}
+	return res;
+}
+
+extern "C"
+__device__ bool trans_to_brake(Context c1, Context c2){
+	int no = next(c1, c2, 1);
+	if (no == 1) {
+		return c1.status == BRAKE;
+	}
+	else if (no == 2) {
+		return c2.status == BRAKE;
+	}
+	else {
+		return true;
+	}
+}
+
+extern "C"
+__device__ bool trans_to_traction(Context c1, Context c2){
+	int no = next(c1, c2, 1);
+	if (no == 1) {
+		return c1.status == TRACTION;
+	}
+	else if (no == 2) {
+		return c2.status == TRACTION;
+	}
+	else {
+		return true;
+	}
+}
+
+extern "C"
+__device__ bool in_brake_state(Context c1, Context c2){
+	int no = now(c1, c2, 1);
+	if (no == 1) {
+		return c1.status == BRAKE;
+	}
+	else if (no == 2) {
+		return c2.status == BRAKE;
+	}
+	else {
+		return false;
+	}
+}
+
+extern "C"
+__device__ bool in_traction_state(Context c1, Context c2){
+	int no = now(c1, c2, 1);
+	if (no == 1) {
+		return c1.status == TRACTION;
+	}
+	else if (no == 2) {
+		return c2.status == TRACTION;
+	}
+	else {
+		return false;
+	}
+}
+
+
+extern "C"
+__device__ bool all_in_brake_state(Context c1, Context c2){
+	if (c1.status == BRAKE && c2.status == BRAKE) {
+		return now(c1, c2, 50) != 0;
+	}
+	return false;
+}
+
+extern "C"
+__device__ bool all_in_traction_state(Context c1, Context c2){
+	if (c1.status == TRACTION && c2.status == TRACTION) {
+		return now(c1, c2, 50) != 0;
+	}
+	return false;
 }
 
 extern "C"
@@ -140,7 +261,7 @@ extern "C"
 __device__ int calc_offset(	int node, int tid, Context *params,
 							int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx,
 							int *pattern_begin, int *pattern_length, int *pattern,
-							double *longitude, double *latitude, double *speed, int *plateNumber, // contexts
+							double *u_u, double *i_i, double *v_v, double *p_p, double *a_a, int *status, // contexts
 							int *branch_size) {
 
 	int offset = branch_size[node];
@@ -154,10 +275,12 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 			tmp /= len;
 
 			params[index].id = pattern[pattern_begin[pattern_idx[parent[current_node]]] + branch_idx];//(pattern + pattern_idx[parent[current_node]] * MAX_PATTERN_SIZE)[(branch_idx + pattern_begin[pattern_idx[parent[current_node]]]) % MAX_PATTERN_SIZE];
-			params[index].latitude = latitude[params[index].id];
-			params[index].longitude = longitude[params[index].id];
-			params[index].speed = speed[params[index].id];
-			params[index].plateNumber = plateNumber[params[index].id];
+			params[index].u = u_u[params[index].id];
+			params[index].i = i_i[params[index].id];
+			params[index].v = v_v[params[index].id];
+			params[index].p = p_p[params[index].id];
+			params[index].a = a_a[params[index].id];
+			params[index].status = status[params[index].id];
 
 			offset += branch_idx * branch_size[current_node] ;
 //			printf("branch_idx = %d, branch_size = %d\n", branch_idx, branch_size[current_node]);
@@ -180,7 +303,7 @@ extern "C"
 __global__ void evaluation(int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx, //constraint rule
                           	 int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
                           	 int *pattern_begin, int *pattern_length, int *pattern, //patterns
-                          	 double *longitude, double *latitude, double *speed,int *plateNumber,// contexts
+                          	 double *u_u, double *i_i, double *v_v, double *p_p, double *a_a, int *status,// contexts
                           	 short *truth_value_result,
                           	 int *link_result, int *link_num, int *cur_link_size,
                           	 int last_cunit_root,
@@ -197,7 +320,7 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 		int ccopy_root_offset = calc_offset(cunit_end, tid, params,
 											parent, left_child, right_child, node_type, pattern_idx,
 											pattern_begin, pattern_length, pattern,
-											longitude, latitude, speed, plateNumber,
+											u_u, i_i, v_v, p_p, a_a, status,
 											branch_size);
 
 //#ifdef DEBUG
@@ -305,35 +428,56 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 
 				default : { //BFUNC
 					switch(type) {
-						case SAME: {
-							value = same(params[0], params[1]);
+						case ELECTRIC_RANGE: {
+							value = electric_range(params[0]);
 							break;
 						}
 
-						case SZ_SPD_CLOSE: {
-							value = sz_spd_close(params[0], params[1]);
+						case VOLTAGE_RANGE: {
+							value = voltage_range(params[0]);
 							break;
 						}
 
-						case SZ_LOC_CLOSE: {
-							value = sz_loc_close(params[0], params[1]);
+						case ACC_RANG: {
+							value = acc_range(params[0], params[1]);
 							break;
 						}
 
-						case SZ_LOC_DIST: {
-							value = sz_loc_dist(params[0], params[1]);
+						case ACC_RATE_RANG: {
+							value = acc_rate_range(params[0], params[1]);
 							break;
 						}
 
-						case SZ_LOC_DIST_NEQ: {
-							value = sz_loc_dist_neq(params[0], params[1]);
+						case ALL_IN_BRAKE_STATE: {
+							value = all_in_brake_state(params[0], params[1]);
 							break;
 						}
 
-						case SZ_LOC_RANGE: {
-							value = sz_loc_range(params[0]);
+						case ALL_IN_TRACTION_STATE: {
+							value = all_in_traction_state(params[0], params[1]);
 							break;
 						}
+
+						case TRANS_TO_BRAKE: {
+							value = trans_to_brake(params[0], params[1]);
+							break;
+						}
+
+						case TRANS_TO_TRACTION: {
+							value = trans_to_traction(params[0], params[1]);
+							break;
+						}
+
+						case IN_BRAKE_STATE: {
+							value = in_brake_state(params[0], params[1]);
+							break;
+						}
+
+						case IN_TRACTION_STATE: {
+							value = in_brake_state(params[0], params[1]);
+							break;
+						}
+
 					}
 
 			
