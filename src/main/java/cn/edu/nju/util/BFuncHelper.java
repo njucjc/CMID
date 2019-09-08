@@ -38,7 +38,12 @@ public class BFuncHelper {
     }
 
     private static boolean electricRange(Context context) {
-        return Math.abs(context.getI()) <= 740.0;
+        if (context.getStatus() != State.TRACTION && context.getStatus() != State.BRAKE) {
+            return true;
+        }
+        else {
+            return Math.abs(context.getI()) <= 740.0;
+        }
     }
 
     private static boolean voltageRange(Context context) {
