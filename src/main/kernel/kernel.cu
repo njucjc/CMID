@@ -92,6 +92,9 @@ __device__ int next(Context c1, Context c2, int diff){
 
 extern "C"
 __device__ bool electric_range(Context c){
+	if (c.status != TRACTION && c.status != BRAKE) {
+		return true;
+	}
 	return abs(c.i) <= 740.0;
 }
 
