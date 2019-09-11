@@ -107,7 +107,7 @@ extern "C"
 __device__ bool acc_range(Context c1, Context c2){
 	bool res = true;
 	double t = 5.0;
-	double v = abs(c1.v - c2.v);
+	double v = abs(c1.v - c2.v) / 3.6;
 
 	if (now(c1, c2, 50) != 0) {
 		res = (v / t) <= 1.0;

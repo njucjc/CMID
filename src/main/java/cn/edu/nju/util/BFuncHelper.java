@@ -53,7 +53,7 @@ public class BFuncHelper {
     private static boolean accRange(Context c1, Context c2) {
         boolean res = true;
         double t = 5.0;
-        double v = Math.abs(c1.getV() - c2.getV());
+        double v = Math.abs(c1.getV() - c2.getV()) / 3.6;
 
         if (now(c1, c2, 50) != null) {
             res = (v / t) <= 1.0;
