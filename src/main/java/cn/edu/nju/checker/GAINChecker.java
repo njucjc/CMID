@@ -185,7 +185,7 @@ public class GAINChecker extends Checker {
 
 
     @Override
-    public synchronized boolean doCheck() {
+    public boolean doCheck() {
        // assert false:"Something is being to do.";
         checkTimes++;
         computeRTTBranchSize(this.stRoot);

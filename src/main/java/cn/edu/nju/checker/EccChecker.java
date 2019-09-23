@@ -30,7 +30,7 @@ public class EccChecker extends Checker{
      * @return violated link
      */
     @Override
-    public synchronized boolean doCheck() {
+    public boolean doCheck() {
 
         checkTimes++;
         clearCCTMap();
