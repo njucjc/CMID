@@ -22,6 +22,10 @@ public class PccChecker extends Checker{
     public  PccChecker(Checker checker) {
         super(checker);
     }
+
+    protected PccChecker() {
+
+    }
     /**
      *
      * @return violated link

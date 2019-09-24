@@ -8,4 +8,5 @@ public interface CheckerType {
     public static final int PCC_TYPE = 1; /*每一条rule的checker*/
     public static final int CON_TYPE = 2;
     public static final int GAIN_TYPE = 3;
+    public static final int CONPCC_TYPE = 4;
 }
