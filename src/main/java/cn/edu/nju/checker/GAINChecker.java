@@ -272,7 +272,7 @@ public class GAINChecker extends Checker {
     }
 
     @Override
-    public synchronized boolean add(String patternId, Context context) {
+    public boolean add(String patternId, Context context) {
       //  return super.add(patternId, context);
         if (!addContextToPattern(patternId, context)) {
             return false;
@@ -284,7 +284,7 @@ public class GAINChecker extends Checker {
 
 
     @Override
-    public synchronized boolean delete(String patternId, String timestamp) {
+    public boolean delete(String patternId, String timestamp) {
         if(!deleteContextFromPattern(patternId, timestamp)) {
             return false;
         }
