@@ -17,6 +17,8 @@ import java.util.concurrent.Future;
 public class ConPccChecker extends PccChecker {
     private Checker pcc;
 
+    private Checker ecc;
+
     private int addNum;
 
     private int taskNum;
@@ -34,58 +36,113 @@ public class ConPccChecker extends PccChecker {
 
     @Override
     public boolean add(String patternId, Context context) {
-        addNum++;
+        if (patternId.equals(stRoot.getContextSetName())) {
+            addNum++;
+        }
         return super.add(patternId, context);
     }
 
     @Override
     protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
         int size = cctRoot.getChildTreeNodes().size();
-        if (addNum == 0 || stMap.size() < 2 || (addNum == size && size == 1)) { // 无新增分支，直接增量检测
-            return super.evaluation(cctRoot, param);
+        if (addNum == 0 || stMap.size() < 2 || size == 1) { // 无新增分支，直接增量检测
+            return pcc.evaluation(cctRoot, param);
         }
         List<Context> p1 = new ArrayList<>(param);
         Future<Result> f1 = checkExecutorService.submit(new CheckTask(cctRoot, p1, pcc, 0, size - 2));
-        List<Context> p2 = new ArrayList<>(param);
-        Future<Result> f2 = checkExecutorService.submit(new CheckTask(cctRoot, p2, pcc, size - 1, size - 1));
 
+        CCTNode newRoot = (CCTNode) cctRoot.getLastChild();
+        int workload = newRoot.getChildTreeNodes().size();
+        int workerNum = workload;
+        if ( workerNum >= taskNum) {
+            workerNum = taskNum;
+        }
+
+        List<Future<Result>> subResultList = new ArrayList<>();
+
+        for(int i = 0; i < workerNum; i++) {
+            List<Context> p = new ArrayList<>();
+            p.add(newRoot.getContext());
+            Future<Result> subResult = checkExecutorService.submit(new CheckTask(newRoot, p, new EccChecker(),i * workload / workerNum, (i + 1) * workload / workerNum - 1));
+            subResultList.add(subResult);
+        }
+
+        boolean andValue = true;
+        boolean orValue = false;
+        StringBuilder satisfiedLink = new StringBuilder();
+        StringBuilder violatedLink = new StringBuilder();
+
+        Result r1 = null;
         try {
-            Result r1 = f1.get();
-            Result r2 = f2.get();
-
-            if (cctRoot.getNodeType() == NodeType.UNIVERSAL_NODE) {
-                cctRoot.setNodeValue(r1.getValue() && r2.getValue());
-            }
-            else {
-                cctRoot.setNodeValue(r1.getValue() || r2.getValue());
-            }
-            cctRoot.setNodeStatus(NodeStatus.NC_STATE);
-
-            String link = "";
-            if (cctRoot.getNodeValue()) {
-                if (r1.getValue()) {
-                    link = link + r1.getLink() + "#";
-                }
-                if (r2.getValue()) {
-                    link = link + r2.getLink() + "#";
+            r1 = f1.get();
+            for (Future<Result> subResult : subResultList) {
+                Result tmpResult = subResult.get();
+                boolean tmp = tmpResult.getValue();
+                andValue = andValue && tmp;
+                orValue = orValue || tmp;
+                if (tmp) {
+                    satisfiedLink.append(tmpResult.getLink());
+                    satisfiedLink.append("#");
+                } else {
+                    violatedLink.append(tmpResult.getLink());
+                    violatedLink.append("#");
                 }
             }
-            else {
-                if (!r1.getValue()) {
-                    link = link + r1.getLink() + "#";
-                }
-                if (!r2.getValue()) {
-                    link = link + r2.getLink() + "#";
-                }
-            }
-
-            cctRoot.setLink(link);
 
         } catch (InterruptedException e) {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
+
+
+        boolean value;
+        if (newRoot.getNodeType() == CCTNode.UNIVERSAL_NODE) {
+            value = andValue;
+
+        } else {
+            value = orValue;
+
+        }
+
+        newRoot.setNodeValue(value);
+
+        if(value) {
+            newRoot.setLink(satisfiedLink.toString());
+        } else {
+            newRoot.setLink(violatedLink.toString());
+        }
+
+        newRoot.setNodeStatus(NodeStatus.NC_STATE);
+
+        if (cctRoot.getNodeType() == NodeType.UNIVERSAL_NODE) {
+            cctRoot.setNodeValue(r1.getValue() && newRoot.getNodeValue());
+        }
+        else {
+            cctRoot.setNodeValue(r1.getValue() || newRoot.getNodeValue());
+        }
+        cctRoot.setNodeStatus(NodeStatus.NC_STATE);
+
+        String link = "";
+        if (cctRoot.getNodeValue()) {
+            if (r1.getValue()) {
+                link = link + r1.getLink() + "#";
+            }
+            if (newRoot.getNodeValue()) {
+                link = link + newRoot.getLink() + "#";
+            }
+        }
+        else {
+            if (!r1.getValue()) {
+                link = link + r1.getLink() + "#";
+            }
+            if (!newRoot.getNodeValue()) {
+                link = link + newRoot.getLink() + "#";
+            }
+        }
+
+        cctRoot.setLink(link);
+
 
 
         addNum = 0; //新增分支数清零
