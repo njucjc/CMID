@@ -14,7 +14,7 @@ public class TimestampHelper {
      * @param timestamp2
      * @return 两个时间戳的时间差
      */
-    public synchronized static long timestampDiff(String timestamp1, String timestamp2) {
+    public static long timestampDiff(String timestamp1, String timestamp2) {
         long diff = getDiff(timestamp1, timestamp2);
         return diff > 0 ? diff : -diff;
     }
@@ -31,7 +31,7 @@ public class TimestampHelper {
         return diff;
     }
 
-    public synchronized static int timestampCmp(String timestamp1, String timestamp2) {
+    public static int timestampCmp(String timestamp1, String timestamp2) {
         long diff = getDiff(timestamp1, timestamp2);
         if(diff < 0) {
             return 1;
@@ -48,7 +48,7 @@ public class TimestampHelper {
      * @param millis
      * @return
      */
-    public synchronized static String plusMillis(String timestamp, long millis) {
+    public static String plusMillis(String timestamp, long millis) {
         String timestamp2 = null;
         try {
             java.util.Date begin = dfs.parse(timestamp);
@@ -59,11 +59,11 @@ public class TimestampHelper {
         return timestamp2;
     }
 
-    public synchronized static String getCurrentTimestamp() {
+    public static String getCurrentTimestamp() {
         return dfs.format(new java.util.Date());
     }
 
-    public synchronized static java.util.Date parserDate(String time) {
+    public static java.util.Date parserDate(String time) {
         java.util.Date date = null;
         try {
             date = dfs.parse(time);

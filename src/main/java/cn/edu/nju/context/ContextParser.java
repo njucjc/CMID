@@ -4,7 +4,7 @@ package cn.edu.nju.context;
  * Created by njucjc on 2017/10/23.
  */
 public class ContextParser {
-    public synchronized Context parseContext(int id, String pattern) {
+    public Context parseContext(int id, String pattern) {
         String [] fields = pattern.split(",");
         String timestamp = fields[0];
         double u = Double.parseDouble(fields[1]);
@@ -17,7 +17,7 @@ public class ContextParser {
         return new Context(id, timestamp, u, i, p, v, a, status);
     }
 
-    public synchronized Context parseChangeContext(String [] elements) {
+    public Context parseChangeContext(String [] elements) {
 
         return new Context(Integer.parseInt(elements[2]),
                 elements[3],

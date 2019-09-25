@@ -34,7 +34,7 @@ public class ConChecker extends EccChecker {
     }
 
     @Override
-    protected synchronized boolean evaluation(CCTNode cctRoot, List<Context> param) {
+    protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
         boolean isSplittingNode = cctRoot.getNodeType() == CCTNode.EXISTENTIAL_NODE
                               || cctRoot.getNodeType() == CCTNode.UNIVERSAL_NODE;
         if (!findSplittingNode && isSplittingNode && cctRoot.getChildTreeNodes().size() >= taskNum) {
@@ -108,12 +108,12 @@ public class ConChecker extends EccChecker {
     }
 
     @Override
-    protected synchronized void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
+    protected void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
         clearCCTMap();
     }
 
     @Override
-    public synchronized boolean doCheck() {
+    public boolean doCheck() {
         boolean value = super.doCheck();
         findSplittingNode = false;
         return value;
