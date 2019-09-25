@@ -45,7 +45,8 @@ public class ConPccChecker extends PccChecker {
     @Override
     protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
         int size = cctRoot.getChildTreeNodes().size();
-        if (addNum == 0 || stMap.size() < 2 || size == 1) { // 无新增分支，直接增量检测
+        if (addNum == 0 || stMap.size() < 2 || size <= 1) { // 无新增分支，直接增量检测
+            addNum = 0;
             return pcc.evaluation(cctRoot, param);
         }
         List<Context> p1 = new ArrayList<>(param);
