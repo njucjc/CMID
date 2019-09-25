@@ -120,7 +120,7 @@ public class Pattern {
      * @param context
      * @return
      */
-    public synchronized boolean addContext(Context context) {
+    public boolean addContext(Context context) {
         if(!isBelong(context)) {
             return false;
         }
@@ -133,7 +133,7 @@ public class Pattern {
      * 若第一个context的过期时间为timestamp则删除
      * @param timestamp 时间戳
      */
-    public synchronized boolean deleteFirstByTime(String timestamp) {
+    public boolean deleteFirstByTime(String timestamp) {
         boolean isDel = false;
         for (Context context : contextList) {
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) >= freshness) {

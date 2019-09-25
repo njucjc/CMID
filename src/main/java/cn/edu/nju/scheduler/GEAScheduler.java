@@ -34,7 +34,7 @@ public class GEAScheduler implements Scheduler{
     }
 
     @Override
-    public synchronized void update(String change) {
+    public void update(String change) {
 
         for(Checker checker : checkerList) {
             if (matching(checker, change)) {
@@ -44,7 +44,7 @@ public class GEAScheduler implements Scheduler{
     }
 
     @Override
-    public synchronized boolean schedule(String ruleName) {
+    public boolean schedule(String ruleName) {
         boolean result = scheduleMap.get(ruleName);
         if(result) {
             scheduleMap.put(ruleName, false);

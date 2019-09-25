@@ -381,7 +381,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
     }
 
-    protected synchronized void update(int checkType, int scheduleType) {
+    protected void update(int checkType, int scheduleType) {
         boolean isUpdate = false;
 
         //update checkers
@@ -438,7 +438,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
 
-    protected synchronized int computeWorkload() {
+    protected int computeWorkload() {
         int workload = 0;
         for(Checker checker: checkerList) {
             workload += checker.getWorkload();
