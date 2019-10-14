@@ -30,11 +30,11 @@ public class EccChecker extends Checker{
      * @return violated link
      */
     @Override
-    public synchronized boolean doCheck() {
+    public boolean doCheck() {
 
         checkTimes++;
         clearCCTMap();
-        //removeCriticalNode(stRoot, cctRoot);
+        removeCriticalNode(stRoot, cctRoot);
         cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
         buildCCT(stRoot, cctRoot);
         List<Context> param = new CopyOnWriteArrayList<>();

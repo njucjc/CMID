@@ -22,12 +22,16 @@ public class PccChecker extends Checker{
     public  PccChecker(Checker checker) {
         super(checker);
     }
+
+    protected PccChecker() {
+
+    }
     /**
      *
      * @return violated link
      */
     @Override
-    public synchronized boolean doCheck() {
+    public boolean doCheck() {
 
         checkTimes++;
         List<Context> param = new CopyOnWriteArrayList<>();
@@ -62,7 +66,7 @@ public class PccChecker extends Checker{
      * @return
      */
     @Override
-    protected synchronized boolean evaluation(CCTNode cctRoot, List<Context> param) {
+    protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
         if(cctRoot.getNodeStatus() == CCTNode.NC_STATE) { //无需重算就直接返回
             return cctRoot.getNodeValue();
         }

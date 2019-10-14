@@ -106,23 +106,23 @@ public abstract class Checker {
 
     protected Checker() {}
 
-    public synchronized String getName() {
+    public String getName() {
         return name;
     }
 
-    public synchronized void setName(String name) {
+    public void setName(String name) {
         this.name = name;
     }
 
-    public synchronized int getInc() {
+    public int getInc() {
         return incLinkSet.size();
     }
 
-    protected synchronized boolean addIncLink(String link) {
+    protected boolean addIncLink(String link) {
         return incLinkSet.add(link);
     }
 
-    protected synchronized Set<String> getIncLinkSet() {
+    protected Set<String> getIncLinkSet() {
         return incLinkSet;
     }
 
@@ -132,7 +132,7 @@ public abstract class Checker {
      */
     abstract public boolean doCheck();
 
-    protected synchronized boolean addContextToPattern(String patternId, Context context) {
+    protected boolean addContextToPattern(String patternId, Context context) {
         if (!affected(patternId)) {
             return false;
         }
@@ -143,7 +143,7 @@ public abstract class Checker {
         return true;
     }
 
-    protected synchronized boolean deleteContextFromPattern(String patternId, String timestamp) {
+    protected boolean deleteContextFromPattern(String patternId, String timestamp) {
         if (!affected(patternId)) {
             return false;
         }
@@ -160,7 +160,7 @@ public abstract class Checker {
      * @param context
      * @return
      */
-    public synchronized boolean add(String patternId, Context context) {
+    public boolean add(String patternId, Context context) {
         if (!addContextToPattern(patternId, context)) {
             return false;
         }
@@ -184,7 +184,7 @@ public abstract class Checker {
     }
 
 
-    public synchronized boolean delete(String patternId, String timestamp) {
+    public boolean delete(String patternId, String timestamp) {
         if(!deleteContextFromPattern(patternId, timestamp)) {
             return false;
         }
@@ -224,7 +224,7 @@ public abstract class Checker {
      * @param stRoot
      * @param cctRoot
      */
-    protected synchronized void buildCCT(STNode stRoot, CCTNode cctRoot) {
+    protected void buildCCT(STNode stRoot, CCTNode cctRoot) {
         if (!stRoot.hasChildNodes()) {
             return ;
         }
@@ -250,7 +250,7 @@ public abstract class Checker {
     }
 
 
-    public synchronized boolean affected(String contextSetName) {
+    public boolean affected(String contextSetName) {
         return stMap.containsKey(contextSetName);
     }
 
@@ -260,7 +260,7 @@ public abstract class Checker {
      * @param stRoot
      * @param cctRoot
      */
-    protected synchronized void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
+    protected void removeCriticalNode(STNode stRoot, CCTNode cctRoot) {
         assert stRoot.getNodeType() == cctRoot.getNodeType()
                 :"[DEBUG] Type error:" + stRoot.getNodeName() + " != " + cctRoot.getNodeName();
         if(!cctRoot.hasChildNodes()) {
@@ -292,7 +292,7 @@ public abstract class Checker {
      * 更新从关键结点到根结点路径上的所有结点状态信息
      * @param node
      */
-    private synchronized void updateNodesToRoot(CCTNode node) {
+    private void updateNodesToRoot(CCTNode node) {
         while(node != null) {
             node.setNodeStatus(CCTNode.PC_STATE); //更新为Partial checking
             node = (CCTNode) node.getParentTreeNode();
@@ -305,7 +305,7 @@ public abstract class Checker {
      * @param param
      * @return
      */
-    protected synchronized boolean evaluation(CCTNode cctRoot, List<Context> param) {
+    protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
         if(cctRoot.getContext() != null) {
             param.add(cctRoot.getContext());
         }
@@ -368,7 +368,7 @@ public abstract class Checker {
     }
 
 
-    protected synchronized boolean notNodeEval(CCTNode notNode, List<Context> param) {
+    protected boolean notNodeEval(CCTNode notNode, List<Context> param) {
         boolean value = !evaluation((CCTNode) notNode.getFirstChild(), param);
         notNode.setNodeValue(value); //更新结点值
         notNode.setLink(((CCTNode) notNode.getFirstChild()).getLink()); //更新link信息
@@ -376,7 +376,7 @@ public abstract class Checker {
     }
 
 
-    protected synchronized boolean andNodeEval(CCTNode andNode, List<Context> param) {
+    protected boolean andNodeEval(CCTNode andNode, List<Context> param) {
 
         CCTNode leftChild = (CCTNode) andNode.getChildTreeNodes().get(0);
         CCTNode rightChild = (CCTNode) andNode.getChildTreeNodes().get(1);
@@ -401,7 +401,7 @@ public abstract class Checker {
     }
 
 
-    protected synchronized boolean impliesNodeEval(CCTNode impliesNode, List<Context> param) {
+    protected boolean impliesNodeEval(CCTNode impliesNode, List<Context> param) {
         CCTNode leftChild = (CCTNode) impliesNode.getChildTreeNodes().get(0);
         CCTNode rightChild = (CCTNode) impliesNode.getChildTreeNodes().get(1);
         boolean leftValue = evaluation(leftChild, param);
@@ -421,7 +421,7 @@ public abstract class Checker {
     }
 
 
-    protected synchronized Result universalNodeEval(CCTNode universalNode, List<Context> param,int start, int end) {
+    protected  Result universalNodeEval(CCTNode universalNode, List<Context> param,int start, int end) {
         List<TreeNode> childNodes = universalNode.getChildTreeNodes();
 
         StringBuilder satisfiedLink = new StringBuilder();
@@ -458,7 +458,7 @@ public abstract class Checker {
         return new Result(value,link);
     }
 
-    protected synchronized Result existentialNodeEval(CCTNode existentialNode, List<Context> param, int start, int end) {
+    protected Result existentialNodeEval(CCTNode existentialNode, List<Context> param, int start, int end) {
         List<TreeNode> childNodes = existentialNode.getChildTreeNodes();
 
         StringBuilder satisfiedLink = new StringBuilder();
@@ -541,7 +541,7 @@ public abstract class Checker {
 
     }
 
-    protected synchronized void clearCCTMap() {
+    protected void clearCCTMap() {
         for (String key : cctMap.keySet()) {
            cctMap.get(key).clear();
         }

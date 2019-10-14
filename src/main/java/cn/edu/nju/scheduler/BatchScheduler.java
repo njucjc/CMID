@@ -13,12 +13,12 @@ public class BatchScheduler implements Scheduler{
     }
 
     @Override
-    public synchronized void update(String change) {
+    public void update(String change) {
         count = (count + 1) % batch;
     }
 
     @Override
-    public synchronized boolean schedule(String ruleName) {
+    public boolean schedule(String ruleName) {
         return count == 0;
     }
 

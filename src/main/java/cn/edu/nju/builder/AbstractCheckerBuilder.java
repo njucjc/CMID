@@ -105,7 +105,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             this.checkType = CON_TYPE;
         } else if("GAIN".equals(technique)) {
             this.checkType = GAIN_TYPE;
-        } else {
+        } else if ("Con-PCC".equals(technique)) {
+            this.checkType = CONPCC_TYPE;
+        }else {
             assert false:"[DEBUG] Checking technique error: " + technique;
         }
 
@@ -285,6 +287,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                     checker = new GAINChecker(idNode.getTextContent(), root, this.patternMap, stMap,
                             kernelFilePath, //kernel function
                             contexts, cuContext, gpuResult); //GPU memory
+                } else if(checkType == CONPCC_TYPE) {
+                    checker = new ConPccChecker(idNode.getTextContent(), root, this.patternMap, stMap, taskNum, checkExecutorService);
                 }
 
                 checkerList.add(checker);
@@ -381,7 +385,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
     }
 
-    protected synchronized void update(int checkType, int scheduleType) {
+    protected void update(int checkType, int scheduleType) {
         boolean isUpdate = false;
 
         //update checkers
@@ -438,7 +442,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
 
-    protected synchronized int computeWorkload() {
+    protected int computeWorkload() {
         int workload = 0;
         for(Checker checker: checkerList) {
             workload += checker.getWorkload();

@@ -74,7 +74,7 @@ public class SimpleSwitcher implements Switcher {
     }
 
     @Override
-    public synchronized boolean isSwitch(long delay) {
+    public boolean isSwitch(long delay) {
         boolean needSwitch = false;
 
         if(delay != 0) {
@@ -141,12 +141,12 @@ public class SimpleSwitcher implements Switcher {
     }
 
     @Override
-    public synchronized int getCheckerType() {
+    public int getCheckerType() {
         return checkerType;
     }
 
     @Override
-    public synchronized int getSchedulerType() {
+    public int getSchedulerType() {
         return schedulerType;
     }
 }

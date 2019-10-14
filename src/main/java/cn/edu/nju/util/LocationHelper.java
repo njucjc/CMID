@@ -6,7 +6,7 @@ package cn.edu.nju.util;
 public class LocationHelper {
 
 
-    public synchronized static double getDistance(double long1, double lat1, double long2, double lat2) {
+    public static double getDistance(double long1, double lat1, double long2, double lat2) {
        return Math.sqrt((long1 - long2) * (long1 - long2) + (lat1 - lat2) * (lat1 - lat2));
     }
 
