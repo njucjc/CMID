@@ -406,6 +406,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 else if(checkType == CON_TYPE) {
                     c = new ConChecker(checker, taskNum, this.checkExecutorService);
                 }
+                else if(checkType == CONPCC_TYPE) {
+                    c = new ConPccChecker(checker, taskNum, this.checkExecutorService);
+                }
                 else {
                     assert false:"Type Error.";
                 }
