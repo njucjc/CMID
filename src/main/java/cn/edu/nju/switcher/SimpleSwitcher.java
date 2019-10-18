@@ -37,9 +37,11 @@ public class SimpleSwitcher implements Switcher {
         if (count + 1 != num) {
             needSwitch = true;
         }
-        count = num;
+        count++;
 
         if (needSwitch) {
+
+            count = num;
             switch (checkerType) {
                 case CheckerType.ECC_TYPE: {
                     checkerType = CheckerType.CON_TYPE;
@@ -55,7 +57,7 @@ public class SimpleSwitcher implements Switcher {
                 }
 
                 case CheckerType.CONPCC_TYPE: {
-                    checkerType = CheckerType.PCC_TYPE;
+                    needSwitch = false;
                 }
 
             }

@@ -55,7 +55,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
 
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
-
+               assert count != -1:"counter overflow.";
                 if(onDemand && switcher.isSwitch(num)) {
 
                     switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
