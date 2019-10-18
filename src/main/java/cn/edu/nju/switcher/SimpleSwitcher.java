@@ -50,14 +50,17 @@ public class SimpleSwitcher implements Switcher {
 
                 case CheckerType.CON_TYPE: {
                     checkerType = CheckerType.PCC_TYPE;
+                    break;
                 }
 
                 case CheckerType.PCC_TYPE: {
                     checkerType = CheckerType.CONPCC_TYPE;
+                    break;
                 }
 
                 case CheckerType.CONPCC_TYPE: {
                     needSwitch = false;
+                    break;
                 }
 
             }
