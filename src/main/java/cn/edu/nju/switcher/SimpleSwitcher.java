@@ -5,9 +5,6 @@ import cn.edu.nju.checker.CheckerType;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.RuntimeMXBean;
-import java.lang.management.ThreadMXBean;
 import java.util.Properties;
 
 /**
@@ -15,13 +12,6 @@ import java.util.Properties;
  */
 public class SimpleSwitcher implements Switcher {
 
-    private ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-
-    private RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-
-    private long initUpTime;
-
-    private long initCPUTime;
 
     private int checkerType;
 
@@ -31,86 +21,17 @@ public class SimpleSwitcher implements Switcher {
 
     private int step;
 
-    private float cpuUsageLow;
+    private int interleave;
+
+    private String type;
 
 
-    public SimpleSwitcher(String paramFile, int checkerType, int schedulerType) {
-        this.initUpTime = runtimeMXBean.getUptime();
-        this.initCPUTime = threadMXBean.getCurrentThreadCpuTime();
+    public SimpleSwitcher(String type, String paramFile, int checkerType, int schedulerType) {
         this.checkerType = checkerType;
         this.schedulerType = schedulerType;
+        this.type = type;
         this.count = 0;
         parseParamFile(paramFile);
-    }
-
-
-    @Override
-    public boolean isSwitch(int num) {
-        boolean needSwitch = false;
-
-        count++;
-
-        if (count % step == 0) {
-            switch (checkerType) {
-                case CheckerType.ECC_TYPE: {
-                    if (count != num) {
-                        checkerType = CheckerType.CON_TYPE;
-                        schedulerType = 1; //ImmedSched
-                        needSwitch = true;
-                        count = num + 1;
-                    }
-                    break;
-                }
-
-                case CheckerType.CON_TYPE: {
-                    if (count != num) {
-                        checkerType = CheckerType.PCC_TYPE;
-                        schedulerType = 1;
-                        needSwitch = true;
-                        count = num + 1;
-                    }
-                    break;
-                }
-
-                case CheckerType.PCC_TYPE: {
-                    if (count != num) {
-                        checkerType = CheckerType.CONPCC_TYPE;
-                        schedulerType = 1;
-                        needSwitch = true;
-                        count = num + 1;
-                    }
-                    break;
-                }
-
-                case CheckerType.CONPCC_TYPE: {
-                    needSwitch = false;
-                    break;
-                }
-
-            }
-        }
-        return needSwitch;
-    }
-
-    @Override
-    public int getCheckerType() {
-        return checkerType;
-    }
-
-    @Override
-    public int getSchedulerType() {
-        return schedulerType;
-    }
-
-
-    private float getCPURate() {
-        int nrCPUs = ManagementFactory.getOperatingSystemMXBean().getAvailableProcessors();
-        long elapsedCPUTime = threadMXBean.getCurrentThreadCpuTime() - initCPUTime;
-        long elapsedUpTime = runtimeMXBean.getUptime() - initUpTime;
-
-        float cpuRate = elapsedCPUTime * 100 / (elapsedUpTime * 1000000F * nrCPUs);
-
-        return cpuRate;
     }
 
     private void parseParamFile(String paramFilePath) {
@@ -124,6 +45,57 @@ public class SimpleSwitcher implements Switcher {
         }
 
         this.step = Integer.parseInt(properties.getProperty("step"));
-        this.cpuUsageLow = Float.parseFloat(properties.getProperty("cpuUsageLow"));
+        this.interleave = Integer.parseInt(properties.getProperty("interleave"));
     }
+
+
+    @Override
+    public boolean isSwitch(int num) {
+        boolean needSwitch = false;
+
+        switch (checkerType) {
+            case CheckerType.PCC_TYPE: {
+                if (count != num) {
+                    checkerType = CheckerType.CONPCC_TYPE;
+                    schedulerType = 1;
+                    needSwitch = true;
+                    count = num;
+                }
+                else {
+                    //TODO
+                }
+                break;
+            }
+
+            case CheckerType.CONPCC_TYPE: {
+                if (count != num) {
+                    if (type.contains("change")) { //change-based data
+                        checkerType = CheckerType.PCC_TYPE;
+                        schedulerType = 0;
+                        needSwitch = true;
+                        count = num;
+                    }
+                }
+                else {
+                   //TODO
+                }
+                break;
+            }
+        }
+
+        count++;
+
+        return needSwitch;
+    }
+
+    @Override
+    public int getCheckerType() {
+        return checkerType;
+    }
+
+    @Override
+    public int getSchedulerType() {
+        return schedulerType;
+    }
+
 }
