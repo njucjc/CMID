@@ -17,13 +17,17 @@ public class SimpleSwitcher implements Switcher {
 
     private int schedulerType;
 
-    private int count;
+    private String type; // change handler type
 
-    private int step;
+    private int count; // context id counter
 
-    private int interleave;
+    private int step; // context interleave check step
 
-    private String type;
+    private long interleave; // context interleave
+
+    private long sum; // the sum of interleaves
+
+    private int stepCount; // step counter
 
 
     public SimpleSwitcher(String type, String paramFile, int checkerType, int schedulerType) {
@@ -32,6 +36,26 @@ public class SimpleSwitcher implements Switcher {
         this.type = type;
         this.count = 0;
         parseParamFile(paramFile);
+        this.sum = 0;
+        this.stepCount = 0;
+    }
+
+    private void reset() {
+        this.stepCount = 0;
+        this.sum = 0;
+    }
+
+    private boolean isWorkloadLow(long i) {
+        boolean res = false;
+        this.stepCount++;
+        this.sum += i;
+        if (this.stepCount == step) {
+            if (this.sum / this.step >= this.interleave) {
+                res = true;
+            }
+            reset();
+        }
+        return res;
     }
 
     private void parseParamFile(String paramFilePath) {
@@ -50,7 +74,7 @@ public class SimpleSwitcher implements Switcher {
 
 
     @Override
-    public boolean isSwitch(int num) {
+    public boolean isSwitch(int num, long i) {
         boolean needSwitch = false;
 
         switch (checkerType) {
@@ -60,9 +84,16 @@ public class SimpleSwitcher implements Switcher {
                     schedulerType = 1;
                     needSwitch = true;
                     count = num;
+
+                    reset();
                 }
                 else {
-                    //TODO
+                    if (schedulerType == 0 && isWorkloadLow(i)) {
+                        checkerType = CheckerType.PCC_TYPE;
+                        schedulerType = 1;
+                        needSwitch = true;
+                    }
+
                 }
                 break;
             }
@@ -75,9 +106,15 @@ public class SimpleSwitcher implements Switcher {
                         needSwitch = true;
                         count = num;
                     }
+
+                    reset();
                 }
                 else {
-                   //TODO
+                   if (isWorkloadLow(i)) {
+                       checkerType = CheckerType.PCC_TYPE;
+                       schedulerType = 1;
+                       needSwitch = true;
+                   }
                 }
                 break;
             }
