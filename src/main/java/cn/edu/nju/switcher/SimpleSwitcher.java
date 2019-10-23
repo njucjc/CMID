@@ -23,7 +23,7 @@ public class SimpleSwitcher implements Switcher {
 
     private int step; // context interleave check step
 
-    private long interleave; // context interleave
+    private long interval; // context interval
 
     private long sum; // the sum of interleaves
 
@@ -50,7 +50,7 @@ public class SimpleSwitcher implements Switcher {
         this.stepCount++;
         this.sum += i;
         if (this.stepCount == step) {
-            if (this.sum / this.step >= this.interleave) {
+            if (this.sum / this.step >= this.interval) {
                 res = true;
             }
             reset();
@@ -69,7 +69,7 @@ public class SimpleSwitcher implements Switcher {
         }
 
         this.step = Integer.parseInt(properties.getProperty("step"));
-        this.interleave = Integer.parseInt(properties.getProperty("interleave"));
+        this.interval = Integer.parseInt(properties.getProperty("interval"));
     }
 
 
