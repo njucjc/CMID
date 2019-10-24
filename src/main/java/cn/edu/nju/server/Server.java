@@ -55,9 +55,9 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
 
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
-                long interleave = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
+                long interval = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
                 assert count != -1:"counter overflow.";
-                if(onDemand && switcher.isSwitch(num, interleave)) {
+                if(onDemand && switcher.isSwitch(num, interval)) {
 
                     switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
                     long startUpdate = System.nanoTime();

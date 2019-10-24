@@ -25,7 +25,7 @@ public class SimpleSwitcher implements Switcher {
 
     private long interval; // context interval
 
-    private long sum; // the sum of interleaves
+    private long sum; // the sum of interval
 
     private int stepCount; // step counter
 
