@@ -17,8 +17,6 @@ public class SimpleSwitcher implements Switcher {
 
     private int schedulerType;
 
-    private String type; // change handler type
-
     private int count; // context id counter
 
     private int step; // context interleave check step
@@ -30,10 +28,9 @@ public class SimpleSwitcher implements Switcher {
     private int stepCount; // step counter
 
 
-    public SimpleSwitcher(String type, String paramFile, int checkerType, int schedulerType) {
+    public SimpleSwitcher(String paramFile, int checkerType, int schedulerType) {
         this.checkerType = checkerType;
         this.schedulerType = schedulerType;
-        this.type = type;
         this.count = 0;
         parseParamFile(paramFile);
         this.sum = 0;
@@ -81,38 +78,22 @@ public class SimpleSwitcher implements Switcher {
             case CheckerType.PCC_TYPE: {
                 if (count != num) {
                     checkerType = CheckerType.CONPCC_TYPE;
-                    schedulerType = 1;
                     needSwitch = true;
+
                     count = num;
-
                     reset();
-                }
-                else {
-                    if (schedulerType == 0 && isWorkloadLow(i)) {
-                        checkerType = CheckerType.PCC_TYPE;
-                        schedulerType = 1;
-                        needSwitch = true;
-                    }
-
                 }
                 break;
             }
 
             case CheckerType.CONPCC_TYPE: {
                 if (count != num) {
-                    if (type.contains("change")) { //change-based data
-                        checkerType = CheckerType.PCC_TYPE;
-                        schedulerType = 0;
-                        needSwitch = true;
-                        count = num;
-                    }
-
+                    count = num;
                     reset();
                 }
                 else {
                    if (isWorkloadLow(i)) {
                        checkerType = CheckerType.PCC_TYPE;
-                       schedulerType = 1;
                        needSwitch = true;
                    }
                 }
