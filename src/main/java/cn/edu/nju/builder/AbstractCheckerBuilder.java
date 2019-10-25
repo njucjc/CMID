@@ -198,7 +198,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
 
         String paramFilePath = properties.getProperty("paramFilePath");
-        this.switcher = new SimpleSwitcher(paramFilePath ,this.checkType, this.scheduleType);
+        this.switcher = new SimpleSwitcher(paramFilePath, this.checkType, this.scheduleType);
     }
 
     private void configChangeHandler() {
@@ -405,6 +405,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 }
                 else if(checkType == CON_TYPE) {
                     c = new ConChecker(checker, taskNum, this.checkExecutorService);
+                }
+                else if(checkType == CONPCC_TYPE) {
+                    c = new ConPccChecker(checker, taskNum, this.checkExecutorService);
                 }
                 else {
                     assert false:"Type Error.";

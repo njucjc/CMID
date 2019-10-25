@@ -46,14 +46,7 @@ public abstract class ChangeHandler {
     protected Context parseContext(int num, String change) {
         String [] strs = change.split(",");
         if(strs[0].equals("+") || strs[0].equals("-")) {
-            int len = strs[0].length() + strs[1].length() + strs[2].length();
-            return new Context(Integer.parseInt(strs[2]),
-                    strs[3],
-                    strs[4],
-                    Double.parseDouble(strs[5]),
-                    Double.parseDouble(strs[6]),
-                    Double.parseDouble(strs[7]),
-                    Integer.parseInt(strs[8]));
+            return contextParser.parseChangeContext(strs);
         }
         else {
             return contextParser.parseContext(num, change);

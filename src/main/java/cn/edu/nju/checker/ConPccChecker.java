@@ -17,8 +17,6 @@ import java.util.concurrent.Future;
 public class ConPccChecker extends PccChecker {
     private Checker pcc;
 
-    private Checker ecc;
-
     private int addNum;
 
     private int taskNum;
@@ -28,6 +26,14 @@ public class ConPccChecker extends PccChecker {
 
     public ConPccChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap, int taskNum, ExecutorService checkExecutorService) {
         super(name, stRoot, patternMap, stMap);
+        this.pcc = new PccChecker();
+        this.addNum = 0;
+        this.taskNum = taskNum;
+        this.checkExecutorService = checkExecutorService;
+    }
+
+    public ConPccChecker(Checker checker, int taskNum, ExecutorService checkExecutorService) {
+        super(checker);
         this.pcc = new PccChecker();
         this.addNum = 0;
         this.taskNum = taskNum;

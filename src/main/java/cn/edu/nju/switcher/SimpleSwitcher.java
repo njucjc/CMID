@@ -2,14 +2,9 @@ package cn.edu.nju.switcher;
 
 
 import cn.edu.nju.checker.CheckerType;
-import cn.edu.nju.util.LogFileHelper;
 
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
-import java.lang.management.OperatingSystemMXBean;
-import java.lang.management.RuntimeMXBean;
-import java.lang.management.ThreadMXBean;
 import java.util.Properties;
 
 /**
@@ -17,44 +12,47 @@ import java.util.Properties;
  */
 public class SimpleSwitcher implements Switcher {
 
-//    private final static int THRESHOLD = 70;
-//
-//    private final static int STEP = 5;
-    private ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-
-    private RuntimeMXBean runtimeMXBean = ManagementFactory.getRuntimeMXBean();
-
-    private OperatingSystemMXBean osMxBean = ManagementFactory.getOperatingSystemMXBean();
-
-    private long initUpTime = runtimeMXBean.getUptime();
-
-    private long initCPUTime = threadMXBean.getCurrentThreadCpuTime();
-
-    private int nrCPUs = osMxBean.getAvailableProcessors();
-
-    private int maxDelay;
-
-    private int step;
-
-    private float cpuUsageLow;
-
-    //private float cpuUsageHigh;
 
     private int checkerType;
 
     private int schedulerType;
 
-    private int count;
+    private int count; // context id counter
 
-    private int totalDelay;
+    private int step; // context interleave check step
 
-    public SimpleSwitcher(String paramFilePath, int checkerType, int schedulerType) {
+    private long interval; // context interval
+
+    private long sum; // the sum of interval
+
+    private int stepCount; // step counter
+
+
+    public SimpleSwitcher(String paramFile, int checkerType, int schedulerType) {
         this.checkerType = checkerType;
         this.schedulerType = schedulerType;
         this.count = 0;
-        this.totalDelay = 0;
+        parseParamFile(paramFile);
+        this.sum = 0;
+        this.stepCount = 0;
+    }
 
-        parseParamFile(paramFilePath);
+    private void reset() {
+        this.stepCount = 0;
+        this.sum = 0;
+    }
+
+    private boolean isWorkloadLow(long i) {
+        boolean res = false;
+        this.stepCount++;
+        this.sum += i;
+        if (this.stepCount == step) {
+            if (this.sum / this.step >= this.interval) {
+                res = true;
+            }
+            reset();
+        }
+        return res;
     }
 
     private void parseParamFile(String paramFilePath) {
@@ -67,75 +65,43 @@ public class SimpleSwitcher implements Switcher {
             e.printStackTrace();
         }
 
-        this.maxDelay = Integer.parseInt(properties.getProperty("maxDelay"));
         this.step = Integer.parseInt(properties.getProperty("step"));
-        this.cpuUsageLow = Float.parseFloat(properties.getProperty("cpuUsageLow"));
-       /// this.cpuUsageHigh = Float.parseFloat(properties.getProperty("cpuUsageHigh"));
+        this.interval = Integer.parseInt(properties.getProperty("interval"));
     }
 
+
     @Override
-    public boolean isSwitch(long delay) {
+    public boolean isSwitch(int num, long i) {
         boolean needSwitch = false;
 
-        if(delay != 0) {
-            count = (count + 1) % step;
-            totalDelay += delay;
-        }
+        switch (checkerType) {
+            case CheckerType.PCC_TYPE: {
+                if (count != num) {
+                    checkerType = CheckerType.CONPCC_TYPE;
+                    needSwitch = true;
 
-        if(count == 0) {
-
-            switch (checkerType) {
-                case CheckerType.ECC_TYPE: {
-                    if (totalDelay / step > maxDelay) {
-                        needSwitch = true;
-                        checkerType = CheckerType.CON_TYPE;
-                    }
-                    break;
+                    count = num;
+                    reset();
                 }
-
-                case CheckerType.CON_TYPE: {
-                    if (totalDelay / step > maxDelay) {
-                        needSwitch = true;
-                        checkerType = CheckerType.PCC_TYPE;
-                    }
-                    break;
-                }
-
-                case CheckerType.PCC_TYPE: {
-                    long elapsedCPUTime = threadMXBean.getCurrentThreadCpuTime() - initCPUTime;
-                    long elapsedUpTime = runtimeMXBean.getUptime() - initUpTime;
-
-                    float cpuUsage = elapsedCPUTime * 100 / (elapsedUpTime * 1000000F * nrCPUs);
-
-                    if (totalDelay / step > maxDelay) {
-                        if(schedulerType == 1) {
-                            needSwitch = true;
-                            schedulerType = 0;
-                        }
-                    }
-                    else { //Delay normal
-                        if (cpuUsage < cpuUsageLow) {
-                            needSwitch = true;
-                            if (schedulerType == 0) {
-                                schedulerType = 1;
-                            } else {
-                                checkerType = CheckerType.ECC_TYPE;
-                            }
-                        }
-                    }
-
-                    break;
-                }
-
+                break;
             }
-            totalDelay = 0;
+
+            case CheckerType.CONPCC_TYPE: {
+                if (count != num) {
+                    count = num;
+                    reset();
+                }
+                else {
+                   if (isWorkloadLow(i)) {
+                       checkerType = CheckerType.PCC_TYPE;
+                       needSwitch = true;
+                   }
+                }
+                break;
+            }
         }
 
-        if(needSwitch) {
-            //calculate cpu time
-            initUpTime = runtimeMXBean.getUptime();
-            initCPUTime = threadMXBean.getCurrentThreadCpuTime();
-        }
+        count++;
 
         return needSwitch;
     }
@@ -149,4 +115,5 @@ public class SimpleSwitcher implements Switcher {
     public int getSchedulerType() {
         return schedulerType;
     }
+
 }

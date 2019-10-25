@@ -67,7 +67,7 @@ public class Client implements Runnable{
 
             System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + " ms");
             sleepMillis = sleepTime.get(i);
-            sendMsg(i+ "," + contextStrList.get(i));
+            sendMsg(i+ "," + contextStrList.get(i) + "," + sleepMillis);
             endTime = System.nanoTime();
 
             long diff = (endTime - startTime) - totalTime * 1000000;
