@@ -142,7 +142,18 @@ public class ChangeFileHelper {
     public static void main(String[] args) {
         if(args.length == 2) {
             ChangeFileHelper changeFileHelper = new ChangeFileHelper(args[0]);
-            changeFileHelper.parseChangeFile(args[1]);
+            File file = new File(args[1]);
+            if (file.isFile()) {
+                changeFileHelper.parseChangeFile(args[1]);
+            }
+            else {
+                File [] fs = file.listFiles();
+                if (fs != null) {
+                    for (File f : fs) {
+                        changeFileHelper.parseChangeFile(f.getPath());
+                    }
+                }
+            }
         }
         else {
             System.out.println("Args Error.");
