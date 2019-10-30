@@ -10,7 +10,6 @@ import org.dom4j.io.SAXReader;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -18,8 +17,6 @@ import java.util.*;
  */
 public class ChangeFileHelper {
     private List<Pattern> patternList = new ArrayList<>();
-    private Map<String, List<String>> contextChangMap = new TreeMap<>();
-    private ContextStaticRepo contextStaticRepo;
 
     public ChangeFileHelper(String patternXmlPath) {
         parsePatternXml(patternXmlPath);
@@ -55,38 +52,22 @@ public class ChangeFileHelper {
     }
 
     public void parseChangeFile(String changeFilePath) {
-        this.contextStaticRepo = new ContextStaticRepo(changeFilePath);
+        Map<String, List<String>> contextChangeMap = new TreeMap<>();
+        ContextStaticRepo contextStaticRepo = new ContextStaticRepo(changeFilePath);
         File file = new File(changeFilePath.split("\\.")[0] + "_change.txt");
 
-        FileWriter writer = null;
-        try {
-            if(file.exists()) {
-                file.delete();
-            }
-            file.createNewFile();
-            writer = new FileWriter(file, true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         Context context;
+        List<String> res = new ArrayList<>();
         try {
             while ((context = contextStaticRepo.getContext()) != null) {
                 String currentTimestamp = context.getTimestamp();
 
-//                Set<String> keySet = contextChangMap.keySet();
-//                String [] keyArray = new String[keySet.size()];
-//                keySet.toArray(keyArray);
-//                Arrays.sort(keyArray);
-                Iterator<Map.Entry<String, List<String>>> it = contextChangMap.entrySet().iterator();
+                Iterator<Map.Entry<String, List<String>>> it = contextChangeMap.entrySet().iterator();
                 while(it.hasNext()) {
                     Map.Entry<String, List<String>> entry = it.next();
                     String timestamp = entry.getKey();
                     if(TimestampHelper.timestampCmp(timestamp, currentTimestamp) < 0) {
-                        for(String change : contextChangMap.get(timestamp)) {
-                            writer.write(change);
-                            writer.write('\n');
-                        }
+                        res.addAll(contextChangeMap.get(timestamp));
                         it.remove();
                     }
                 }
@@ -94,46 +75,42 @@ public class ChangeFileHelper {
                 String str = context.allForString();
                 for(Pattern pattern: patternList) {
                     if(pattern.isBelong(context)) {
-                        writer.write("+," + pattern.getId() + "," + str);
-                        writer.write('\n');
+                        res.add(("+," + pattern.getId() + "," + str));
                         String key = TimestampHelper.plusMillis(currentTimestamp, pattern.getFreshness());
                         context.setTimestamp(key);
-                        if(!contextChangMap.containsKey(key)) {
-                            contextChangMap.put(key, new ArrayList<>());
+                        if(!contextChangeMap.containsKey(key)) {
+                            contextChangeMap.put(key, new ArrayList<>());
                         }
-                        contextChangMap.get(key).add("-," + pattern.getId() + "," + context.allForString());
+                        contextChangeMap.get(key).add("-," + pattern.getId() + "," + context.allForString());
                     }
                     context.setTimestamp(currentTimestamp);
                 }
             }
+
+            Iterator<Map.Entry<String, List<String>>> it = contextChangeMap.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<String, List<String>> entry = it.next();
+                String key = entry.getKey();
+                res.addAll(contextChangeMap.get(key));
+            }
+
+            if(file.exists()) {
+                file.delete();
+            }
+
+            file.createNewFile();
+            FileWriter writer = new FileWriter(file, true);
+
+            for (String line : res) {
+                writer.write(line + "\n");
+            }
+
+            writer.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-//        Set<String> keySet = contextChangMap.keySet();
-//        String [] keyArray = new String[keySet.size()];
-//        keySet.toArray(keyArray);
-//        Arrays.sort(keyArray);
 
-        try {
-            Iterator<Map.Entry<String, List<String>>> it = contextChangMap.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry<String, List<String>> entry = it.next();
-                String key = entry.getKey();
-                for (String change : contextChangMap.get(key)) {
-                    writer.write(change);
-                    writer.write('\n');
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
 
 
     }
@@ -142,7 +119,31 @@ public class ChangeFileHelper {
     public static void main(String[] args) {
         if(args.length == 2) {
             ChangeFileHelper changeFileHelper = new ChangeFileHelper(args[0]);
-            changeFileHelper.parseChangeFile(args[1]);
+            File file = new File(args[1]);
+            if (file.isFile()) {
+                System.out.println(args[1]);
+                changeFileHelper.parseChangeFile(args[1]);
+            }
+            else {
+                File [] fs = file.listFiles();
+                if (fs != null) {
+
+                    List<File> fileList = Arrays.asList(fs);
+                    fileList.sort((Comparator<File>) (o1, o2) -> {
+                        if (o1.isDirectory() && o2.isFile())
+                            return -1;
+                        if (o1.isFile() && o2.isDirectory())
+                            return 1;
+                        return o1.getName().compareTo(o2.getName());
+                    });
+
+                    for (File f : fileList) {
+                        System.out.println(f.getPath());
+                        changeFileHelper.parseChangeFile(f.getPath());
+                    }
+                }
+
+            }
         }
         else {
             System.out.println("Args Error.");
