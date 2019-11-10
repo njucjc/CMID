@@ -41,8 +41,12 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long count = 0;
         long switchTimeCount = 0;
         long startTime = System.nanoTime();
+
+        long timeSum = 0;
+        long intervalSum = 0;
         try {
             while (running) {
+                long start = System.nanoTime();
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 serverSocket.receive(packet);
 
@@ -70,6 +74,22 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 changeHandler.doContextChange(num, msg);
                 count++;
 
+                int inc = 0;
+                for (Checker checker : checkerList) {
+                    inc += checker.getInc();
+                }
+
+                long end = System.nanoTime();
+                long checkTime = (end - start);
+                timeSum += checkTime;
+                intervalSum += interval;
+
+                System.out.print("\033[36;4m" + "Send/Receive: " + (num + 1) + "/" + count +
+                        "\tTotal inc: "+ inc +
+                        "\tChecking time/Interval: " + (checkTime/1000000)+ "(" + (timeSum/1000000/count) + ")/" + interval + "(" + (intervalSum/count)+")" +
+                        "\tTotal Checking time: " + (timeSum/1000000) + "\033[0m" +"\r");
+
+
             }
             scheduler.reset();
             changeHandler.doCheck();
@@ -91,7 +111,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }
         LogFileHelper.getLogger().info("Total Inc: " + inc);
         LogFileHelper.getLogger().info("Receive: " + count );
-        LogFileHelper.getLogger().info("check time: " +  changeHandler.timeCount / 1000000 + " ms");
+        LogFileHelper.getLogger().info("check time: " +  timeSum / 1000000 + " ms");
         LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
         LogFileHelper.getLogger().info("Switch Time: " + switchTimeCount + " ns = " + switchTimeCount / 1000000 +" ms");
         for(long timePoint : switchPoint) {
