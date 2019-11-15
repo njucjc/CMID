@@ -249,6 +249,30 @@ public abstract class Checker {
         }
     }
 
+    protected void build(STNode stRoot, CCTNode cctRoot) {
+        if (!stRoot.hasChildNodes()) {
+            return ;
+        }
+        if(stRoot.getNodeType() == STNode.EXISTENTIAL_NODE || stRoot.getNodeType() == STNode.UNIVERSAL_NODE) {
+            STNode stChild = (STNode) stRoot.getFirstChild();
+            for(Context context : patternMap.get(stRoot.getContextSetName()).getContextList()) {
+                //CCT结点创建默认为FC状态
+                CCTNode cctChild = new CCTNode(stChild.getNodeName(), stChild.getNodeType(), context);
+                build(stChild, cctChild);
+                cctRoot.addChildeNode(cctChild);
+            }
+        }
+        else {
+            List<TreeNode> childNodes = stRoot.getChildTreeNodes();
+            for (TreeNode n : childNodes) {
+                STNode stChild = (STNode) n;
+                CCTNode cctChild = new CCTNode(stChild.getNodeName(), stChild.getNodeType());
+                build(stChild, cctChild);
+                cctRoot.addChildeNode(cctChild);
+            }
+        }
+    }
+
 
     public boolean affected(String contextSetName) {
         return stMap.containsKey(contextSetName);
@@ -794,6 +818,10 @@ public abstract class Checker {
 
     public int getMaxLinkSize() {
         return maxLinkSize;
+    }
+
+    public void sCheck(List<Context> contextList) {
+        doCheck();
     }
 
 }
