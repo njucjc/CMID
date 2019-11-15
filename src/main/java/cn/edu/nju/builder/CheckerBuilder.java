@@ -44,8 +44,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         }
         LogFileHelper.getLogger().info("Total INC: " + incCount + " times");
         LogFileHelper.getLogger().info("Total check: " + checkTimes + " times");
-        LogFileHelper.getLogger().info("check time: " + changeHandler.timeCount / 1000000 + " ms");
-        LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
+        LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms");
         shutdown();
     }
 

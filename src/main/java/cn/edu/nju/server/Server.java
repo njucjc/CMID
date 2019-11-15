@@ -40,7 +40,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
         long count = 0;
         long switchTimeCount = 0;
-        long startTime = System.nanoTime();
 
         long timeSum = 0;
         long intervalSum = 0;
@@ -100,7 +99,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
         changeHandler.shutdown();
 
-        long endTime = System.nanoTime();
 
         int inc = 0;
         long time = 0L;
@@ -111,8 +109,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }
         LogFileHelper.getLogger().info("Total Inc: " + inc);
         LogFileHelper.getLogger().info("Receive: " + count );
-        LogFileHelper.getLogger().info("check time: " +  timeSum / 1000000 + " ms");
-        LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
+        LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms");
         LogFileHelper.getLogger().info("Switch Time: " + switchTimeCount + " ns = " + switchTimeCount / 1000000 +" ms");
         for(long timePoint : switchPoint) {
             LogFileHelper.getLogger().info("Switch at: " + timePoint + " ms");
