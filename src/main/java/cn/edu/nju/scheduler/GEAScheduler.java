@@ -19,11 +19,14 @@ public class GEAScheduler implements Scheduler{
 
     protected ContextParser parser = new ContextParser();
 
+    private List<Context> contextList;
+
 
     public GEAScheduler(List<Checker> checkerList) {
         this.checkerList = checkerList;
         this.scheduleMap = new HashMap<>();
         this.currentBatchMap = new HashMap<>();
+        this.contextList = new ArrayList<>();
 
 
         for(Checker checker : checkerList) {
@@ -63,10 +66,15 @@ public class GEAScheduler implements Scheduler{
 
         boolean result = sCondition(checker, currentBatch, elements);
 
-        List<Boolean> subTree = calcSubTree(checker, elements[1], parser.parseChangeContext(elements));
+        Context context = parser.parseChangeContext(elements);
+        contextList.add(context);
+
+        List<Boolean> subTree = calcSubTree(checker, elements[1], context);
+
 
         if (result) { //make batch empty
             currentBatch.clear();
+            sCheck(checker);
         } else {
             String c = cCondition(checker, currentBatch, elements, subTree);
             if (c == null) {
@@ -118,6 +126,11 @@ public class GEAScheduler implements Scheduler{
         for(String key : scheduleMap.keySet()) {
             scheduleMap.put(key, true);
         }
+    }
+
+    protected void sCheck(Checker checker) {
+        checker.sCheck(this.contextList);
+        this.contextList.clear();
     }
 
 }

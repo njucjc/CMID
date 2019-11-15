@@ -230,4 +230,9 @@ public class ConPccChecker extends PccChecker {
     public boolean doCheck() {
         return super.doCheck();
     }
+
+    @Override
+    public void sCheck(List<Context> contextList) {
+        doCheck();
+    }
 }
