@@ -78,7 +78,7 @@ public class PccChecker extends Checker{
         CCTNode newRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
         for (Context c : contextList) {
             CCTNode newChild = new CCTNode(stRoot.getFirstChild().getNodeName(),((STNode)(stRoot.getFirstChild())).getNodeType(), c);
-            build((STNode) stRoot.getFirstChild(), newChild);
+            build((STNode) stRoot.getFirstChild(), newChild, 1);
 
             newRoot.addChildeNode(newChild);
         }
