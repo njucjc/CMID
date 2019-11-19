@@ -86,7 +86,8 @@ public class GEAScheduler implements Scheduler{
             if (c == null) {
                 currentBatch.add(change);
             }
-            else {
+            else { //GEAS-opt only
+                updateGEASOptWinSize(checker.getName(), currentBatch.size());
                 currentBatch.remove(c);
             }
         }
@@ -146,6 +147,14 @@ public class GEAScheduler implements Scheduler{
 
         tmp[2] += size;
         tmp[3]++;
+    }
+
+    void updateGEASOptWinSize(String name, int size) {
+        int [] tmp = winSizeMap.get(name);
+        if (tmp[1] < size + 2) {
+            tmp[1] = size + 2;
+        }
+        tmp[2] += 2;
     }
 
     protected void sCheck(Checker checker) {
