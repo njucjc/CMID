@@ -36,14 +36,11 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         changeHandler.doCheck();
         long endTime = System.nanoTime(); //获取结束时间
         int incCount = 0;
-        int checkTimes = 0;
         for(Checker checker : checkerList) {
             incCount += checker.getInc();
-            checkTimes += checker.getCheckTimes();
             LogFileHelper.getLogger().info(checker.getName() + ": INC = " + checker.getInc() + " times" + " ,win size {min, max, avg} = " + scheduler.getWinSizeStr(checker.getName()));
         }
         LogFileHelper.getLogger().info("Total INC: " + incCount + " times");
-        LogFileHelper.getLogger().info("Total check: " + checkTimes + " times");
         LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms");
         shutdown();
     }
