@@ -28,7 +28,7 @@ public class BatchScheduler implements Scheduler{
     }
 
     @Override
-    public String getWinSizeStr(String ruleName) {
-        return "{" + batch + "," + batch + "," + batch + "}";
+    public int getWinSize() {
+        return batch;
     }
 }

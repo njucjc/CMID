@@ -36,7 +36,7 @@ public class GEAScheduler implements Scheduler{
             String name = checker.getName();
             scheduleMap.put(name, false);
             currentBatchMap.put(name, new ArrayList<>());
-            int [] tmp = new int[]{Integer.MAX_VALUE, 0, 0, 0};
+            int [] tmp = new int[]{0, 0};
             winSizeMap.put(name, tmp);
         }
     }
@@ -87,7 +87,7 @@ public class GEAScheduler implements Scheduler{
                 currentBatch.add(change);
             }
             else { //GEAS-opt only
-                updateGEASOptWinSize(checker.getName(), currentBatch.size());
+                updateGEASOptWinSize(checker.getName());
                 currentBatch.remove(c);
             }
         }
@@ -137,24 +137,13 @@ public class GEAScheduler implements Scheduler{
 
     void updateWinSize(String name, int size) {
         int [] tmp = winSizeMap.get(name);
-        if (tmp[0] > size) {
-            tmp[0] = size;
-        }
-
-        if (tmp[1] < size) {
-            tmp[1] = size;
-        }
-
-        tmp[2] += size;
-        tmp[3]++;
+        tmp[0] += size;
+        tmp[1]++;
     }
 
-    void updateGEASOptWinSize(String name, int size) {
+    void updateGEASOptWinSize(String name) {
         int [] tmp = winSizeMap.get(name);
-        if (tmp[1] < size + 2) {
-            tmp[1] = size + 2;
-        }
-        tmp[2] += 2;
+        tmp[0] += 2;
     }
 
     protected void sCheck(Checker checker) {
@@ -163,9 +152,16 @@ public class GEAScheduler implements Scheduler{
     }
 
     @Override
-    public String getWinSizeStr(String ruleName) {
-        int [] tmp = winSizeMap.get(ruleName);
-        int avg = tmp[3] == 0 ? 0 : tmp[2] / tmp[3];
-        return "{" + tmp[0] +"," + tmp[1] + "," + avg + "}";
+    public int getWinSize() {
+        int winSum = 0;
+        int count = 0;
+        for (Checker checker : checkerList) {
+            int [] tmp = winSizeMap.get(checker.getName());
+            winSum += tmp[0];
+            count += tmp[1];
+        }
+
+        return count == 0 ? 0 : winSum/count;
+
     }
 }

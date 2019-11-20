@@ -105,10 +105,11 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         for (Checker checker : checkerList) {
             inc += checker.getInc();
             time = time + checker.getTimeCount();
-            LogFileHelper.getLogger().info(checker.getName() + ": " + checker.getInc() + " times" + " ,win size  {min, max, avg} = " + scheduler.getWinSizeStr(checker.getName()) );
+            LogFileHelper.getLogger().info(checker.getName() + ": " + checker.getInc() + " times");
         }
         LogFileHelper.getLogger().info("Total Inc: " + inc);
         LogFileHelper.getLogger().info("Receive: " + count );
+        LogFileHelper.getLogger().info("Win size: " + scheduler.getWinSize());
         LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms");
         LogFileHelper.getLogger().info("Switch Time: " + switchTimeCount + " ns = " + switchTimeCount / 1000000 +" ms");
         for(long timePoint : switchPoint) {

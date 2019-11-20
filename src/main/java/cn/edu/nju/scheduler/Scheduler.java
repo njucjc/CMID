@@ -8,5 +8,5 @@ public interface Scheduler {
     void  update(String change);
     boolean schedule(String ruleName);
     //----------------------
-    String getWinSizeStr(String ruleName);
+    int getWinSize();
 }
