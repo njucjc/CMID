@@ -76,12 +76,7 @@ public class PccChecker extends Checker{
     @Override
     public void sCheck(List<Context> contextList) {
         CCTNode newRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
-        for (Context c : contextList) {
-            CCTNode newChild = new CCTNode(stRoot.getFirstChild().getNodeName(),((STNode)(stRoot.getFirstChild())).getNodeType(), c);
-            build((STNode) stRoot.getFirstChild(), newChild, 1);
-
-            newRoot.addChildeNode(newChild);
-        }
+        build(stRoot, newRoot, 2);
 
         List<Context> param = new ArrayList<>();
         evaluation(newRoot, param);
