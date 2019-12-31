@@ -56,171 +56,71 @@ public class ConPccChecker extends PccChecker {
             return pcc.evaluation(cctRoot, param);
         }
 
-        if (addNum == 1) {
-            List<Context> p1 = new ArrayList<>(param);
-            Future<Result> f1 = checkExecutorService.submit(new CheckTask(cctRoot, p1, pcc, 0, size - 2));
+        int workload = size;
 
-            CCTNode newRoot = (CCTNode) cctRoot.getLastChild();
-            int workload = newRoot.getChildTreeNodes().size();
-            int workerNum = workload;
-            if (workerNum >= taskNum) {
-                workerNum = taskNum;
-            }
+        int workerNum = workload;
 
-            List<Future<Result>> subResultList = new ArrayList<>();
+        if ( workerNum >= taskNum) {
+            workerNum = taskNum;
 
-            for (int i = 0; i < workerNum; i++) {
-                List<Context> p = new ArrayList<>();
-                p.add(newRoot.getContext());
-                Future<Result> subResult = checkExecutorService.submit(new CheckTask(newRoot, p, new EccChecker(), i * workload / workerNum, (i + 1) * workload / workerNum - 1));
-                subResultList.add(subResult);
-            }
-
-            boolean andValue = true;
-            boolean orValue = false;
-            StringBuilder satisfiedLink = new StringBuilder();
-            StringBuilder violatedLink = new StringBuilder();
-
-            Result r1 = null;
-            try {
-                r1 = f1.get();
-                for (Future<Result> subResult : subResultList) {
-                    Result tmpResult = subResult.get();
-                    boolean tmp = tmpResult.getValue();
-                    andValue = andValue && tmp;
-                    orValue = orValue || tmp;
-                    if (tmp) {
-                        satisfiedLink.append(tmpResult.getLink());
-                        satisfiedLink.append("#");
-                    } else {
-                        violatedLink.append(tmpResult.getLink());
-                        violatedLink.append("#");
-                    }
-                }
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-
-
-            boolean value;
-            if (newRoot.getNodeType() == CCTNode.UNIVERSAL_NODE) {
-                value = andValue;
-
-            } else {
-                value = orValue;
-
-            }
-
-            newRoot.setNodeValue(value);
-
-            if (value) {
-                newRoot.setLink(satisfiedLink.toString());
-            } else {
-                newRoot.setLink(violatedLink.toString());
-            }
-
-            newRoot.setNodeStatus(NodeStatus.NC_STATE);
-
-            if (cctRoot.getNodeType() == NodeType.UNIVERSAL_NODE) {
-                cctRoot.setNodeValue(r1.getValue() && newRoot.getNodeValue());
-            } else {
-                cctRoot.setNodeValue(r1.getValue() || newRoot.getNodeValue());
-            }
-            cctRoot.setNodeStatus(NodeStatus.NC_STATE);
-
-            String link = "";
-            if (cctRoot.getNodeValue()) {
-                if (r1.getValue()) {
-                    link = link + r1.getLink() + "#";
-                }
-                if (newRoot.getNodeValue()) {
-                    link = link + newRoot.getLink() + "#";
-                }
-            } else {
-                if (!r1.getValue()) {
-                    link = link + r1.getLink() + "#";
-                }
-                if (!newRoot.getNodeValue()) {
-                    link = link + newRoot.getLink() + "#";
-                }
-            }
-
-            cctRoot.setLink(link);
-        }
-        else {
-            int workload = size;
-            int workerNum = workload;
-            if ( workerNum >= taskNum) {
-                workerNum = taskNum;
-            }
-
-            List<Future<Result>> subResultList = new ArrayList<>();
-
-            for(int i = 0; i < workerNum; i++) {
-                List<Context> p = new ArrayList<>();
-                p.addAll(param);
-                Future<Result> subResult = checkExecutorService.submit(new CheckTask(cctRoot, p, new PccChecker(),i * workload / workerNum, (i + 1) * workload / workerNum - 1));
-                subResultList.add(subResult);
-            }
-
-            boolean andValue = true;
-            boolean orValue = false;
-            StringBuilder satisfiedLink = new StringBuilder();
-            StringBuilder violatedLink = new StringBuilder();
-            try {
-                for (Future<Result> subResult : subResultList) {
-                    Result tmpResult = subResult.get();
-                    boolean tmp = tmpResult.getValue();
-                    andValue = andValue && tmp;
-                    orValue = orValue || tmp;
-                    if (tmp) {
-                        satisfiedLink.append(tmpResult.getLink());
-                        satisfiedLink.append("#");
-                    } else {
-                        violatedLink.append(tmpResult.getLink());
-                        violatedLink.append("#");
-                    }
-                }
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
-
-
-            boolean value;
-            if (cctRoot.getNodeType() == CCTNode.UNIVERSAL_NODE) {
-                value = andValue;
-
-            } else {
-                value = orValue;
-
-            }
-
-            cctRoot.setNodeValue(value);
-
-            if(value) {
-                int len = satisfiedLink.length();
-                if(len > 0) {
-                    satisfiedLink.deleteCharAt(len - 1);
-                }
-                cctRoot.setLink(satisfiedLink.toString());
-            } else {
-                int len = violatedLink.length();
-                if(len > 0) {
-                    violatedLink.deleteCharAt(len - 1);
-                }
-                cctRoot.setLink(violatedLink.toString());
-            }
-
-            cctRoot.setNodeStatus(NodeStatus.NC_STATE);
         }
 
+        List<Future<Result>> subResultList = new ArrayList<>();
 
+        for(int i = 0; i < workerNum; i++) {
+            List<Context> p = new ArrayList<>();
+            p.addAll(param);
+            Future<Result> subResult = checkExecutorService.submit(new CheckTask(cctRoot, p, new PccChecker(),i * workload / workerNum, (i + 1) * workload / workerNum - 1));
+            subResultList.add(subResult);
+        }
+
+        boolean andValue = true;
+        boolean orValue = false;
+        StringBuilder satisfiedLink = new StringBuilder();
+        StringBuilder violatedLink = new StringBuilder();
+        try {
+            for (Future<Result> subResult : subResultList) {
+                Result tmpResult = subResult.get();
+                boolean tmp = tmpResult.getValue();
+                andValue = andValue && tmp;
+                orValue = orValue || tmp;
+                if (tmp) {
+                    satisfiedLink.append(tmpResult.getLink());
+                    satisfiedLink.append("#");
+                } else {
+                    violatedLink.append(tmpResult.getLink());
+                    violatedLink.append("#");
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        boolean value;
+        if (cctRoot.getNodeType() == CCTNode.UNIVERSAL_NODE) {
+            value = andValue;
+        } else {
+            value = orValue;
+
+        }
+        cctRoot.setNodeValue(value);
+        if(value) {
+            int len = satisfiedLink.length();
+            if(len > 0) {
+                satisfiedLink.deleteCharAt(len - 1);
+            }
+            cctRoot.setLink(satisfiedLink.toString());
+        } else {
+            int len = violatedLink.length();
+            if(len > 0) {
+                violatedLink.deleteCharAt(len - 1);
+            }
+            cctRoot.setLink(violatedLink.toString());
+        }
+
+        cctRoot.setNodeStatus(NodeStatus.NC_STATE);
 
         addNum = 0; //新增分支数清零
         return cctRoot.getNodeValue();
