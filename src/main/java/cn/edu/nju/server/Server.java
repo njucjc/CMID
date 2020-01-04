@@ -45,7 +45,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long intervalSum = 0;
         try {
             while (running) {
-                long start = System.nanoTime();
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 serverSocket.receive(packet);
 
@@ -55,7 +54,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                     running = false;
                     break;
                 }
-
 
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
                 long interval = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
@@ -68,8 +66,10 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                     long endUpdate = System.nanoTime();
                     switchTimeCount += endUpdate - startUpdate;
                 }
-
                 msg = msg.substring(msg.indexOf(",") + 1);
+
+                long start = System.nanoTime();
+
                 changeHandler.doContextChange(num, msg);
                 count++;
 
