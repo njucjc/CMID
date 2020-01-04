@@ -73,14 +73,16 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 changeHandler.doContextChange(num, msg);
                 count++;
 
+                long end = System.nanoTime();
+                long checkTime = (end - start);
+                timeSum += checkTime;
+
                 int inc = 0;
                 for (Checker checker : checkerList) {
                     inc += checker.getInc();
                 }
 
-                long end = System.nanoTime();
-                long checkTime = (end - start);
-                timeSum += checkTime;
+
                 intervalSum += interval;
 
                 System.out.print("\033[36;4m" + "Send/Receive: " + (num + 1) + "/" + count +
