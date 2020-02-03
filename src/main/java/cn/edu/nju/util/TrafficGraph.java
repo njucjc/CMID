@@ -68,11 +68,11 @@ public class TrafficGraph {
             visited.put(key, false);
         }
         List<String> path = new ArrayList<>();
-        existPathLenK(visited, path, v, w, k);
-        return path;
+        boolean ok = existPathLenK(visited, path, v, w, k);
+        return ok ? path : null;
     }
 
-    public static boolean existPathLenK(Map<String, Boolean> visited, List<String> path, String v, String w, int k) {
+    private static boolean existPathLenK(Map<String, Boolean> visited, List<String> path, String v, String w, int k) {
         visited.put(v, true);
         path.add(v);
         if (v.equals(w) && k == 0) {
