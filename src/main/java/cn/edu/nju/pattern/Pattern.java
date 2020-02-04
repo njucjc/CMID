@@ -11,7 +11,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Pattern {
     private String id;
-    private long freshness;
+    private int freshness;
     private String category;
     private String subject;
     private String predicate;
@@ -21,7 +21,7 @@ public class Pattern {
     private List<Context> contextList;
 
     public Pattern(String id,
-                   long freshness,
+                   int freshness,
                    String category,
                    String subject,
                    String predicate,
@@ -38,7 +38,7 @@ public class Pattern {
         this.contextList = new CopyOnWriteArrayList<>();
     }
 
-    public long getFreshness() {
+    public int getFreshness() {
         return freshness;
     }
 
@@ -100,44 +100,7 @@ public class Pattern {
      * @return
      */
     public boolean isBelong(Context context) {
-        int status = context.getStatus();
-        String plateNumber = context.getPlateNumber();
-
-        boolean belong = false;
-        if (status == 0) {
-            if("run_with_service".equals(predicate)) {
-                belong = false;
-            }
-            else {
-                belong = true;
-            }
-        }
-        else {
-            if("run_without_service".equals(predicate)) {
-                belong = false;
-            }
-            else {
-                belong = true;
-            }
-        }
-
-       if(!"any".equals(site)) {
-            if(plateNumber.matches("[0-9]+")) { //旧数据的判断条件（车牌为纯数字）
-                String [] elem = site.split("_");
-                if (elem[1].matches("[0-9]")) {
-                    belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() - 1));
-                }
-                else {
-                    belong = belong && HotAreaHelper.inArea(elem[1], context.getLatitude(), context.getLongitude());
-                }
-
-            }
-            else { //新数据的判断条件
-                belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() - 2));
-            }
-        }
-
-        return  belong;
+        return true;
     }
 
     /**
@@ -182,7 +145,7 @@ public class Pattern {
         Set<String> timeSet = new HashSet<>();
         for(Context context : contextList) {
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) > freshness) {
-                timeSet.add(TimestampHelper.plusMillis(context.getTimestamp(), freshness));
+                timeSet.add(TimestampHelper.plus(context.getTimestamp(), freshness));
             }
             else {//找到第一个还未过期的context即可结束遍历
                 break;

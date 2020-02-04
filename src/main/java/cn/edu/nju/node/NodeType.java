@@ -12,12 +12,11 @@ public interface NodeType {
     public static final int BFUNC_NODE = 5;
     public static final int EMPTY_NODE = 6;
 
-    public static final int SAME = 7;
-    public static final int SZ_SPD_CLOSE = 8;
-    public static final int SZ_LOC_CLOSE = 9;
-    public static final int SZ_LOC_DIST = 10;
-    public static final int SZ_LOC_DIST_NEQ = 11;
-    public static final int SZ_LOC_RANGE = 12;
+    public static final int BEFORE = 7;
+    public static final int GATE = 8;
+    public static final int EQUAL = 9;
+    public static final int CONN = 10;
+    public static final int OPPO = 11;
 
     int getNodeType();
     void setNodeType(int nodeType);

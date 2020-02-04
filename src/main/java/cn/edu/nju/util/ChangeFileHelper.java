@@ -42,7 +42,7 @@ public class ChangeFileHelper {
                   //  System.out.println("name：" + patternChild.getName() + " value：" + patternChild.getStringValue());
                     attr[i++] = patternChild.getStringValue();
                 }
-                Pattern p = new Pattern(attr[0], Long.parseLong(attr[1]), attr[2], attr[3], attr[4], attr[5], attr[6]);
+                Pattern p = new Pattern(attr[0], Integer.parseInt(attr[1]), attr[2], attr[3], attr[4], attr[5], attr[6]);
                 patternList.add(p);
             }
         } catch (DocumentException e) {
@@ -76,7 +76,7 @@ public class ChangeFileHelper {
                 for(Pattern pattern: patternList) {
                     if(pattern.isBelong(context)) {
                         res.add(("+," + pattern.getId() + "," + str));
-                        String key = TimestampHelper.plusMillis(currentTimestamp, pattern.getFreshness());
+                        String key = TimestampHelper.plus(currentTimestamp, pattern.getFreshness());
                         context.setTimestamp(key);
                         if(!contextChangeMap.containsKey(key)) {
                             contextChangeMap.put(key, new ArrayList<>());

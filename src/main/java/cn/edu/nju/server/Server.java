@@ -34,10 +34,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     public void run() {
         running = true;
 
-        String startTimestamp = TimestampHelper.getCurrentTimestamp();
-        List<Long> switchPoint = new ArrayList<>();
-
-
         long count = 0;
         long switchTimeCount = 0;
 
@@ -59,8 +55,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 long interval = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
                 assert count != -1:"counter overflow.";
                 if(onDemand && switcher.isSwitch(num, interval)) {
-
-                    switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
                     long startUpdate = System.nanoTime();
                     update(switcher.getCheckerType(), switcher.getSchedulerType());
                     long endUpdate = System.nanoTime();
@@ -114,9 +108,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("Win size: " + scheduler.getWinSize());
         LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms");
         LogFileHelper.getLogger().info("Switch Time: " + switchTimeCount + " ns = " + switchTimeCount / 1000000 +" ms");
-        for(long timePoint : switchPoint) {
-            LogFileHelper.getLogger().info("Switch at: " + timePoint + " ms");
-        }
         shutdown();
     }
 

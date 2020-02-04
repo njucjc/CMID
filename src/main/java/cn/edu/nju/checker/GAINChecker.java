@@ -4,7 +4,6 @@ import static jcuda.driver.JCudaDriver.*;
 
 import cn.edu.nju.context.Context;
 import cn.edu.nju.memory.*;
-import cn.edu.nju.node.CCTNode;
 import cn.edu.nju.node.NodeType;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
@@ -156,23 +155,20 @@ public class GAINChecker extends Checker {
             }
             else {
                 String name = constraintNodes[i].getNodeName();
-                if("sz_loc_range".equals(name)) {
-                    nodeType[i] = NodeType.SZ_LOC_RANGE;
+                if("before".equals(name)) {
+                    nodeType[i] = NodeType.BEFORE;
                 }
-                else if("same".equals(name)) {
-                    nodeType[i] = NodeType.SAME;
+                else if("gate".equals(name)) {
+                    nodeType[i] = NodeType.GATE;
                 }
-                else if("sz_loc_close".equals(name)) {
-                    nodeType[i] = NodeType.SZ_LOC_CLOSE;
+                else if("equal".equals(name)) {
+                    nodeType[i] = NodeType.EQUAL;
                 }
-                else if("sz_spd_close".equals(name)) {
-                    nodeType[i] = NodeType.SZ_SPD_CLOSE;
+                else if("conn".equals(name)) {
+                    nodeType[i] = NodeType.CONN;
                 }
-                else if("sz_loc_dist".equals(name)) {
-                    nodeType[i] = NodeType.SZ_LOC_DIST;
-                }
-                else if("sz_loc_dist_neq".equals(name)) {
-                    nodeType[i] = NodeType.SZ_LOC_DIST_NEQ;
+                else if("oppo".equals(name)) {
+                    nodeType[i] = NodeType.OPPO;
                 }
                 else {
                     assert false:"BFunc type error.";
@@ -214,7 +210,7 @@ public class GAINChecker extends Checker {
                     .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
                             deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
                             gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                            gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(), gpuContextMemory.getPlateNumber(),
+                            gpuContextMemory.getCode(), gpuContextMemory.getType(),
                             deviceTruthValueResult,
                             deviceLinkResult, deviceLinkNum, deviceMaxLinkSize,
                             cunits.get(0),

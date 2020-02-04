@@ -321,7 +321,7 @@ public abstract class Checker {
             else {
                 int size = param.size();
                 assert size >= 1:"[DEBUG] Param error";
-                value = BFuncHelper.bfun(cctRoot.getNodeName(), param.get(size - 1), param.get(size >= 2 ? size - 2:size - 1));
+                value = BFuncHelper.bfunc(cctRoot.getNodeName(), param.get(size - 1), param.get(size >= 2 ? size - 2:size - 1));
             }
             //设置本结点布尔值
             cctRoot.setNodeValue(value);
@@ -518,7 +518,7 @@ public abstract class Checker {
             if(t instanceof CCTNode) {
                 Context c = ((CCTNode) t).getContext();
                 if(c != null) {
-                    System.out.print("(" + c.getPlateNumber() + ") ");
+                    System.out.print("(" + c.getCode() + ") ");
                 }
                 else {
                     System.out.print(" ");
@@ -699,12 +699,12 @@ public abstract class Checker {
             if (n.getNodeType() == NodeType.BFUNC_NODE) {
 
                 if (p == null) {
-                    Boolean b1 = BFuncHelper.bfun(n.getNodeName(), c, null);
+                    Boolean b1 = BFuncHelper.bfunc(n.getNodeName(), c, null);
                     result.add(b1);
                 }
                 else {
                     for (Context c1 : patternMap.get(p).getContextList()) {
-                        Boolean b1 = BFuncHelper.bfun(n.getNodeName(), c, c1);
+                        Boolean b1 = BFuncHelper.bfunc(n.getNodeName(), c, c1);
                         result.add(b1);
                     }
                 }
@@ -739,8 +739,8 @@ public abstract class Checker {
             boolean flag = false;
             if (n.getNodeType() == NodeType.BFUNC_NODE) {
                 if (p == null) {
-                    boolean b1 = BFuncHelper.bfun(n.getNodeName(), c1, null);
-                    boolean b2 = BFuncHelper.bfun(n.getNodeName(), c2, null);
+                    boolean b1 = BFuncHelper.bfunc(n.getNodeName(), c1, null);
+                    boolean b2 = BFuncHelper.bfunc(n.getNodeName(), c2, null);
 
                     if (b1 != b2) {
                         result = false;
@@ -749,8 +749,8 @@ public abstract class Checker {
                 }
                 else {
                     for (Context c : patternMap.get(p).getContextList()) {
-                        boolean b1 = BFuncHelper.bfun(n.getNodeName(), c1, c);
-                        boolean b2 = BFuncHelper.bfun(n.getNodeName(), c2, c);
+                        boolean b1 = BFuncHelper.bfunc(n.getNodeName(), c1, c);
+                        boolean b2 = BFuncHelper.bfunc(n.getNodeName(), c2, c);
 
                         if(b1 != b2) {
                             result = false;
