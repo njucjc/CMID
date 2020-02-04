@@ -4,6 +4,7 @@ import cn.edu.nju.change.*;
 import cn.edu.nju.checker.*;
 import cn.edu.nju.memory.GPUContextMemory;
 import cn.edu.nju.memory.GPUResult;
+import cn.edu.nju.node.Param;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.BatchScheduler;
@@ -352,7 +353,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                         stNode = new STNode(nodeName, STNode.IMPLIES_NODE);
                         break;
                     case "bfunction":
-                        stNode = new STNode(e.getAttribute("name"), STNode.BFUNC_NODE);
+                        stNode = new STNode(e.getAttribute("name"), STNode.BFUNC_NODE, buildParam(e));
                         break;
                     default:
                         assert false : "[DEBUG] Syntax tree node type error!";
@@ -363,6 +364,19 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 root.addChildeNode(stNode);
             }
         }
+    }
+
+    private List<Param> buildParam(Element e) {
+        List<Param> res = new ArrayList<>();
+        NodeList list = e.getChildNodes();
+        for (int i = 0; i < list.getLength(); i++) {
+            Element element = (Element) list.item(i);
+            int pos = Integer.parseInt(element.getAttribute("pos"));
+            String op = element.getAttribute("op");
+            String defaultValue = element.getAttribute("default_value");
+            res.add(new Param(pos, op, defaultValue));
+        }
+        return res;
     }
 
     private void compileKernelFunction(String cudaSourceFilePath) {

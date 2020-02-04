@@ -35,7 +35,7 @@ public class EccChecker extends Checker{
         checkTimes++;
         clearCCTMap();
         removeCriticalNode(stRoot, cctRoot);
-        cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
+        cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType(), stRoot.getParamList());
         buildCCT(stRoot, cctRoot);
         List<Context> param = new CopyOnWriteArrayList<>();
         evaluation(cctRoot, param);

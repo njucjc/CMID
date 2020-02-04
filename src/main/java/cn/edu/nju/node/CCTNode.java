@@ -2,6 +2,8 @@ package cn.edu.nju.node;
 
 import cn.edu.nju.context.Context;
 
+import java.util.List;
+
 /**
  * Created by njucjc on 2017/10/3.
  */
@@ -20,22 +22,25 @@ public class CCTNode extends TreeNode implements NodeType, NodeStatus{
 
     private String link;
 
+    private List<Param> paramList;
 
-    public CCTNode(String nodeName, int nodeType, Context context) {
+    public CCTNode(String nodeName, int nodeType, List<Param> paramList, Context context) {
             super(nodeName);
         this.nodeValue = false;
         this.context = context;
         this.nodeStatus = CCTNode.EC_STATE;
         this.nodeType = nodeType;
+        this.paramList = paramList;
         this.link = "";
     }
 
-    public CCTNode(String nodeName, int nodeType) {
+    public CCTNode(String nodeName, int nodeType, List<Param> paramList) {
         super(nodeName);
         this.nodeValue = false;
         this.context = null;
         this.nodeStatus = CCTNode.EC_STATE;
         this.nodeType = nodeType;
+        this.paramList = paramList;
         this.link = "";
     }
 
@@ -61,6 +66,10 @@ public class CCTNode extends TreeNode implements NodeType, NodeStatus{
 
     public void setLink(String link) {
         this.link = link;
+    }
+
+    public List<Param> getParamList() {
+        return paramList;
     }
 
     @Override

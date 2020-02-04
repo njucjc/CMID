@@ -74,7 +74,7 @@ public abstract class Checker {
         }
 
         //初始化CCT
-        this.cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
+        this.cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType(), stRoot.getParamList());
         buildCCT(stRoot, this.cctRoot);
     }
 
@@ -100,7 +100,7 @@ public abstract class Checker {
 
         clearCCTMap();
 
-        this.cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
+        this.cctRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType(), stRoot.getParamList());
         buildCCT(stRoot, this.cctRoot);
     }
 
@@ -174,7 +174,11 @@ public abstract class Checker {
             //更新从关键节点到根节点的状态
             updateNodesToRoot(node);
             //创建一个以context相关联的新子树
-            CCTNode newChild = new CCTNode(stNode.getFirstChild().getNodeName(),((STNode)(stNode.getFirstChild())).getNodeType(), context);
+            CCTNode newChild = new CCTNode(stNode.getFirstChild().getNodeName(),
+                    ((STNode)(stNode.getFirstChild())).getNodeType(),
+                    ((STNode)(stNode.getFirstChild())).getParamList(),
+                    context);
+
             buildCCT((STNode) stNode.getFirstChild(), newChild);
             //添加到本结点
             node.addChildeNode(newChild);
@@ -233,7 +237,7 @@ public abstract class Checker {
             STNode stChild = (STNode) stRoot.getFirstChild();
             for(Context context : patternMap.get(stRoot.getContextSetName()).getContextList()) {
                 //CCT结点创建默认为FC状态
-                CCTNode cctChild = new CCTNode(stChild.getNodeName(), stChild.getNodeType(), context);
+                CCTNode cctChild = new CCTNode(stChild.getNodeName(), stChild.getNodeType(),stChild.getParamList(), context);
                 buildCCT(stChild, cctChild);
                 cctRoot.addChildeNode(cctChild);
             }
@@ -242,7 +246,7 @@ public abstract class Checker {
             List<TreeNode> childNodes = stRoot.getChildTreeNodes();
             for (TreeNode n : childNodes) {
                 STNode stChild = (STNode) n;
-                CCTNode cctChild = new CCTNode(stChild.getNodeName(), stChild.getNodeType());
+                CCTNode cctChild = new CCTNode(stChild.getNodeName(), stChild.getNodeType(), stChild.getParamList());
                 buildCCT(stChild, cctChild);
                 cctRoot.addChildeNode(cctChild);
             }
@@ -321,7 +325,7 @@ public abstract class Checker {
             else {
                 int size = param.size();
                 assert size >= 1:"[DEBUG] Param error";
-                value = BFuncHelper.bfunc(cctRoot.getNodeName(), param.get(size - 1), param.get(size >= 2 ? size - 2:size - 1));
+                value = BFuncHelper.bfunc(cctRoot.getNodeName(), cctRoot.getParamList(), param);
             }
             //设置本结点布尔值
             cctRoot.setNodeValue(value);
@@ -698,14 +702,19 @@ public abstract class Checker {
 
             if (n.getNodeType() == NodeType.BFUNC_NODE) {
 
+                List<Context> param = new ArrayList<>();
+                param.add(c);
+
                 if (p == null) {
-                    Boolean b1 = BFuncHelper.bfunc(n.getNodeName(), c, null);
+                    Boolean b1 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param);
                     result.add(b1);
                 }
                 else {
                     for (Context c1 : patternMap.get(p).getContextList()) {
-                        Boolean b1 = BFuncHelper.bfunc(n.getNodeName(), c, c1);
+                        param.add(c1);
+                        Boolean b1 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param);
                         result.add(b1);
+                        param.remove(c1);
                     }
                 }
             }
@@ -738,9 +747,16 @@ public abstract class Checker {
 
             boolean flag = false;
             if (n.getNodeType() == NodeType.BFUNC_NODE) {
+
+                List<Context> param1 = new ArrayList<>();
+                List<Context> param2 = new ArrayList<>();
+
+                param1.add(c1);
+                param2.add(c2);
+
                 if (p == null) {
-                    boolean b1 = BFuncHelper.bfunc(n.getNodeName(), c1, null);
-                    boolean b2 = BFuncHelper.bfunc(n.getNodeName(), c2, null);
+                    boolean b1 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param1);
+                    boolean b2 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param2);
 
                     if (b1 != b2) {
                         result = false;
@@ -749,13 +765,19 @@ public abstract class Checker {
                 }
                 else {
                     for (Context c : patternMap.get(p).getContextList()) {
-                        boolean b1 = BFuncHelper.bfunc(n.getNodeName(), c1, c);
-                        boolean b2 = BFuncHelper.bfunc(n.getNodeName(), c2, c);
+                        param1.add(c);
+                        param2.add(c);
+
+                        boolean b1 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param1);
+                        boolean b2 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param2);
 
                         if(b1 != b2) {
                             result = false;
                             flag = true;
                         }
+
+                        param1.remove(c);
+                        param2.remove(c);
                     }
                 }
             }

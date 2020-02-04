@@ -1,5 +1,7 @@
 package cn.edu.nju.node;
 
+import java.util.List;
+
 /**
  * Created by njucjc on 2017/10/7.
  */
@@ -10,10 +12,19 @@ public class STNode extends TreeNode implements NodeType{
 
     private int nodeNum = 0;
 
+    private List<Param> paramList;
+
     public STNode(String nodeName, int nodeType) {
         super(nodeName);
         this.nodeType = nodeType;
         this.contextSetName = "";
+    }
+
+    public STNode(String nodeName, int nodeType, List<Param> paramList) {
+        super(nodeName);
+        this.nodeType = nodeType;
+        this.contextSetName = "";
+        this.paramList = paramList;
     }
 
     public STNode(String nodeName, int nodeType, String contextSetName) {
@@ -28,6 +39,10 @@ public class STNode extends TreeNode implements NodeType{
         super("");
         this.nodeType = EMPTY_NODE;
         this.contextSetName = "";
+    }
+
+    public List<Param> getParamList() {
+        return paramList;
     }
 
     public String getContextSetName() {

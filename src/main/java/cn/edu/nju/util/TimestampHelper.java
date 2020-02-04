@@ -41,21 +41,4 @@ public class TimestampHelper {
     public static String getCurrentTimestamp() {
         return dfs.format(new java.util.Date());
     }
-
-    public static java.util.Date parserDate(String time) {
-        java.util.Date date = null;
-        try {
-            date = dfs.parse(time);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return date;
-    }
-
-
-    public static void main(String[] args) {
-        System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:057"));
-        System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:228"));
-        System.out.println(timestampDiff("2007-10-26 11:00:00:057","2007-10-26 11:00:00:228"));
-    }
 }
