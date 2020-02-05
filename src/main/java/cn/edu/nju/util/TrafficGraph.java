@@ -80,7 +80,7 @@ public class TrafficGraph {
         }
         else if (k > 0) {
             for (String p : trafficGraph.get(v)) {
-                if (!visited.get(p) && existPathLenK(visited, path, p, w, k - 1)) return true;
+                if (visited.get(p) != null && !visited.get(p) && existPathLenK(visited, path, p, w, k - 1)) return true;
                 visited.put(p, false);
             }
         }

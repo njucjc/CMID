@@ -39,8 +39,8 @@ public class BFuncHelper {
         Context [] contexts = new Context[4]; // 下标为0的没有用
         for (int i = 0; i < list1.size(); i++) {
             Param p = list1.get(i);
-            if (p.getDefaultValue() != null) continue; // 有默认值的参数不是Context对象
-            if (p.getOp() == null) {
+            if (!p.getDefaultValue().equals("")) continue; // 有默认值的参数不是Context对象
+            if (p.getOp().equals("")) {
                 contexts[p.getPos()] = list2.get(i); //
             }
             else {

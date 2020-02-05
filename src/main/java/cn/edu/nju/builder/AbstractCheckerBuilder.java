@@ -369,7 +369,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     private List<Param> buildParam(Element e) {
         List<Param> res = new ArrayList<>();
         NodeList list = e.getChildNodes();
-        for (int i = 0; i < list.getLength(); i++) {
+        for (int i = 1; i < list.getLength(); i+= 2) {
             Element element = (Element) list.item(i);
             int pos = Integer.parseInt(element.getAttribute("pos"));
             String op = element.getAttribute("op");
