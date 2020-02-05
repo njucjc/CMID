@@ -23,11 +23,11 @@ public class LinkHelper {
         int length = cxts1.length > cxts2.length ? cxts2.length : cxts1.length;
         int index;
         int start = 0;
-        for(index = 0; index < length; index++) {
+        for(index = 0; index < 1; index++) { //目前的规则中，最长前缀仅有1个
             if(!cxts1[index].equals(cxts2[index])) {
                 break;
             }
-            start += cxts1[index].length();
+            start += cxts1[index].length() + 1;
         }
 
         if (index == length) {
@@ -38,13 +38,8 @@ public class LinkHelper {
         for(String s1 : strs1) {
             for(String s2 : strs2) {
                 res.append(s1);
-                if(start == 0) {
-                    res.append(" ");
-                    res.append(s2);
-                }
-                else {
-                    res.append(s2.substring(start + 1, s2.length()));
-                }
+                res.append(" ");
+                res.append(s2.substring(start));
                 res.append("#");
             }
         }
@@ -57,10 +52,7 @@ public class LinkHelper {
     }
 
     public static void main(String[] args) {
-        System.out.println(linkCartesian("abc b c#abc b d","e f"));
-        System.out.println(linkCartesian("abc b c#abc b d","e f#e g"));
-        System.out.println(linkCartesian("abc b c#abc b d","abc b e#abc b f"));
-        System.out.println(linkCartesian("abc b c#abc b d","abc;b"));
-        System.out.println(linkCartesian("abc b","abc b c#abc b d"));
+        System.out.println(linkCartesian("v1 v2#v1 v4","v1 v2#v1 v5"));
+        System.out.println(linkCartesian("v1 v2 v3","v1 v4"));
     }
 }
