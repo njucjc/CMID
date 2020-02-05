@@ -44,7 +44,7 @@ public class BFuncHelper {
                 contexts[p.getPos()] = list2.get(i); //
             }
             else {
-                if ("getOppo".equals(p.getOp())) { // 参数操作
+                if ("get_oppo".equals(p.getOp())) { // 参数操作
                     contexts[p.getPos()] = new Context(
                             list2.get(i).getId(),
                             list2.get(i).getTimestamp(),

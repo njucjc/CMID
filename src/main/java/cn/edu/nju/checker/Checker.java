@@ -449,14 +449,10 @@ public abstract class Checker {
 
         }
         universalNode.setNodeValue(value); //更新结点值
-        String link;
+        String link = "";
         if (!value) {
             violatedLink.deleteCharAt(violatedLink.length() -1);
             link = violatedLink.toString();
-        }
-        else {
-            satisfiedLink.deleteCharAt(satisfiedLink.length() - 1);
-            link = satisfiedLink.toString();
         }
         universalNode.setLink(link);
         return new Result(value,link);
@@ -485,15 +481,11 @@ public abstract class Checker {
             }
         }
         existentialNode.setNodeValue(value);
-        String link;
+        String link = "";
         if (value) {
             satisfiedLink.deleteCharAt(satisfiedLink.length() - 1);
             link = satisfiedLink.toString();
 
-        }
-        else {
-            violatedLink.deleteCharAt(violatedLink.length() -1);
-            link = violatedLink.toString();
         }
         existentialNode.setLink(link);
         return new Result(value, link);
