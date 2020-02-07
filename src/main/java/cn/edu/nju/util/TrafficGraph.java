@@ -14,8 +14,10 @@ public class TrafficGraph {
 
     private static final Map<String, String> opposite = new HashMap<>();
 
+    private static final Map<String, Integer> nodeType = new HashMap<>();
+
     static {
-        List<String> neiList = readFile("res/nei.txt");
+        List<String> neiList = FileHelper.readFile("res/nei.txt");
         for (String line : neiList) {
             String [] pat = line.split(",");
             if (trafficGraph.containsKey(pat[0])) {
@@ -26,31 +28,17 @@ public class TrafficGraph {
                 l.add(pat[2]);
                 trafficGraph.put(pat[0], l);
             }
+
+            nodeType.put(pat[0], Integer.parseInt(pat[1]));
+            nodeType.put(pat[2], Integer.parseInt(pat[3]));
         }
 
-        List<String> oppoList = readFile("res/oppo.txt");
+        List<String> oppoList = FileHelper.readFile("res/oppo.txt");
         for (String line : oppoList) {
             String [] pat = line.split(",");
             opposite.put(pat[0], pat[2]);
         }
 
-    }
-
-    private static List<String> readFile(String path) {
-        List<String> list = new ArrayList<>();
-        try {
-            FileReader fr = new FileReader(path);
-            BufferedReader br = new BufferedReader(fr);
-
-            while (true) {
-                String str = br.readLine();
-                if (str == null) break;
-                list.add(str);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return list;
     }
 
     public static String getOppo(String code) {
@@ -79,13 +67,20 @@ public class TrafficGraph {
             return true;
         }
         else if (k > 0) {
-            for (String p : trafficGraph.get(v)) {
-                if (visited.get(p) != null && !visited.get(p) && existPathLenK(visited, path, p, w, k - 1)) return true;
-                visited.put(p, false);
+            if (trafficGraph.get(v) != null) {
+                for (String p : trafficGraph.get(v)) {
+                    if (visited.get(p) != null && !visited.get(p) && existPathLenK(visited, path, p, w, k - 1))
+                        return true;
+                    visited.put(p, false);
+                }
             }
         }
         path.remove(v);
         return false;
+    }
+
+    public static int getNodeType(String code) {
+        return nodeType.get(code);
     }
 
     public static void main(String[] args) {

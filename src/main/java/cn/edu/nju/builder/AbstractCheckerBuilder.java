@@ -13,6 +13,7 @@ import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
 import cn.edu.nju.switcher.SimpleSwitcher;
 import cn.edu.nju.switcher.Switcher;
+import cn.edu.nju.util.ConfigHelper;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.PTXFileHelper;
 import jcuda.driver.CUcontext;
@@ -87,14 +88,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     private void parseConfigFile(String configFilePath) {
         //不要随意更换处理顺序
-        Properties properties = new Properties();
-        try {
-            FileInputStream fis = new FileInputStream(configFilePath);
-            properties.load(fis);
-            fis.close();
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
+        Properties properties = ConfigHelper.getConfig(configFilePath);
 
         //check type
         String technique = properties.getProperty("technique");
@@ -356,7 +350,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                         stNode = new STNode(e.getAttribute("name"), STNode.BFUNC_NODE, buildParam(e));
                         break;
                     default:
-                        assert false : "[DEBUG] Syntax tree node type error!";
+                        assert false : "[DEBUG] " + nodeName + " Syntax tree node type error!";
                         break;
                 }
 

@@ -2,6 +2,7 @@ package cn.edu.nju.switcher;
 
 
 import cn.edu.nju.checker.CheckerType;
+import cn.edu.nju.util.ConfigHelper;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -56,14 +57,7 @@ public class SimpleSwitcher implements Switcher {
     }
 
     private void parseParamFile(String paramFilePath) {
-        Properties properties = new Properties();
-        try {
-            FileInputStream fis = new FileInputStream(paramFilePath);
-            properties.load(fis);
-            fis.close();
-        }catch (IOException e) {
-            e.printStackTrace();
-        }
+        Properties properties = ConfigHelper.getConfig(paramFilePath);
 
         this.step = Integer.parseInt(properties.getProperty("step"));
         this.interval = Integer.parseInt(properties.getProperty("interval"));
