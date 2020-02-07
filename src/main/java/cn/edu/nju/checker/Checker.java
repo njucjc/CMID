@@ -414,11 +414,14 @@ public abstract class Checker {
         boolean value =  !leftValue || (leftValue && rightValue);
         impliesNode.setNodeValue(value); //更新结点值
         //更新link信息
-        if(value) {
-            impliesNode.setLink(LinkHelper.linkCartesian(leftChild.getLink(), rightChild.getLink()));
+        if (leftValue &&  rightValue) {
+            impliesNode.setLink(rightChild.getLink());
+        }
+        else if (!leftValue && !rightValue) {
+            impliesNode.setLink(leftChild.getLink()) ;
         }
         else {
-            impliesNode.setLink(rightChild.getLink());
+            impliesNode.setLink(LinkHelper.linkCartesian(leftChild.getLink(), rightChild.getLink()));
         }
 
         return value;
