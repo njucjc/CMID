@@ -46,7 +46,7 @@ public class TrafficGraph {
     }
 
     public static List<String> getPath(String v, String w, int k) {
-        Set<String> keySet = trafficGraph.keySet();
+        Set<String> keySet = nodeType.keySet();
         if (!keySet.contains(v) || !keySet.contains(w)) {
             return null;
         }
@@ -69,7 +69,7 @@ public class TrafficGraph {
         else if (k > 0) {
             if (trafficGraph.get(v) != null) {
                 for (String p : trafficGraph.get(v)) {
-                    if (visited.get(p) != null && !visited.get(p) && existPathLenK(visited, path, p, w, k - 1))
+                    if (!visited.get(p) && existPathLenK(visited, path, p, w, k - 1))
                         return true;
                     visited.put(p, false);
                 }
@@ -84,8 +84,8 @@ public class TrafficGraph {
     }
 
     public static void main(String[] args) {
-        List<String> path = getPath("3D0B15", "3C650C", 5);
-        System.out.println("Path 3D0B15 to 3C650C:");
+        List<String> path = getPath("3C2013", "3D2010", 1);
+        System.out.println("Path 3C2013 to 3D2010:");
         for (String v : path) {
             System.out.println(v + " ");
         }

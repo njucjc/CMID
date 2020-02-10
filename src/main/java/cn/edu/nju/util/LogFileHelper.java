@@ -17,6 +17,13 @@ public class LogFileHelper {
             Handler fileHandler  = new FileHandler(logFilePath);
 
             //Assigning handlers to LOGGER object
+            Handler [] handlers = LOGGER.getHandlers();
+            if (handlers != null) {
+                for (Handler handler : handlers) {
+                    handler.close();
+                    LOGGER.removeHandler(handler);
+                }
+            }
             LOGGER.addHandler(fileHandler);
 
             //Setting levels to handlers and LOGGER
