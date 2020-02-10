@@ -98,15 +98,15 @@ public class Repair {
             int index2 = Integer.parseInt(elem[2].split("_")[1]);
 
             if ("rule_03".equals(elem[0])) { // 添加1个
-                List<String> path = TrafficGraph.getPath(dataList.get(index2).split(",")[0],
-                        dataList.get(index1).split(",")[0], 2);
+                List<String> path = TrafficGraph.getPath(dataList.get(index1).split(",")[0],
+                        dataList.get(index2).split(",")[0], 2);
                 List<String> p = new ArrayList<>();
                 p.add(path.get(1));
                 missMap.put(index1, p);
             }
             else if ("rule_04".equals(elem[0])){ // 添加2个
-                List<String> path = TrafficGraph.getPath(dataList.get(index2).split(",")[0],
-                        dataList.get(index1).split(",")[0], 3);
+                List<String> path = TrafficGraph.getPath(dataList.get(index1).split(",")[0],
+                        dataList.get(index2).split(",")[0], 3);
                 List<String> p = new ArrayList<>();
                 p.add(path.get(1));
                 p.add(path.get(2));
@@ -119,9 +119,8 @@ public class Repair {
             res.add(dataList.get(i));
             if (missMap.keySet().contains(i)) {
                 for (String c : missMap.get(i)) {
-                    String code = TrafficGraph.getOppo(c);
-                    int type = TrafficGraph.getNodeType(code);
-                    res.add(code + "," + type);
+                    int type = TrafficGraph.getNodeType(c);
+                    res.add(c + "," + type);
                 }
             }
         }
@@ -142,7 +141,7 @@ public class Repair {
                 break;
             }
 
-            int index = Integer.parseInt(elem[4].split("_")[1]);
+            int index = Integer.parseInt(elem[elem.length - 1].split("_")[1]);
             deleteSet.add(index);
         }
         List<String> res = new ArrayList<>();
