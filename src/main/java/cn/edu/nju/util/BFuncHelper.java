@@ -9,8 +9,13 @@ import java.util.List;
  * Created by njucjc at 2020/2/3
  */
 public class BFuncHelper {
-    public static boolean before(Context c1, Context c2) {
-        return c1.getId() < c2.getId();
+    public static boolean before(Context [] contexts, int num) {
+        int id = -1;
+        for (int i = 1; i <= num;i++ ) {
+            if (id >= contexts[i].getId()) return false;
+            id = contexts[i].getId();
+        }
+        return true;
     }
 
     public static boolean gate(Context c1, Context c2) {
@@ -36,10 +41,11 @@ public class BFuncHelper {
     }
 
     public static boolean bfunc(String name, List<Param> list1, List<Context> list2) {
-        Context [] contexts = new Context[4]; // 下标为0的没有用
+        Context [] contexts = new Context[5]; // 下标为0的没有用
         for (int i = 0; i < list1.size(); i++) {
             Param p = list1.get(i);
             if (!p.getDefaultValue().equals("")) continue; // 有默认值的参数不是Context对象
+            if (p.getPos() == 0) continue; // 无用参数
             if (p.getOp().equals("")) {
                 contexts[p.getPos()] = list2.get(i); //
             }
@@ -58,7 +64,7 @@ public class BFuncHelper {
         boolean value = false;
         switch (name) {
             case "before":
-                value = before(contexts[1], contexts[2]);
+                value = before(contexts, Integer.parseInt(list1.get(list1.size() - 1).getDefaultValue()));
                 break;
             case "gate":
                 value = gate(contexts[1], contexts[2]);

@@ -23,7 +23,7 @@ public class LinkHelper {
         int length = cxts1.length > cxts2.length ? cxts2.length : cxts1.length;
         int index;
         int start = 0;
-        for(index = 0; index < 1; index++) { //目前的规则中，最长前缀仅有1个
+        for(index = 0; index < length; index++) { //目前的规则中，最长前缀仅有1个
             if(!cxts1[index].equals(cxts2[index])) {
                 break;
             }
