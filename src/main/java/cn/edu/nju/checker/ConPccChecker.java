@@ -48,8 +48,18 @@ public class ConPccChecker extends PccChecker {
         return super.add(patternId, context);
     }
 
+
     @Override
     protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
+        if (cctRoot.getNodeType() == NodeType.UNIVERSAL_NODE || cctRoot.getNodeType() == NodeType.EXISTENTIAL_NODE) {
+            return conPccCheck(cctRoot, param);
+        }
+        else {
+            return super.evaluation(cctRoot, param);
+        }
+    }
+
+    private boolean conPccCheck(CCTNode cctRoot, List<Context> param) {
         int size = cctRoot.getChildTreeNodes().size();
         if (addNum == 0 ||  size <= 1) { // 无新增分支，直接增量检测
             addNum = 0;
@@ -109,7 +119,7 @@ public class ConPccChecker extends PccChecker {
 
         cctRoot.setNodeValue(value);
 
-        if(value) {
+        if(cctRoot.getNodeType() == NodeType.EXISTENTIAL_NODE) {
             int len = satisfiedLink.length();
             if(len > 0) {
                 satisfiedLink.deleteCharAt(len - 1);

@@ -2,6 +2,7 @@ package cn.edu.nju.checker;
 
 import cn.edu.nju.context.Context;
 import cn.edu.nju.node.CCTNode;
+import cn.edu.nju.node.NodeType;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
 
@@ -35,6 +36,15 @@ public class ConChecker extends EccChecker {
 
     @Override
     protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
+        if (cctRoot.getNodeType() == NodeType.UNIVERSAL_NODE || cctRoot.getNodeType() == NodeType.EXISTENTIAL_NODE) {
+            return conCheck(cctRoot, param);
+        }
+        else {
+            return super.evaluation(cctRoot, param);
+        }
+    }
+
+    private boolean conCheck(CCTNode cctRoot, List<Context> param) {
 
         int workload = cctRoot.getChildTreeNodes().size();
         int workerNum = workload;
@@ -88,7 +98,7 @@ public class ConChecker extends EccChecker {
 
         cctRoot.setNodeValue(value);
 
-        if(value) {
+        if(cctRoot.getNodeType() == NodeType.EXISTENTIAL_NODE) {
             int len = satisfiedLink.length();
             if(len > 0) {
                 satisfiedLink.deleteCharAt(len - 1);
