@@ -680,114 +680,101 @@ public abstract class Checker {
 
     public List<Boolean> calcSubTree(String patternId, Context c) {
         List<Boolean> result = new ArrayList<>();
-        STNode node = stMap.get(patternId);
 
-        String p = null;
-        if (stMap.keySet().size() == 2) {
-            for (String s : stMap.keySet()) {
-                if (!s.equals(patternId)) {
-                    p = s;
-                }
-            }
-        }
-        Queue<STNode> queue = new LinkedList<>();
-        queue.add(node);
-        while (!queue.isEmpty()) {
-            STNode n = queue.poll();
+        List<Context> param = new ArrayList<>();
+        calc0(result, (STNode) this.stRoot.getFirstChild(), param, patternId, c);
 
-            if (n.getNodeType() == NodeType.BFUNC_NODE) {
-
-                List<Context> param = new ArrayList<>();
-                param.add(c);
-
-                if (p == null) {
-                    Boolean b1 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param);
-                    result.add(b1);
-                }
-                else {
-                    for (Context c1 : patternMap.get(p).getContextList()) {
-                        param.add(c1);
-                        Boolean b1 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param);
-                        result.add(b1);
-                        param.remove(c1);
-                    }
-                }
-            }
-
-            for (TreeNode t : n.getChildTreeNodes()) {
-                queue.add((STNode)t);
-            }
-
-        }
         return result;
     }
 
-    public boolean allEqual(String patternId, Context c1, Context c2) {
-        STNode node = stMap.get(patternId);
-
-        boolean result = true;
-        String p = null;
-        if (stMap.keySet().size() == 2) {
-            for (String s : stMap.keySet()) {
-                if (!s.equals(patternId)) {
-                    p = s;
+    private void calc0(List<Boolean> res, STNode stRoot, List<Context> param, String patternId, Context context) {
+        if (stRoot.getNodeType() == NodeType.BFUNC_NODE) {
+            boolean b =  BFuncHelper.bfunc(stRoot.getNodeName(), stRoot.getParamList(), param);
+            res.add(b);
+        }
+        else if (stRoot.getNodeType() == NodeType.UNIVERSAL_NODE || stRoot.getNodeType() == NodeType.EXISTENTIAL_NODE) {
+            String curPat = stRoot.getContextSetName();
+            if (!curPat.equals(patternId)) {
+                for (Context c : patternMap.get(curPat).getContextList()) {
+                    param.add(c);
+                    calc0(res, (STNode) stRoot.getFirstChild(), param, patternId, context);
+                    param.remove(c);
                 }
             }
+            else {
+                param.add(context);
+                calc0(res, (STNode) stRoot.getFirstChild(), param, patternId, context);
+                param.remove(context);
+            }
         }
+        else if (stRoot.getNodeType() == NodeType.NOT_NODE) {
+            calc0(res, (STNode) stRoot.getFirstChild(), param, patternId, context);
+        }
+        else {
+            calc0(res, (STNode) stRoot.getFirstChild(), param, patternId, context);
+            calc0(res, (STNode) stRoot.getLastChild(), param, patternId, context);
+        }
+    }
 
-        Queue<STNode> queue = new LinkedList<>();
-        queue.add(node);
-        while (!queue.isEmpty()) {
-            STNode n = queue.poll();
+    public boolean allEqual(String patternId, Context c1, Context c2) {
+        List<Context> param1 = new ArrayList<>();
+        List<Context> param2 = new ArrayList<>();
+        return calc1((STNode)this.stRoot.getFirstChild(),param1, param2, patternId, c1, c2);
+    }
 
-            boolean flag = false;
-            if (n.getNodeType() == NodeType.BFUNC_NODE) {
+    private boolean calc1(STNode stRoot, List<Context> param1, List<Context> param2, String patternId, Context c1, Context c2) {
+        if (stRoot.getNodeType() == NodeType.BFUNC_NODE) {
+            boolean b1 =  BFuncHelper.bfunc(stRoot.getNodeName(), stRoot.getParamList(), param1);
+            boolean b2 =  BFuncHelper.bfunc(stRoot.getNodeName(), stRoot.getParamList(), param2);
 
-                List<Context> param1 = new ArrayList<>();
-                List<Context> param2 = new ArrayList<>();
+            return b1 == b2;
 
+        }
+        else if (stRoot.getNodeType() == NodeType.UNIVERSAL_NODE || stRoot.getNodeType() == NodeType.EXISTENTIAL_NODE) {
+            String curPat = stRoot.getContextSetName();
+            if (!patternId.equals(curPat)) {
+                for (Context c : patternMap.get(curPat).getContextList()) {
+                    param1.add(c);
+                    param2.add(c);
+
+                    boolean b = calc1((STNode) stRoot.getFirstChild(), param1, param2, patternId, c1, c2);
+
+                    param1.remove(c);
+                    param2.remove(c);
+
+                    if (!b) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            else {
                 param1.add(c1);
                 param2.add(c2);
 
-                if (p == null) {
-                    boolean b1 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param1);
-                    boolean b2 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param2);
+                boolean b = calc1((STNode) stRoot.getFirstChild(), param1, param2, patternId, c1, c2);
 
-                    if (b1 != b2) {
-                        result = false;
-                        break;
-                    }
-                }
-                else {
-                    for (Context c : patternMap.get(p).getContextList()) {
-                        param1.add(c);
-                        param2.add(c);
+                param1.remove(c1);
+                param2.remove(c2);
 
-                        boolean b1 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param1);
-                        boolean b2 = BFuncHelper.bfunc(n.getNodeName(), n.getParamList(), param2);
-
-                        if(b1 != b2) {
-                            result = false;
-                            flag = true;
-                        }
-
-                        param1.remove(c);
-                        param2.remove(c);
-                    }
-                }
+                return b;
             }
-
-            if (flag) {
-                break;
-            }
-
-            for (TreeNode t : n.getChildTreeNodes()) {
-                queue.add((STNode)t);
-            }
-
         }
+        else if (stRoot.getNodeType() == NodeType.NOT_NODE) {
+            return calc1((STNode) stRoot.getFirstChild(), param1, param2, patternId, c1, c2);
+        }
+        else {
+            boolean b1 = calc1((STNode) stRoot.getFirstChild(), param1, param2, patternId, c1, c2);
+            if (!b1) {
+                return false;
+            }
+            boolean b2 = calc1((STNode) stRoot.getLastChild(), param1, param2, patternId, c1, c2);
+            if (!b2) {
+                return false;
+            }
 
-        return result;
+            return true;
+        }
     }
 
     public boolean inCriticalSet(String id) {
