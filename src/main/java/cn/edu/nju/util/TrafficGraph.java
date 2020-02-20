@@ -16,6 +16,8 @@ public class TrafficGraph {
 
     private static final Map<String, Integer> nodeType = new HashMap<>();
 
+    private static final Map<String, Integer> toInt = new HashMap<>();
+
     static {
         List<String> neiList = FileHelper.readFile("res/nei.txt");
         for (String line : neiList) {
@@ -31,6 +33,12 @@ public class TrafficGraph {
 
             nodeType.put(pat[0], Integer.parseInt(pat[1]));
             nodeType.put(pat[2], Integer.parseInt(pat[3]));
+        }
+
+        int i = 0;
+        for (String key : nodeType.keySet()) {
+            toInt.put(key, i);
+            i++;
         }
 
         List<String> oppoList = FileHelper.readFile("res/oppo.txt");
@@ -94,5 +102,17 @@ public class TrafficGraph {
         String oppo = getOppo("3D0B15");
         System.out.println(oppo);
 
+    }
+
+    public static int codeToInt(String code) {
+        return toInt.get(code);
+    }
+
+    public static Map<String, List<String>> getTrafficGraph() {
+        return trafficGraph;
+    }
+
+    public static Map<String, String> getOpposite() {
+        return opposite;
     }
 }

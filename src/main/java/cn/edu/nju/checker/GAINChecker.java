@@ -39,6 +39,8 @@ public class GAINChecker extends Checker {
 
     private GPUPatternMemory gpuPatternMemory;
 
+    private GPUGraphMemory gpuGraphMemory;
+
     private Map<String, Integer> patternIdMap;
 
     private static final int threadPerBlock = 512;
@@ -52,6 +54,8 @@ public class GAINChecker extends Checker {
     private CUdeviceptr deviceLinkNum;
 
     private CUdeviceptr deviceMaxLinkSize;
+
+    private CUdeviceptr deviceParamOrder;
 
     private CUcontext cuContext;
 
@@ -86,6 +90,7 @@ public class GAINChecker extends Checker {
         this.evaluation = KernelLauncher.load(kernelFilePath, "evaluation");
 
         this.gpuContextMemory = GPUContextMemory.getInstance(contexts);
+        this.gpuGraphMemory = GPUGraphMemory.getInstance();
         this.gpuPatternMemory = new GPUPatternMemory(this.stMap.keySet());
 
         this.patternIdMap = gpuPatternMemory.getIndexMap();
@@ -128,6 +133,7 @@ public class GAINChecker extends Checker {
         this.deviceMaxLinkSize = gpuResult.getDeviceMaxLinkSize();
 
         cuMemAlloc(this.deviceBranchSize, stSize * Sizeof.INT);
+        cuMemAlloc(this.deviceParamOrder, 10 * (Config.MAX_PARAN_NUM * Sizeof.INT));
 
 
         int [] parent = new int[stSize];
@@ -211,6 +217,8 @@ public class GAINChecker extends Checker {
                             deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
                             gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
                             gpuContextMemory.getCode(), gpuContextMemory.getType(),
+                            gpuGraphMemory.getGraph(), gpuGraphMemory.getOppoTable(),
+                            deviceParamOrder,
                             deviceTruthValueResult,
                             deviceLinkResult, deviceLinkNum, deviceMaxLinkSize,
                             cunits.get(0),

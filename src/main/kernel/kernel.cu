@@ -25,25 +25,26 @@ enum Type {
 #define EXISTENTIAL_NODE 4
 #define BFUNC_NODE 5
 #define EMPTY_NODE 6
-#define SAME 7
-#define SZ_SPD_CLOSE 8
-#define SZ_LOC_CLOSE 9
-#define SZ_LOC_DIST 10
-#define SZ_LOC_DIST_NEQ 11
-#define SZ_LOC_RANGE 12
-#define OR_NODE 13
 
-#define MAX_PARAM_NUM 2
+#define BEFORE 7
+#define GATE 8
+#define EQUAL 9
+#define CONN 10
+#define OPPO 11
+
+#define MAX_PARAM_NUM 4
 #define MAX_CCT_SIZE 3000000
 #define MAX_LINK_SIZE 5000
+
+#define GRAPH_NODE_NUM 2000
+#define MAX_NEI_NUM 5
+
 #define DEBUG
 
 struct Context{
 	int id;
-	double latitude;
-	double longitude;
-	double speed;
-	int plateNumber;
+	int code;
+	int type;
 };
 
 struct Node {
@@ -57,39 +58,64 @@ __device__ bool truth_values[MAX_CCT_SIZE];
 __device__ Node links[MAX_CCT_SIZE];
 
 extern "C"
-__device__ bool same(Context c1, Context c2){
-	return (c1.plateNumber == c2.plateNumber);
+__device__ bool before(Context c[], int len){
+	int tmp = -1;
+	for (int i = 0; i < len; i++) {
+		if (tmp >= c[i]) return false;
+		tmp = c[i];
+	}
 }
 
 extern "C"
-__device__ bool sz_spd_close(Context c1, Context c2){
-	return ((c1.speed - c2.speed) >= -50.0 && (c1.speed - c2.speed) <= 50.0);
+__device__ bool gate(Context c1, Context c2){
+	return c1.type == 3 || c2.type == 3;
 }
 
 extern "C"
-__device__ bool sz_loc_close(Context c1, Context c2){
-	return ((c1.latitude - c2.latitude) * (c1.latitude - c2.latitude) + (c1.longitude - c2.longitude) * (c1.longitude - c2.longitude)) <= 0.000001;
+__device__ bool equal(Context c1, Context c2){
+	return c1.code == c2.code;
 }
 
 extern "C"
-__device__ bool sz_loc_dist(Context c1, Context c2){
-	return ((c1.latitude - c2.latitude) * (c1.latitude - c2.latitude) + (c1.longitude - c2.longitude) * (c1.longitude - c2.longitude)) <= 0.000625;
+__device__ bool conn(int *graph, Context c1, Context c2, int k){
+	return has_path(graph, c1.code, c2.code, k);
 }
 
 extern "C"
-__device__ bool sz_loc_dist_neq(Context c1, Context c2){
-	double dist = ((c1.latitude - c2.latitude) * (c1.latitude - c2.latitude) + (c1.longitude - c2.longitude) * (c1.longitude - c2.longitude));
-	bool result = true;
-    if (dist > 0.000625 || dist == 0) {
-    	result = false;
-    }
-    return result;
-	//return (dist <= 0.000625) && (dist != 0);
+__device__ bool oppo(int *oppo_table, Context c1, Context c2){
+	return oppo_table[c1.code] == c2.code;
 }
 
 extern "C"
-__device__ bool sz_loc_range(Context c){
-	return c.longitude >= 112.0 && c.longitude <= 116.0 && c.latitude >=20.0 && c.latitude <= 24.0;
+__device__ bool has_path(int *graph, int v, int w, int k){
+	bool visited[GRAPH_NODE_NUM];
+	for (int i = 0; i < GRAPH_NODE_NUM; i++) {
+		visited[i] = false;
+	}
+
+	return has_path_k(graph, visited, v, w, k);
+}
+
+extern "C"
+__device__ bool has_path_k(int *graph, int visited[], int v, int w, int k){
+	visited[v] = true;
+	if (v == w && k == 0) {
+		return true;
+	}
+	else if (k > 0) {
+		int offset = v * MAX_NEI_NUM;
+		for (int i = 0; i < MAX_NEI_NUM; i++) {
+			if (graph[offset + i] != -1) {
+				if (!visited[graph[offset + i]] && has_path_k(graph, visited, graph[offset + i], w, k -1)) return true;
+				visited[graph[offset + i]] = false;
+			}
+			else {
+				break;
+			}
+		}
+	}
+
+	return false;
 }
 
 extern "C"
@@ -140,7 +166,7 @@ extern "C"
 __device__ int calc_offset(	int node, int tid, Context *params,
 							int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx,
 							int *pattern_begin, int *pattern_length, int *pattern,
-							double *longitude, double *latitude, double *speed, int *plateNumber, // contexts
+							int *codes, int *types, // contexts
 							int *branch_size) {
 
 	int offset = branch_size[node];
@@ -154,10 +180,8 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 			tmp /= len;
 
 			params[index].id = pattern[pattern_begin[pattern_idx[parent[current_node]]] + branch_idx];//(pattern + pattern_idx[parent[current_node]] * MAX_PATTERN_SIZE)[(branch_idx + pattern_begin[pattern_idx[parent[current_node]]]) % MAX_PATTERN_SIZE];
-			params[index].latitude = latitude[params[index].id];
-			params[index].longitude = longitude[params[index].id];
-			params[index].speed = speed[params[index].id];
-			params[index].plateNumber = plateNumber[params[index].id];
+			params[index].code = codes[params[index].id];
+			params[index].type = types[params[index].id];
 
 			offset += branch_idx * branch_size[current_node] ;
 //			printf("branch_idx = %d, branch_size = %d\n", branch_idx, branch_size[current_node]);
@@ -177,10 +201,28 @@ __device__ int calc_offset(	int node, int tid, Context *params,
 }
 
 extern "C"
+__device__ void reorder_params(int *oppo_table, int *params_order, Context params[], Context ordered_params[]) {
+	int len = params_order[0];
+	for (int i = 1; i <= len; i++) {
+		if (params_order[i] == 0) continue;
+		else if (params_order[i] < 0){
+			ordered_params[-params_order[i]] = params[i-1]
+			ordered_params[-params_order[i]].code = oppo_table[ordered_params[-params_order[i]].code];
+		}
+		else {
+			ordered_params[params_order[i]] = params[i-1];
+		}
+
+	}
+}
+
+extern "C"
 __global__ void evaluation(int *parent, int *left_child, int *right_child, int *node_type, int *pattern_idx, //constraint rule
                           	 int *branch_size, int cunit_begin, int cunit_end,//cunit_end is the root of cunit
                           	 int *pattern_begin, int *pattern_length, int *pattern, //patterns
-                          	 double *longitude, double *latitude, double *speed,int *plateNumber,// contexts
+                          	 int *codes, int *types,// contexts
+                          	 int *graph, int *oppo_table,
+                          	 int *params_order,
                           	 short *truth_value_result,
                           	 int *link_result, int *link_num, int *cur_link_size,
                           	 int last_cunit_root,
@@ -191,13 +233,17 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 	if(tid < ccopy_num) {
 
 		Context params[MAX_PARAM_NUM];
+		Context ordered_params[MAX_PARAM_NUM];
+
 		for (int i = 0; i < MAX_PARAM_NUM; i++) {
             params[i].id = -1;
+            ordered_params[i].id = -1;
          }
+
 		int ccopy_root_offset = calc_offset(cunit_end, tid, params,
 											parent, left_child, right_child, node_type, pattern_idx,
 											pattern_begin, pattern_length, pattern,
-											longitude, latitude, speed, plateNumber,
+											codes, types,
 											branch_size);
 
 //#ifdef DEBUG
@@ -225,9 +271,6 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 							}
 							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
 						}
-						else if(value) {
-							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
-						}
 					}
 
 					break;
@@ -244,9 +287,6 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 								init_node(cur_links);
 								first = false;
 							}
-							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
-						}
-						else if(!value) {
 							linkHelper(cur_links, &(links[offset - (i * step + 1)]));
 						}
 					}
@@ -305,35 +345,40 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 
 				default : { //BFUNC
 					switch(type) {
-						case SAME: {
-							value = same(params[0], params[1]);
+						case BEFORE: {
+							reorder_params(oppo_table, params_order, params, ordered_params);
+							value = BEFORE(ordered_params, params_order[0]);
 							break;
 						}
 
-						case SZ_SPD_CLOSE: {
-							value = sz_spd_close(params[0], params[1]);
+						case GATE: {
+							int *gate_params_order = params_order + (GATE - BEFORE) * (MAX_PATTERN_SIZE + 2);
+							reorder_params(oppo_table, gate_params_order, params, ordered_params);
+							value = gate(ordered_params[0], ordered_params[1]);
 							break;
 						}
 
-						case SZ_LOC_CLOSE: {
-							value = sz_loc_close(params[0], params[1]);
+						case EQUAL: {
+							int *equal_params_order = params_order + (EQUAL - BEFORE) * (MAX_PATTERN_SIZE + 2);
+							reorder_params(oppo_table, equal_params_order, params, ordered_params);
+							value = equal(ordered_params[0], ordered_params[1]);
 							break;
 						}
 
-						case SZ_LOC_DIST: {
-							value = sz_loc_dist(params[0], params[1]);
+						case CONN: {
+							int *conn_params_order = params_order + (CONN - BEFORE) * (MAX_PATTERN_SIZE + 2);
+							reorder_params(oppo_table, conn_params_order, params, ordered_params);
+							value = conn(graph, params[0], params[1], conn_params_order[conn_params_order[0]]);
 							break;
 						}
 
-						case SZ_LOC_DIST_NEQ: {
-							value = sz_loc_dist_neq(params[0], params[1]);
+						case OPPO: {
+							int *oppo_params_order = params_order + (OPPO - BEFORE) * (MAX_PATTERN_SIZE + 2);
+							reorder_params(oppo_table, oppo_params_order, params, ordered_params);
+							value = oppo(oppo_table, ordered_params[0], ordered_params[1]);
 							break;
 						}
 
-						case SZ_LOC_RANGE: {
-							value = sz_loc_range(params[0]);
-							break;
-						}
 					}
 
 			

@@ -4,6 +4,7 @@ import static jcuda.driver.JCudaDriver.*;
 
 import cn.edu.nju.context.Context;
 import cn.edu.nju.context.ContextParser;
+import cn.edu.nju.util.TrafficGraph;
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import jcuda.driver.CUdeviceptr;
@@ -27,7 +28,7 @@ public class GPUContextMemory {
         int [] typeRaw = new int[size];
         for(int i = 0; i < size; i++) {
             Context c = parser.parseContext(i,contextStrList.get(i));
-            codeRaw[i] = parseInt(c.getCode());
+            codeRaw[i] = TrafficGraph.codeToInt(c.getCode());
             typeRaw[i] = c.getType();//Integer.parseInt(c.getPlateNumber());
         }
 
@@ -51,20 +52,6 @@ public class GPUContextMemory {
 //        cuMemFree(this.longitude);
 //        cuMemFree(this.speed);
 //        cuMemFree(this.plateNumber);
-    }
-
-    private int parseInt(String str) {
-        int res = 0;
-        for(int i = 0; i < str.length(); i++) {
-            char c = str.charAt(i);
-            if(c >= '0' && c <= '9') {
-                res = (res + (c - '0')) * 36;
-            }
-            else {
-                res = (res + (c - 'A' + 10)) * 36;
-            }
-        }
-        return res;
     }
 
     public CUdeviceptr getCode() {
