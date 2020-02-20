@@ -682,7 +682,7 @@ public abstract class Checker {
         List<Boolean> result = new ArrayList<>();
 
         List<Context> param = new ArrayList<>();
-        calc0(result, (STNode) this.stRoot.getFirstChild(), param, patternId, c);
+        calc0(result, this.stRoot, param, patternId, c);
 
         return result;
     }
@@ -719,7 +719,7 @@ public abstract class Checker {
     public boolean allEqual(String patternId, Context c1, Context c2) {
         List<Context> param1 = new ArrayList<>();
         List<Context> param2 = new ArrayList<>();
-        return calc1((STNode)this.stRoot.getFirstChild(),param1, param2, patternId, c1, c2);
+        return calc1(this.stRoot ,param1, param2, patternId, c1, c2);
     }
 
     private boolean calc1(STNode stRoot, List<Context> param1, List<Context> param2, String patternId, Context c1, Context c2) {
