@@ -51,10 +51,16 @@ public class ChangeFileHelper {
         }
     }
 
-    public void parseChangeFile(String changeFilePath) {
+    public void parseChangeFile(String dataFilePath) {
+        parseChangeFile(dataFilePath, dataFilePath.split("\\.")[0] + "_change.txt");
+    }
+
+
+
+    public void parseChangeFile(String dataFilePath, String changeFilePath) {
         Map<String, List<String>> contextChangeMap = new TreeMap<>();
-        ContextStaticRepo contextStaticRepo = new ContextStaticRepo(changeFilePath);
-        File file = new File(changeFilePath.split("\\.")[0] + "_change.txt");
+        ContextStaticRepo contextStaticRepo = new ContextStaticRepo(dataFilePath);
+        File file = new File(changeFilePath);
 
         Context context;
         List<String> res = new ArrayList<>();

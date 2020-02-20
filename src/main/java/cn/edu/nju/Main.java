@@ -2,6 +2,7 @@ package cn.edu.nju;
 
 import cn.edu.nju.builder.CheckerBuilder;
 import cn.edu.nju.repair.Repair;
+import cn.edu.nju.util.ChangeFileHelper;
 import cn.edu.nju.util.ConfigHelper;
 
 import java.util.Properties;
@@ -15,17 +16,31 @@ public class Main  {
         if (args.length == 1) {
             Properties properties = ConfigHelper.getConfig(args[0]);
 
+            ChangeFileHelper changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
+            changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
+
             check(args[0]);
             Repair.repairStep0(properties);
             modifyConfig(properties, args[0], 0);
+
+            changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
+            changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
+
 
             check(args[0]);
             Repair.repairStep1(properties);
             modifyConfig(properties, args[0], 1);
 
+            changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
+            changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
+
+
             check(args[0]);
             Repair.repairStep2(properties);
             modifyConfig(properties, args[0], 2);
+
+            changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
+            changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
 
             check(args[0]);
             Repair.repairStep3(properties);

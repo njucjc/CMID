@@ -24,9 +24,9 @@ public class TimestampHelper {
     public static int timestampCmp(String timestamp1, String timestamp2) {
         long diff = Integer.parseInt(timestamp1) - Integer.parseInt(timestamp2);
         if(diff < 0) {
-            return 1;
-        } else if(diff > 0) {
             return -1;
+        } else if(diff > 0) {
+            return 1;
         } else {
             return 0;
         }
