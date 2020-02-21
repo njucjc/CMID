@@ -77,6 +77,7 @@ public class TrafficGraph {
         else if (k > 0) {
             if (trafficGraph.get(v) != null) {
                 for (String p : trafficGraph.get(v)) {
+                    if (k > 1 && nodeType.get(p) == 3) continue; //路径中间不能出现收费站
                     if (!visited.get(p) && existPathLenK(visited, path, p, w, k - 1))
                         return true;
                     visited.put(p, false);
