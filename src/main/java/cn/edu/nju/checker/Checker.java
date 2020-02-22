@@ -346,6 +346,9 @@ public abstract class Checker {
             else if(cctRoot.getNodeType() == CCTNode.AND_NODE){
                 value = andNodeEval(cctRoot, param);
             }
+            else if (cctRoot.getNodeType() == CCTNode.OR_NODE) {
+                value = orNodeEval(cctRoot, param);
+            }
             else if(cctRoot.getNodeType() == CCTNode.IMPLIES_NODE) {
                 value = impliesNodeEval(cctRoot, param);
             }
@@ -376,6 +379,28 @@ public abstract class Checker {
         boolean value = !evaluation((CCTNode) notNode.getFirstChild(), param);
         notNode.setNodeValue(value); //更新结点值
         notNode.setLink(((CCTNode) notNode.getFirstChild()).getLink()); //更新link信息
+        return value;
+    }
+
+    protected boolean orNodeEval(CCTNode orNode, List<Context> param) {
+        CCTNode leftChild = (CCTNode) orNode.getChildTreeNodes().get(0);
+        CCTNode rightChild = (CCTNode) orNode.getChildTreeNodes().get(1);
+        boolean leftValue = evaluation(leftChild, param);
+        boolean rightValue = evaluation(rightChild, param);
+
+        boolean value = leftValue || rightValue;
+        orNode.setNodeValue(value);
+
+        if(!leftValue && rightValue) {
+            orNode.setLink(rightChild.getLink());
+        }
+        else  if(leftValue && !rightValue) {
+            orNode.setLink(leftChild.getLink());
+        }
+        else {
+            orNode.setLink(LinkHelper.linkCartesian(leftChild.getLink(), rightChild.getLink()));
+        }
+
         return value;
     }
 
@@ -565,7 +590,7 @@ public abstract class Checker {
             result.add("-," + root.getContextSetName());
             result.addAll(calcIncAddSet((STNode) root.getFirstChild()));
         }
-        else if(root.getNodeType() == STNode.AND_NODE ) {
+        else if(root.getNodeType() == STNode.AND_NODE || root.getNodeType() == STNode.OR_NODE) {
             result.addAll(calcIncAddSet((STNode)(root.getChildTreeNodes().get(0))));
             result.addAll(calcIncAddSet((STNode)(root.getChildTreeNodes().get(1))));
         }
@@ -597,7 +622,7 @@ public abstract class Checker {
             result.add("+," + root.getContextSetName());
             result.addAll(calcIncDelSet((STNode) root.getFirstChild()));
         }
-        else if(root.getNodeType() == STNode.AND_NODE ) {
+        else if(root.getNodeType() == STNode.AND_NODE || root.getNodeType() == STNode.OR_NODE) {
             result.addAll(calcIncDelSet((STNode)(root.getChildTreeNodes().get(0))));
             result.addAll(calcIncDelSet((STNode)(root.getChildTreeNodes().get(1))));
         }
@@ -665,7 +690,7 @@ public abstract class Checker {
         else if(type == STNode.NOT_NODE) {
             return  1 + calcTreeSize((STNode)root.getFirstChild());
         }
-        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE) {
+        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE || type == STNode.OR_NODE) {
             return  1 + calcTreeSize((STNode)root.getFirstChild()) + calcTreeSize((STNode)root.getLastChild());
         }
         else if(type == STNode.BFUNC_NODE){

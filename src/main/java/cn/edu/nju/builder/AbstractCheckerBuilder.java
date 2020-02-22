@@ -340,6 +340,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                     case "and":
                         stNode = new STNode(nodeName, STNode.AND_NODE);
                         break;
+                    case "or":
+                        stNode = new STNode(nodeName, STNode.OR_NODE);
+                        break;
                     case "not":
                         stNode = new STNode(nodeName, STNode.NOT_NODE);
                         break;

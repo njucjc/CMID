@@ -131,6 +131,7 @@ public class GAINChecker extends Checker {
         this.deviceLinkResult = gpuResult.getDeviceLinkResult();
         this.deviceLinkNum = gpuResult.getDeviceLinkNum();
         this.deviceMaxLinkSize = gpuResult.getDeviceMaxLinkSize();
+        this.deviceParamOrder = new CUdeviceptr();
 
         cuMemAlloc(this.deviceBranchSize, stSize * Sizeof.INT);
         cuMemAlloc(this.deviceParamOrder, 10 * (Config.MAX_PARAN_NUM * Sizeof.INT));
@@ -306,7 +307,7 @@ public class GAINChecker extends Checker {
         if(type == STNode.UNIVERSAL_NODE || type == NodeType.EXISTENTIAL_NODE || type == STNode.NOT_NODE) {
             return 1 + computeSTSize((STNode) root.getFirstChild());
         }
-        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE) { //not support 'OR' node type
+        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE || type == STNode.OR_NODE) {
             return 1 + computeSTSize((STNode) root.getFirstChild()) + computeSTSize((STNode) root.getLastChild());
         }
         else if(type == STNode.BFUNC_NODE) {
@@ -344,7 +345,7 @@ public class GAINChecker extends Checker {
         if (type == STNode.UNIVERSAL_NODE || type == STNode.EXISTENTIAL_NODE) {
             rootOfCunit.offer((STNode) node.getFirstChild());
         }
-        else if(type == STNode.IMPLIES_NODE || type == STNode.AND_NODE){
+        else if(type == STNode.IMPLIES_NODE || type == STNode.AND_NODE || type == STNode.OR_NODE){
             parseCunit(rootOfCunit, (STNode) node.getLastChild(), currentNodeNum);
             parseCunit(rootOfCunit, (STNode) node.getFirstChild(), currentNodeNum);
         }
@@ -379,7 +380,7 @@ public class GAINChecker extends Checker {
         else if(type == STNode.NOT_NODE) {
             size = 1 + computeRTTBranchSize((STNode)root.getFirstChild());
         }
-        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE) {
+        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE || type == STNode.OR_NODE) {
             size = 1 + computeRTTBranchSize((STNode)root.getFirstChild()) + computeRTTBranchSize((STNode)root.getLastChild());
         }
         else if(type == STNode.BFUNC_NODE){

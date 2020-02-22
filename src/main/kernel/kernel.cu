@@ -25,12 +25,13 @@ enum Type {
 #define EXISTENTIAL_NODE 4
 #define BFUNC_NODE 5
 #define EMPTY_NODE 6
+#define OR_NODE 7
 
-#define BEFORE 7
-#define GATE 8
-#define EQUAL 9
-#define CONN 10
-#define OPPO 11
+#define BEFORE 8
+#define GATE 9
+#define EQUAL 10
+#define CONN 11
+#define OPPO 12
 
 #define MAX_PARAM_NUM 4
 #define MAX_CCT_SIZE 3000000
