@@ -89,7 +89,12 @@ public class TrafficGraph {
     }
 
     public static int getNodeType(String code) {
-        return nodeType.get(code);
+        if (nodeType.containsKey(code))
+            return nodeType.get(code);
+        else {
+            System.out.println(code + " is not exist.");
+            return 0;
+        }
     }
 
     public static void main(String[] args) {
