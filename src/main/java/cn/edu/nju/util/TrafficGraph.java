@@ -50,7 +50,14 @@ public class TrafficGraph {
     }
 
     public static String getOppo(String code) {
-        return opposite.get(code);
+        if (opposite.containsKey(code)) {
+            return opposite.get(code);
+        }
+        else {
+            assert getNodeType(code) == 3 : "gate type";
+            return code;
+        }
+
     }
 
     public static List<String> getPath(String v, String w, int k) {
