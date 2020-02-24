@@ -53,10 +53,11 @@ public class TrafficGraph {
         if (opposite.containsKey(code)) {
             return opposite.get(code);
         }
-        else {
-            assert getNodeType(code) == 3 : "gate type";
+        else if (getNodeType(code) == 3){
             return code;
         }
+        else
+            return null;
 
     }
 
@@ -100,7 +101,7 @@ public class TrafficGraph {
             return nodeType.get(code);
         else {
             System.out.println(code + " is not exist.");
-            return 0;
+            return -1;
         }
     }
 
