@@ -107,10 +107,18 @@ public class Repair {
             else if ("rule_04".equals(elem[0])){ // 添加2个
                 List<String> path = TrafficGraph.getPath(dataList.get(index1).split(",")[0],
                         dataList.get(index2).split(",")[0], 3);
-                List<String> p = new ArrayList<>();
-                p.add(path.get(1));
-                p.add(path.get(2));
-                missMap.put(index1, p);
+                List<String> p1 = new ArrayList<>();
+                p1.add(path.get(1));
+                if (index2 - index1 == 1) {
+                    p1.add(path.get(2));
+                    missMap.put(index1, p1);
+                }
+                else {
+                    List<String> p2 = new ArrayList<>();
+                    p2.add(path.get(2));
+                    missMap.put(index1, p1);
+                    missMap.put(index2 - 1, p2);
+                }
             }
         }
 
