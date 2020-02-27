@@ -32,6 +32,7 @@ enum Type {
 #define EQUAL 10
 #define CONN 11
 #define OPPO 12
+#define NEXT 13
 
 #define MAX_PARAM_NUM 4
 #define MAX_CCT_SIZE 3000000
@@ -85,6 +86,11 @@ __device__ bool conn(int *graph, Context c1, Context c2, int k){
 extern "C"
 __device__ bool oppo(int *oppo_table, Context c1, Context c2){
 	return oppo_table[c1.code] == c2.code;
+}
+
+extern "C"
+__device__ bool oppo(Context c1, Context c2){
+	return c2.id - c1.id == 1;
 }
 
 extern "C"
@@ -378,6 +384,13 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 							reorder_params(oppo_table, oppo_params_order, params, ordered_params);
 							value = oppo(oppo_table, ordered_params[0], ordered_params[1]);
 							break;
+						}
+
+						case NEXT: {
+						    int *next_params_order = params_order + (NEXT - BEFORE) * (MAX_PATTERN_SIZE + 2);
+						    reorder_params(oppo_table, next_params_order, params, ordered_params);
+						    value = next(ordered_params[0], ordered_params[1]);
+						    break;
 						}
 
 					}

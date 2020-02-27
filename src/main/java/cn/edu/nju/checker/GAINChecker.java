@@ -177,6 +177,9 @@ public class GAINChecker extends Checker {
                 else if("oppo".equals(name)) {
                     nodeType[i] = NodeType.OPPO;
                 }
+                else if("next".equals(name)) {
+                    nodeType[i] = NodeType.NEXT;
+                }
                 else {
                     assert false:"BFunc type error.";
                 }

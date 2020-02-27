@@ -18,6 +18,7 @@ public interface NodeType {
     public static final int EQUAL = 10;
     public static final int CONN = 11;
     public static final int OPPO = 12;
+    public static final int NEXT = 13;
 
     int getNodeType();
     void setNodeType(int nodeType);

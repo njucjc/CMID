@@ -40,6 +40,10 @@ public class BFuncHelper {
         return c2.getCode().equals(oppoCode);
     }
 
+    public static boolean next(Context c1, Context c2) {
+        return c2.getId() - c1.getId() == 1;
+    }
+
     public static boolean bfunc(String name, List<Param> list1, List<Context> list2) {
         Context [] contexts = new Context[5]; // 下标为0的没有用
         for (int i = 0; i < list1.size(); i++) {
@@ -77,6 +81,9 @@ public class BFuncHelper {
                 break;
             case "oppo":
                 value = oppo(contexts[1], contexts[2]);
+                break;
+            case "next":
+                value = next(contexts[1], contexts[2]);
                 break;
             default:
                 assert  false:"[DEBUG] Illegal bfunc: " + name;
