@@ -33,6 +33,7 @@ enum Type {
 #define CONN 11
 #define OPPO 12
 #define NEXT 13
+#define CONN_WITHIN_K 14
 
 #define MAX_PARAM_NUM 4
 #define MAX_CCT_SIZE 3000000
@@ -89,8 +90,18 @@ __device__ bool oppo(int *oppo_table, Context c1, Context c2){
 }
 
 extern "C"
-__device__ bool oppo(Context c1, Context c2){
+__device__ bool next(Context c1, Context c2){
 	return c2.id - c1.id == 1;
+}
+
+extern "C"
+__device__ bool conn_within_k(int *graph, Context c1, Context c2, int k){
+    for(int i = k; i >= 1; i--) {
+	    if (has_path(graph, c1.code, c2.code, i)) {
+	        return true;
+	    }
+	}
+	return false;
 }
 
 extern "C"
@@ -102,6 +113,8 @@ __device__ bool has_path(int *graph, int v, int w, int k){
 
 	return has_path_k(graph, visited, v, w, k);
 }
+
+
 
 extern "C"
 __device__ bool has_path_k(int *graph, int visited[], int v, int w, int k){
@@ -391,6 +404,13 @@ __global__ void evaluation(int *parent, int *left_child, int *right_child, int *
 						    reorder_params(oppo_table, next_params_order, params, ordered_params);
 						    value = next(ordered_params[0], ordered_params[1]);
 						    break;
+						}
+
+						case CONN_WITHIN_K: {
+						    int *connk_params_order = params_order + (CONN_WITHIN_K - BEFORE) * (MAX_PATTERN_SIZE + 2);
+                            reorder_params(oppo_table, connk_params_order, params, ordered_params);
+                            value = conn_within_k(graph, params[0], params[1], conn_params_order[conn_params_order[0]]);
+                            break;
 						}
 
 					}

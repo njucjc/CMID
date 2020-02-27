@@ -35,6 +35,15 @@ public class BFuncHelper {
         }
     }
 
+    public static boolean connWithinK(Context c1, Context c2, int k) {
+        for (int i = k; i >= 1; i--) {
+            if (conn(c1, c2, i)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static boolean oppo(Context c1, Context c2) {
         String oppoCode = TrafficGraph.getOppo(c1.getCode());
         return c2.getCode().equals(oppoCode);
@@ -84,6 +93,9 @@ public class BFuncHelper {
                 break;
             case "next":
                 value = next(contexts[1], contexts[2]);
+                break;
+            case "conn_within_k":
+                value = connWithinK(contexts[1], contexts[2], Integer.parseInt(list1.get(list1.size() - 1).getDefaultValue()));
                 break;
             default:
                 assert  false:"[DEBUG] Illegal bfunc: " + name;

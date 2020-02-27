@@ -180,6 +180,9 @@ public class GAINChecker extends Checker {
                 else if("next".equals(name)) {
                     nodeType[i] = NodeType.NEXT;
                 }
+                else if("conn_within_k".equals(name)) {
+                    nodeType[i] = NodeType.CONN_WITHIN_K;
+                }
                 else {
                     assert false:"BFunc type error.";
                 }
