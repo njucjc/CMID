@@ -1,8 +1,5 @@
 package cn.edu.nju.util;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -15,6 +12,8 @@ public class TrafficGraph {
     private static final Map<String, String> opposite = new HashMap<>();
 
     private static final Map<String, Integer> nodeType = new HashMap<>();
+
+    private static final Map<String, List<String>> path = new HashMap<>();
 
     private static final Map<String, Integer> toInt = new HashMap<>();
 
@@ -47,21 +46,31 @@ public class TrafficGraph {
             opposite.put(pat[0], pat[2]);
         }
 
+        List<String> pathlist = FileHelper.readFile("res/path.txt");
+        for (String line : pathlist) {
+            String [] pat = line.split(":");
+            path.put(pat[0], Arrays.asList(pat[1].split(",")));
+        }
+
     }
 
     public static String getOppo(String code) {
         if (opposite.containsKey(code)) {
             return opposite.get(code);
         }
-        else if (getNodeType(code) == 3){
-            return code;
-        }
+//        else if (getNodeType(code) == 3){
+//            return code;
+//        }
         else
             return null;
 
     }
 
     public static List<String> getPath(String v, String w, int k) {
+        return path.get(v + "_" + w + "_" + k);
+    }
+
+    public static List<String> getPath2(String v, String w, int k) {
         Set<String> keySet = nodeType.keySet();
         if (!keySet.contains(v) || !keySet.contains(w)) {
             return null;
