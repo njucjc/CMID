@@ -29,8 +29,9 @@ public class Repair {
             oppoSet.add(index2);
 
             if (elem[0].equals("rule_01")) {
-                List<String> path = TrafficGraph.getPath(dataList.get(index2).split(",")[0],
-                                                        dataList.get(index1).split(",")[0], 2);
+                List<String> path = TrafficGraph.getPath(TrafficGraph.getOppo(dataList.get(index1).split(",")[0]),
+                                                         TrafficGraph.getOppo(dataList.get(index2).split(",")[0]),
+                                                      2);
                 missMap.put(index1, path.get(1));
             }
         }
@@ -48,7 +49,7 @@ public class Repair {
         for (int i = 0; i < dataList.size();i++) {
             res.add(dataList.get(i));
             if (missMap.keySet().contains(i)) {
-                String code = TrafficGraph.getOppo(missMap.get(i));
+                String code = missMap.get(i);
                 int type = TrafficGraph.getNodeType(code);
                 res.add(code + "," + type);
             }

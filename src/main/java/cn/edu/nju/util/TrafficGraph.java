@@ -55,15 +55,7 @@ public class TrafficGraph {
     }
 
     public static String getOppo(String code) {
-        if (opposite.containsKey(code)) {
-            return opposite.get(code);
-        }
-//        else if (getNodeType(code) == 3){
-//            return code;
-//        }
-        else
-            return null;
-
+        return opposite.get(code);
     }
 
     public static List<String> getPath(String v, String w, int k) {
@@ -115,15 +107,29 @@ public class TrafficGraph {
     }
 
     public static void main(String[] args) {
-        List<String> path = getPath("3C2013", "3D2010", 1);
-        System.out.println("Path 3C2013 to 3D2010:");
-        for (String v : path) {
-            System.out.println(v + " ");
+        List<String> res = new ArrayList<>();
+        System.out.println(nodeType.keySet().size());
+        int i = 0;
+        for (String w : nodeType.keySet()) {
+            for (String v : nodeType.keySet()) {
+                i++;
+                for (int k = 1; k <= 3; k++) {
+                    List<String> path = getPath2(w, v, k);
+                    if (path != null) {
+                        String str = w + "_" + v + "_"+ k + ":";
+                        for (String p : path) {
+                            str += p + ',';
+                        }
+                        str = str.substring(0, str.length() - 1);
+                        System.out.println(i+" " + str);
+                        res.add(str);
+                        break;
+                    }
+                }
+            }
         }
 
-        System.out.println("Opposite of 3D0B15:");
-        String oppo = getOppo("3D0B15");
-        System.out.println(oppo);
+        FileHelper.writeFile("path.txt", res);
 
     }
 
