@@ -26,25 +26,16 @@ public class Main  {
             changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
             changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
 
-
-            check(args[0]);
-            Repair.repairStep1(properties);
-            modifyConfig(properties, args[0], 1);
-
-            changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
-            changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
-
-
             check(args[0]);
             Repair.repairStep2(properties);
-            modifyConfig(properties, args[0], 2);
+            modifyConfig(properties, args[0], 1);
 
             changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
             changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
 
             check(args[0]);
             Repair.repairStep3(properties);
-            modifyConfig(properties, args[0], 3);
+            modifyConfig(properties, args[0], 2);
 
         }
         else {
@@ -65,7 +56,7 @@ public class Main  {
         String log = properties.getProperty("logFilePath");
 
         String old_regex = "_" + step;
-        String new_regex = "_" + ((step + 1) % 4);
+        String new_regex = "_" + ((step + 1) % 3);
         properties.setProperty("ruleFilePath", rule.split(old_regex)[0] + new_regex + ".xml");
         properties.setProperty("patternFilePath", pattern.split(old_regex)[0] + new_regex + ".xml");
 
