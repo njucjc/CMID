@@ -134,7 +134,7 @@ public class Repair {
             }
         }
 
-        FileHelper.writeFile(dataPath.split("_2")[0] + "_3.txt", res);
+        FileHelper.writeFile(dataPath.split("_1")[0] + "_2.txt", res);
     }
 
 
@@ -160,6 +160,6 @@ public class Repair {
             }
         }
 
-        FileHelper.writeFile(dataPath.split("_3")[0] + "_4.txt", res);
+        FileHelper.writeFile(dataPath.split("_2")[0] + "_3.txt", res);
     }
 }
