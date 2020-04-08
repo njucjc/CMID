@@ -25,6 +25,19 @@ public class Repair {
             int index1 = Integer.parseInt(elem[1].split("_")[1]);
             int index2 = Integer.parseInt(elem[2].split("_")[1]);
 
+            if (index2  - index1 == 1) { //相邻且没有路径才取反
+                boolean hasPath = false;
+                for (int k = 1; k <= 3; k++) {
+                    hasPath = hasPath || (TrafficGraph.getPath(dataList.get(index1).split(",")[0],
+                                                    dataList.get(index2).split(",")[0],
+                                                    k) != null);
+                }
+
+                if (hasPath) {
+                    continue;
+                }
+            }
+
             oppoSet.add(index1);
             oppoSet.add(index2);
 
