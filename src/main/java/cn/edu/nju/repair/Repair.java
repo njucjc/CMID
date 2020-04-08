@@ -10,7 +10,7 @@ import java.util.*;
  */
 public class Repair {
 
-    public static void repairStep0(Properties properties) {
+    public static List<Integer> repairStep0(Properties properties, List<Integer> status) {
         String dataPath = properties.getProperty("dataFilePath");
         List<String> dataList = FileHelper.readFile(dataPath);
         List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
@@ -25,24 +25,6 @@ public class Repair {
             int index1 = Integer.parseInt(elem[1].split("_")[1]);
             int index2 = Integer.parseInt(elem[2].split("_")[1]);
 
-            if (index2  - index1 == 1) { //相邻且没有路径才取反
-
-                if (elem[0].equals("rule_01")) {
-                    continue;
-                }
-
-                boolean hasPath = false;
-                for (int k = 1; k <= 3; k++) {
-                    hasPath = hasPath || (TrafficGraph.getPath(dataList.get(index1).split(",")[0],
-                            dataList.get(index2).split(",")[0],
-                            k) != null);
-                }
-
-                if (hasPath) {
-                    continue;
-                }
-            }
-
             oppoSet.add(index1);
             oppoSet.add(index2);
 
@@ -54,29 +36,38 @@ public class Repair {
             }
         }
 
-        //
+        // init datalist and status
         for (int i = 0; i < dataList.size();i++) {
             if (oppoSet.contains(i)) {
+                status.add(1); // modify status
                 String code = TrafficGraph.getOppo(dataList.get(i).split(",")[0]);
                 int type = TrafficGraph.getNodeType(code);
                 dataList.set(i, code + "," + type);
             }
+            else {
+                status.add(0); // ori status
+            }
         }
         List<String> res = new ArrayList<>();
-        //
+        List<Integer> newStatus = new ArrayList<>();
+
         for (int i = 0; i < dataList.size();i++) {
             res.add(dataList.get(i));
+            newStatus.add(status.get(i)); //
             if (missMap.keySet().contains(i)) {
                 String code = missMap.get(i);
                 int type = TrafficGraph.getNodeType(code);
                 res.add(code + "," + type);
+                newStatus.add(2); //add status
             }
         }
 
         FileHelper.writeFile(dataPath.split("_0")[0] + "_1.txt", res);
+
+        return newStatus;
     }
 
-    public static void repairStep1(Properties properties) {
+    public static List<Integer> repairStep1(Properties properties, List<Integer> status) {
         String dataPath = properties.getProperty("dataFilePath");
         List<String> dataList = FileHelper.readFile(dataPath);
         List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
@@ -92,16 +83,20 @@ public class Repair {
         }
 
         List<String> res = new ArrayList<>();
+        List<Integer> newStatus = new ArrayList<>();
+
         for (int i = 0; i < dataList.size(); i++) {
             if (!redundantSet.contains(i)) {
                 res.add(dataList.get(i));
+                newStatus.add(status.get(i));
             }
         }
 
         FileHelper.writeFile(dataPath.split("_1")[0] + "_2.txt", res);
+        return newStatus;
     }
 
-    public static void repairStep2(Properties properties) {
+    public static List<Integer> repairStep2(Properties properties, List<Integer> status) {
         String dataPath = properties.getProperty("dataFilePath");
         List<String> dataList = FileHelper.readFile(dataPath);
         List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
@@ -142,21 +137,25 @@ public class Repair {
         }
 
         List<String> res = new ArrayList<>();
+        List<Integer> newStatus = new ArrayList<>();
         for (int i = 0; i < dataList.size();i++) {
             res.add(dataList.get(i));
+            newStatus.add(status.get(i)); // ori status
             if (missMap.keySet().contains(i)) {
                 for (String c : missMap.get(i)) {
                     int type = TrafficGraph.getNodeType(c);
                     res.add(c + "," + type);
+                    newStatus.add(2); // add status
                 }
             }
         }
 
         FileHelper.writeFile(dataPath.split("_2")[0] + "_3.txt", res);
+        return newStatus;
     }
 
 
-    public static void repairStep3(Properties properties) {
+    public static List<Integer> repairStep3(Properties properties, List<Integer> status) {
         String dataPath = properties.getProperty("dataFilePath");
         List<String> dataList = FileHelper.readFile(dataPath);
         List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
@@ -172,12 +171,52 @@ public class Repair {
             deleteSet.add(index);
         }
         List<String> res = new ArrayList<>();
+        List<Integer> newStatus = new ArrayList<>();
         for (int i = 0; i < dataList.size(); i++) {
             if (!deleteSet.contains(i)) {
                 res.add(dataList.get(i));
+                newStatus.add(status.get(i));
+            }
+        }
+        res = deleteCycle(res, newStatus);
+        FileHelper.writeFile(dataPath.split("_3")[0] + "_4.txt", res);
+        return newStatus;
+    }
+
+    private static List<String> deleteCycle(List<String> dataList, List<Integer> status) {
+        Map<String, List<Integer>> hexMap = new HashMap<>();
+        for (int i = 0; i < dataList.size(); i++) {
+            String key = dataList.get(i).split(",")[0];
+            if (hexMap.containsKey(key)) {
+                hexMap.get(key).add(i);
+            }
+            else {
+                List<Integer> tmp = new ArrayList<>();
+                tmp.add(i);
+                hexMap.put(key, tmp);
             }
         }
 
-        FileHelper.writeFile(dataPath.split("_3")[0] + "_4.txt", res);
+        Set<Integer> deleteSet = new HashSet<>();
+        for (String key : hexMap.keySet()) {
+            List<Integer> idxList = hexMap.get(key);
+            int start = idxList.get(0);
+            int end = idxList.get(idxList.size() - 1);
+
+            if (end - start > 1) {
+                for (int i = start + 1; i <= end; i++) {
+                    deleteSet.add(i);
+                }
+            }
+        }
+
+        List<String> res = new ArrayList<>();
+        for (int i = 0; i < dataList.size(); i++) {
+            if (deleteSet.contains(i) && status.get(i) != 0) {
+                continue;
+            }
+            res.add(dataList.get(i));
+        }
+        return res;
     }
 }
