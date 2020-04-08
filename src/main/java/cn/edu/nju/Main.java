@@ -5,6 +5,8 @@ import cn.edu.nju.repair.Repair;
 import cn.edu.nju.util.ChangeFileHelper;
 import cn.edu.nju.util.ConfigHelper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 public class Main  {
@@ -19,22 +21,23 @@ public class Main  {
             ChangeFileHelper changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
             changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
 
+            List<Integer> status = new ArrayList<>();
             check(args[0]);
-            Repair.repairStep0(properties);
+            status = Repair.repairStep0(properties, status);
             modifyConfig(properties, args[0], 0);
 
             changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
             changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
 
             check(args[0]);
-            Repair.repairStep2(properties);
+            status = Repair.repairStep2(properties, status);
             modifyConfig(properties, args[0], 1);
 
             changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
             changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
 
             check(args[0]);
-            Repair.repairStep3(properties);
+            Repair.repairStep3(properties, status);
             modifyConfig(properties, args[0], 2);
 
         }
