@@ -100,7 +100,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             this.checkType = CON_TYPE;
         } else if("GAIN".equals(technique)) {
             this.checkType = GAIN_TYPE;
-        } else if ("Con-PCC".equals(technique)) {
+        } else if ("CPCC".equals(technique)) {
             this.checkType = CONPCC_TYPE;
         }else {
             assert false:"[DEBUG] Checking technique error: " + technique;
@@ -166,7 +166,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             this.scheduleType = Integer.parseInt(schedule);
             System.out.println("[DEBUG] " + schedule);
         }
-        else if ("GEAS".equals(schedule) && this.changeHandlerType.contains("change-based")) {
+        else if ("GEAS-ori".equals(schedule) && this.changeHandlerType.contains("change-based")) {
             this.scheduler = new GEAScheduler(this.checkerList);
             this.scheduleType = 0;
             System.out.println("[DEBUG] " + schedule);
