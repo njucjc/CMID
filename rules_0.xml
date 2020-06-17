@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+
+<rules>
+	<rule>
+		<id>rule_00</id>
+		<formula>
+			<not>
+				<exists var = "v1" in = "pat_0">
+					<exists var = "v2" in = "pat_1">
+						<and>
+							<bfunction name = "before">
+								<param pos = "1" var = "v1" field = "id" op = "" default_value = ""/>
+								<param pos = "2" var = "v2" field = "id" op = "" default_value = ""/>
+								<param pos = "3" var = ""   field = ""   op = "" default_value = "2"/>
+							</bfunction>
+							<bfunction name = "conn">
+								<param pos = "1" var = "v1" field = "code" op = "get_oppo" default_value = ""/>
+								<param pos = "2" var = "v2" field = "code" op = "get_oppo" default_value = ""/>
+								<param pos = "3" var = ""   field = ""     op = "" 	       default_value = "1" />
+							</bfunction>
+						</and>
+					</exists>
+				</exists>
+			</not>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_01</id>
+		<formula>
+			<not>
+				<exists var = "v1" in = "pat_2">
+					<exists var = "v3" in = "pat_3">
+						<and>
+							<and>
+								<bfunction name = "before">
+									<param pos = "1" var = "v1" field = "id" op = "" default_value = ""/>
+									<param pos = "2" var = "v3" field = "id" op = "" default_value = ""/>
+									<param pos = "3" var = ""   field = ""   op = "" default_value = "2"/>
+								</bfunction>
+								<bfunction name = "conn">
+									<param pos = "1" var = "v1" field = "code" op = "get_oppo" default_value = ""/>
+									<param pos = "2" var = "v3" field = "code" op = "get_oppo" default_value = ""/>
+									<param pos = "3" var = ""   field = ""     op = ""         default_value = "2"/>
+								</bfunction>
+							</and>
+							<not>
+								<exists var = "v2" in = "pat_4">
+									<and>
+										<bfunction name = "before">
+											<param pos = "1" var = "v1" field = "id" op = "" default_value = ""/>
+											<param pos = "3" var = "v3" field = "id" op = "" default_value = ""/>
+											<param pos = "2" var = "v2" field = "id" op = "" default_value = ""/>
+											<param pos = "4" var = ""   field = ""   op = "" default_value = "3"/>
+										</bfunction>
+										<bfunction name = "conn">
+											<param pos = "1" var = "v1" field = "code" op = "get_oppo" default_value = ""/>
+											<param pos = "0" var = "v3" field = ""     op = ""         default_value = ""/>
+											<param pos = "2" var = "v2" field = "code" op = "get_oppo" default_value = ""/>
+											<param pos = "3" var = ""   field = ""     op = ""         default_value = "1"/>
+										</bfunction>
+									</and>
+								</exists>
+							</not>
+						</and>
+					</exists>
+				</exists>
+			</not>
+		</formula>
+	</rule>
+</rules>

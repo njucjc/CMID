@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+
+<patterns>
+
+	<pattern>
+		<id>pat_7</id>
+		<timestamp>4</timestamp>
+		<category>highway</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_8</id>
+		<timestamp>4</timestamp>
+		<category>highway</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_9</id>
+		<timestamp>4</timestamp>
+		<category>highway</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_10</id>
+		<timestamp>5</timestamp>
+		<category>highway</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_11</id>
+		<timestamp>5</timestamp>
+		<category>highway</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_12</id>
+		<timestamp>5</timestamp>
+		<category>highway</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_13</id>
+		<timestamp>5</timestamp>
+		<category>highway</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+</patterns>

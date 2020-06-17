@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+
+<rules>
+	<rule>
+		<id>rule_03</id>
+		<formula>
+			<not>
+				<exists var = "v1" in = "pat_7">
+					<exists var = "v3" in = "pat_8">
+						<and>
+							<and>
+								<bfunction name = "before">
+									<param pos = "1" var = "v1" field = "id" op = "" default_value = ""/>
+									<param pos = "2" var = "v3" field = "id" op = "" default_value = ""/>
+									<param pos = "3" var = ""   field = ""   op = "" default_value = "2"/>
+								</bfunction>
+								<bfunction name = "conn">
+									<param pos = "1" var = "v1" field = "code" op = "" default_value = ""/>
+									<param pos = "2" var = "v3" field = "code" op = "" default_value = ""/>
+									<param pos = "3" var = ""   field = ""     op = "" default_value = "2"/>
+								</bfunction>
+							</and>
+							<not>
+								<exists var = "v2" in = "pat_9">
+									<and>
+										<bfunction name = "before">
+											<param pos = "1" var = "v1" field = "id" op = "" default_value = ""/>
+											<param pos = "3" var = "v3" field = "id" op = "" default_value = ""/>
+											<param pos = "2" var = "v2" field = "id" op = "" default_value = ""/>
+											<param pos = "4" var = ""   field = ""   op = "" default_value = "3"/>
+										</bfunction>
+										<bfunction name = "conn">
+											<param pos = "1" var = "v1" field = "code" op = "" default_value = ""/>
+											<param pos = "0" var = "v3" field = ""     op = "" default_value = ""/>
+											<param pos = "2" var = "v2" field = "code" op = "" default_value = ""/>
+											<param pos = "3" var = ""   field = ""     op = "" default_value = "1"/>
+										</bfunction>
+									</and>
+								</exists>
+							</not>
+						</and>
+					</exists>
+				</exists>
+			</not>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_04</id>
+		<formula>
+			<not>
+				<exists var = "v1" in = "pat_10">
+					<exists var = "v4" in = "pat_11">
+						<and>
+							<and>
+								<bfunction name = "before">
+										<param pos = "1" var = "v1" field = "id" op = "" default_value = ""/>
+										<param pos = "2" var = "v4" field = "id" op = "" default_value = ""/>
+										<param pos = "3" var = ""   field = ""   op = "" default_value = "2"/>
+								</bfunction>
+								<bfunction name = "conn">
+									<param pos = "1" var = "v1" field = "code" op = "" default_value = ""/>
+									<param pos = "2" var = "v4" field = "code" op = "" default_value = ""/>
+									<param pos = "3" var = ""   field = ""     op = "" default_value = "3"/>
+								</bfunction>
+							</and>
+							<and>
+								<not>
+									<exists var = "v2" in = "pat_12">
+										<and>
+											<bfunction name = "before">
+												<param pos = "1" var = "v1" field = "id" op = "" default_value = ""/>
+												<param pos = "3" var = "v4" field = "id" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "id" op = "" default_value = ""/>
+												<param pos = "4" var = ""   field = ""   op = "" default_value = "3"/>
+											</bfunction>
+											<bfunction name = "conn">
+												<param pos = "1" var = "v1" field = "code" op = "" default_value = ""/>
+												<param pos = "0" var = "v4" field = ""     op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "code" op = "" default_value = ""/>
+												<param pos = "3" var = ""   field = ""     op = "" default_value = "1"/>
+											</bfunction>
+										</and>
+									</exists>
+								</not>
+								<not>
+									<exists var = "v3" in = "pat_13">
+										<and>
+											<bfunction name = "before">
+												<param pos = "1" var = "v1" field = "id" op = "" default_value = ""/>
+												<param pos = "3" var = "v4" field = "id" op = "" default_value = ""/>
+												<param pos = "2" var = "v3" field = "id" op = "" default_value = ""/>
+												<param pos = "4" var = ""   field = ""   op = "" default_value = "3"/>
+											</bfunction>
+											<bfunction name = "conn">
+												<param pos = "1" var = "v1" field = "code" op = "" default_value = ""/>
+												<param pos = "0" var = "v4" field = ""     op = "" default_value = ""/>
+												<param pos = "2" var = "v3" field = "code" op = "" default_value = ""/>
+												<param pos = "3" var = ""   field = ""     op = "" default_value = "2"/>
+											</bfunction>
+										</and>
+									</exists>
+								</not>
+							</and>
+						</and>
+					</exists>
+				</exists>
+			</not>
+		</formula>
+	</rule>
+</rules>
