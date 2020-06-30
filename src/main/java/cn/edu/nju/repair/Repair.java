@@ -1,6 +1,9 @@
 package cn.edu.nju.repair;
 
+import cn.edu.nju.Main;
+import cn.edu.nju.util.ConfigHelper;
 import cn.edu.nju.util.FileHelper;
+import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.TrafficGraph;
 
 import java.util.*;
@@ -62,7 +65,7 @@ public class Repair {
             }
         }
 
-        FileHelper.writeFile(dataPath.split("_0")[0] + "_1.txt", res);
+        FileHelper.writeFile(dataPath.split("\\.")[0] + "_repair.txt", res);
 
         return newStatus;
     }
@@ -218,5 +221,19 @@ public class Repair {
             res.add(dataList.get(i));
         }
         return res;
+    }
+
+    public static void main(String[] args) {
+        if (args.length == 1) {
+            Main.main(args);
+            long start = System.nanoTime();
+            Properties properties = ConfigHelper.getConfig(args[0]);
+            repairStep0(properties, new ArrayList<>());
+            long end = System.nanoTime();
+            LogFileHelper.getLogger().info("Repair time: " + (end - start) / 1000000 + " ms");
+        }
+        else {
+            System.out.println("Usage: java Main [configFilePath].");
+        }
     }
 }
