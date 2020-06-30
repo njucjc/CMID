@@ -130,22 +130,22 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         this.dataFilePath = properties.getProperty("dataFilePath");
         this.changeFilePath = properties.getProperty("changeFilePath");
 
-        if(this.checkType == GAIN_TYPE) {
-            //开启异常捕获
-            JCudaDriver.setExceptionsEnabled(true);
-
-            //初始化设备
-            cuInit(0);
-            CUdevice device = new CUdevice();
-            cuDeviceGet(device, 0);
-            cuContext = new CUcontext();
-            cuCtxCreate(cuContext, 0, device);
-
-           // initGPUMemory();
-            contexts = fileReader(this.dataFilePath);
-            gpuResult = new GPUResult();
-            compileKernelFunction(cudaSourceFilePath);
-        }
+//        if(this.checkType == GAIN_TYPE) {
+//            //开启异常捕获
+//            JCudaDriver.setExceptionsEnabled(true);
+//
+//            //初始化设备
+//            cuInit(0);
+//            CUdevice device = new CUdevice();
+//            cuDeviceGet(device, 0);
+//            cuContext = new CUcontext();
+//            cuCtxCreate(cuContext, 0, device);
+//
+//           // initGPUMemory();
+//            contexts = fileReader(this.dataFilePath);
+//            gpuResult = new GPUResult();
+//            compileKernelFunction(cudaSourceFilePath);
+//        }
 
         //rule
         String ruleFilePath = properties.getProperty("ruleFilePath");
@@ -388,12 +388,12 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     public void shutdown() {
         checkExecutorService.shutdown();
-        if(checkType == GAIN_TYPE) {
-            GPUContextMemory.getInstance(contexts).free();
-            for (Checker checker : checkerList) {
-                checker.reset();
-            }
-        }
+//        if(checkType == GAIN_TYPE) {
+//            GPUContextMemory.getInstance(contexts).free();
+//            for (Checker checker : checkerList) {
+//                checker.reset();
+//            }
+//        }
     }
 
     protected void update(int checkType, int scheduleType) {
