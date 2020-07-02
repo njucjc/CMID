@@ -11,8 +11,6 @@ import cn.edu.nju.scheduler.BatchScheduler;
 import cn.edu.nju.scheduler.GEASOptScheduler;
 import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
-import cn.edu.nju.switcher.SimpleSwitcher;
-import cn.edu.nju.switcher.Switcher;
 import cn.edu.nju.util.ConfigHelper;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.PTXFileHelper;
@@ -78,10 +76,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     private List<String> contexts;
 
-    protected boolean onDemand;
-
-    protected Switcher switcher;
-
     public AbstractCheckerBuilder(String configFilePath) {
         parseConfigFile(configFilePath);
     }
@@ -123,7 +117,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         String patternFilePath = properties.getProperty("patternFilePath");
         parsePatternFile(patternFilePath);
 
-        String cudaSourceFilePath = properties.getProperty("cudaSourceFilePath");
+        String cudaSourceFilePath = "src/main/kernel/kernel.cu";
         //如果是GAIN需要初始化GPU内存
 
         //context file path
@@ -184,16 +178,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         //change handle
         configChangeHandler();
 
-        String onDemandStr = properties.getProperty("on-demand");
-        if("on".equals(onDemandStr)) {
-            this.onDemand = true;
-        }
-        else {
-            this.onDemand = false;
-        }
-
-        String paramFilePath = properties.getProperty("paramFilePath");
-        this.switcher = new SimpleSwitcher(paramFilePath, this.checkType, this.scheduleType);
     }
 
     private void configChangeHandler() {
