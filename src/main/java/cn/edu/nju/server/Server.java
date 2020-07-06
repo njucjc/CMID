@@ -59,14 +59,14 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
                 long interval = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
                 assert count != -1:"counter overflow.";
-                if(onDemand && switcher.isSwitch(num, interval)) {
-
-                    switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
-                    long startUpdate = System.nanoTime();
-                    update(switcher.getCheckerType(), switcher.getSchedulerType());
-                    long endUpdate = System.nanoTime();
-                    switchTimeCount += endUpdate - startUpdate;
-                }
+//                if(onDemand && switcher.isSwitch(num, interval)) {
+//
+//                    switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
+//                    long startUpdate = System.nanoTime();
+//                    update(switcher.getCheckerType(), switcher.getSchedulerType());
+//                    long endUpdate = System.nanoTime();
+//                    switchTimeCount += endUpdate - startUpdate;
+//                }
 
                 msg = msg.substring(msg.indexOf(",") + 1);
 
