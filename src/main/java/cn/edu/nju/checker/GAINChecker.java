@@ -32,7 +32,7 @@ public class GAINChecker extends Checker {
 
     //private KernelLauncher genTruthValue;
 
-   // private KernelLauncher genLinks;
+    // private KernelLauncher genLinks;
 
     private  KernelLauncher evaluation;
 
@@ -54,19 +54,25 @@ public class GAINChecker extends Checker {
 
     private CUdeviceptr deviceMaxLinkSize;
 
+    private CUdeviceptr deviceParamOrder;
+
     private CUcontext cuContext;
+
+    private Checker checker;
 
 
     public GAINChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap,
                        String kernelFilePath,
                        List<String> contexts, CUcontext cuContext, GPUResult gpuResult) {
         super(name, stRoot, patternMap, stMap);
-        init(kernelFilePath, contexts, cuContext, gpuResult);
+        this.checker = new PccChecker(name, stRoot, patternMap, stMap);
+        //init(kernelFilePath, contexts, cuContext, gpuResult);
     }
 
     public GAINChecker(Checker checker, String kernelFilePath, List<String> contexts, CUcontext cuContext, GPUResult gpuResult){
         super(checker);
-        init(kernelFilePath, contexts, cuContext, gpuResult);
+        this.checker = new PccChecker(name, stRoot, patternMap, stMap);
+        //init(kernelFilePath, contexts, cuContext, gpuResult);
     }
 
     private void init(String kernelFilePath, List<String> contexts, CUcontext cuContext, GPUResult gpuResult) {
@@ -127,8 +133,10 @@ public class GAINChecker extends Checker {
         this.deviceLinkResult = gpuResult.getDeviceLinkResult();
         this.deviceLinkNum = gpuResult.getDeviceLinkNum();
         this.deviceMaxLinkSize = gpuResult.getDeviceMaxLinkSize();
+        this.deviceParamOrder = new CUdeviceptr();
 
         cuMemAlloc(this.deviceBranchSize, stSize * Sizeof.INT);
+        cuMemAlloc(this.deviceParamOrder, 10 * (Config.MAX_PARAN_NUM * Sizeof.INT));
 
 
         int [] parent = new int[stSize];
@@ -187,66 +195,71 @@ public class GAINChecker extends Checker {
 
     @Override
     public boolean doCheck() {
-       // assert false:"Something is being to do.";
+        // assert false:"Something is being to do.";
         checkTimes++;
-        computeRTTBranchSize(this.stRoot);
-        int cctSize = branchSize[stSize - 1];
-
-        assert cctSize <= Config.MAX_CCT_SIZE:"CCT size overflow: " + cctSize;
-
-        cuCtxPushCurrent(cuContext);
-
-        updateGPUPatternMemory();
-        cuMemcpyHtoD(this.deviceBranchSize, Pointer.to(branchSize), stSize * Sizeof.INT);
-
-        for(int i = cunits.size() - 2; i >= 0; i--) {
-            int ccopyNum = computeCCopyNum(cunits.get(i));
-            //System.out.println("num: " + ccopyNum);
-            if(ccopyNum == 0) {
-                continue;
-            }
-
-            dim3 gridSize = new dim3(threadPerBlock, 1, 1);
-            dim3 blockSize = new dim3((ccopyNum + threadPerBlock - 1) / threadPerBlock,1, 1);
-
-            //gen truth value and links
-            evaluation.setup(gridSize, blockSize)
-                    .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
-                            deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
-                            gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
-                            gpuContextMemory.getLongitude(), gpuContextMemory.getLatitude(), gpuContextMemory.getSpeed(), gpuContextMemory.getPlateNumber(),
-                            deviceTruthValueResult,
-                            deviceLinkResult, deviceLinkNum, deviceMaxLinkSize,
-                            cunits.get(0),
-                            ccopyNum);
-
-        }
-
-        short [] hostTruthValueResult = new short[1];
-        cuMemcpyDtoH(Pointer.to(hostTruthValueResult), deviceTruthValueResult, Sizeof.SHORT);
-
-        boolean value = hostTruthValueResult[0] == 1;
-//        System.out.println(Arrays.toString(hostTruthValue));
-
-
-        if(!value) {
-            int [] hostLinkNum = new int[1];
-            cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
-
-            int [] hostMaxLinkSize = new int[1];
-            cuMemcpyDtoH(Pointer.to(hostMaxLinkSize), deviceMaxLinkSize, Sizeof.INT);
-
-            this.maxLinkSize = this.maxLinkSize > hostMaxLinkSize[0] ? this.maxLinkSize : hostMaxLinkSize[0];
-
-            int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
-            cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * hostLinkNum[0]) * Sizeof.INT);
-            //           System.out.println(Arrays.toString(hostLinkResult));
-            parseLink(hostLinkResult, hostLinkNum[0]);
-        }
-
-
-        cuCtxPopCurrent(cuContext);
-
+//        computeRTTBranchSize(this.stRoot);
+//        int cctSize = branchSize[stSize - 1];
+//
+//        assert cctSize <= Config.MAX_CCT_SIZE:"CCT size overflow: " + cctSize;
+//
+//        cuCtxPushCurrent(cuContext);
+//
+//        updateGPUPatternMemory();
+//        cuMemcpyHtoD(this.deviceBranchSize, Pointer.to(branchSize), stSize * Sizeof.INT);
+//
+//        for(int i = cunits.size() - 2; i >= 0; i--) {
+//            int ccopyNum = computeCCopyNum(cunits.get(i));
+//            //System.out.println("num: " + ccopyNum);
+//            if(ccopyNum == 0) {
+//                continue;
+//            }
+//
+//            dim3 gridSize = new dim3(threadPerBlock, 1, 1);
+//            dim3 blockSize = new dim3((ccopyNum + threadPerBlock - 1) / threadPerBlock,1, 1);
+//
+//            //gen truth value and links
+//            evaluation.setup(gridSize, blockSize)
+//                    .call(gpuRuleMemory.getParent(), gpuRuleMemory.getLeftChild(), gpuRuleMemory.getRightChild(), gpuRuleMemory.getNodeType(), gpuRuleMemory.getPatternId(),
+//                            deviceBranchSize, cunits.get(i + 1) + 1, cunits.get(i),
+//                            gpuPatternMemory.getBegin(), gpuPatternMemory.getLength(), gpuPatternMemory.getContexts(),
+//                            gpuContextMemory.getCode(), gpuContextMemory.getType(),
+//                            gpuGraphMemory.getGraph(), gpuGraphMemory.getOppoTable(),
+//                            deviceParamOrder,
+//                            deviceTruthValueResult,
+//                            deviceLinkResult, deviceLinkNum, deviceMaxLinkSize,
+//                            cunits.get(0),
+//                            ccopyNum);
+//
+//        }
+//
+//        short [] hostTruthValueResult = new short[1];
+//        cuMemcpyDtoH(Pointer.to(hostTruthValueResult), deviceTruthValueResult, Sizeof.SHORT);
+//
+//        boolean value = hostTruthValueResult[0] == 1;
+////        System.out.println(Arrays.toString(hostTruthValue));
+//
+//
+//        if(!value) {
+//            int [] hostLinkNum = new int[1];
+//            cuMemcpyDtoH(Pointer.to(hostLinkNum), deviceLinkNum, Sizeof.INT);
+//
+//            int [] hostMaxLinkSize = new int[1];
+//            cuMemcpyDtoH(Pointer.to(hostMaxLinkSize), deviceMaxLinkSize, Sizeof.INT);
+//
+//            this.maxLinkSize = this.maxLinkSize > hostMaxLinkSize[0] ? this.maxLinkSize : hostMaxLinkSize[0];
+//
+//            int [] hostLinkResult = new int[Config.MAX_PARAN_NUM * Config.MAX_LINK_SIZE];
+//            cuMemcpyDtoH(Pointer.to(hostLinkResult), deviceLinkResult, (Config.MAX_PARAN_NUM * hostLinkNum[0]) * Sizeof.INT);
+//            //           System.out.println(Arrays.toString(hostLinkResult));
+//            parseLink(hostLinkResult, hostLinkNum[0]);
+//        }
+//
+//
+//        cuCtxPopCurrent(cuContext);
+        boolean value = this.checker.doCheck();
+        CCTNode newRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
+        build(stRoot, newRoot,6);
+        evaluation(newRoot, new ArrayList<>());
 
         return value;
     }
@@ -274,23 +287,25 @@ public class GAINChecker extends Checker {
 
     @Override
     public boolean add(String patternId, Context context) {
-      //  return super.add(patternId, context);
-        if (!addContextToPattern(patternId, context)) {
-            return false;
-        }
-        assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
-        return true;
+        //  return super.add(patternId, context);
+//        if (!addContextToPattern(patternId, context)) {
+//            return false;
+//        }
+//        assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
+//        return true;
+        return this.checker.add(patternId, context);
     }
 
 
 
     @Override
     public boolean delete(String patternId, String timestamp) {
-        if(!deleteContextFromPattern(patternId, timestamp)) {
-            return false;
-        }
-        assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
-        return true;
+//        if(!deleteContextFromPattern(patternId, timestamp)) {
+//            return false;
+//        }
+//        assert patternMap.get(patternId).getContextList().size() <= Config.MAX_PATTERN_SIZE:"pattern size overflow.";
+//        return true;
+        return this.checker.delete(patternId, timestamp);
     }
 
 
@@ -302,7 +317,7 @@ public class GAINChecker extends Checker {
         if(type == STNode.UNIVERSAL_NODE || type == NodeType.EXISTENTIAL_NODE || type == STNode.NOT_NODE) {
             return 1 + computeSTSize((STNode) root.getFirstChild());
         }
-        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE) { //not support 'OR' node type
+        else if(type == STNode.AND_NODE || type == STNode.IMPLIES_NODE) {
             return 1 + computeSTSize((STNode) root.getFirstChild()) + computeSTSize((STNode) root.getLastChild());
         }
         else if(type == STNode.BFUNC_NODE) {
@@ -332,7 +347,7 @@ public class GAINChecker extends Checker {
         if(node == null) {
             return ;
         }
-  //      System.out.println(currentNodeNum[0] + " :" + node.getNodeName());
+        //      System.out.println(currentNodeNum[0] + " :" + node.getNodeName());
         node.setNodeNum(currentNodeNum[0]);
         constraintNodes[currentNodeNum[0]] = node;
         currentNodeNum[0]--;
@@ -389,13 +404,6 @@ public class GAINChecker extends Checker {
     }
 
     @Override
-    public void reset() {
-        cuMemFree(this.deviceBranchSize);
-        this.gpuPatternMemory.free();
-        super.reset();
-    }
-
-    @Override
     public void sCheck(List<Context> contextList) {
         CCTNode newRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
         build(stRoot, newRoot, 2);
@@ -403,4 +411,17 @@ public class GAINChecker extends Checker {
         List<Context> param = new ArrayList<>();
         evaluation(newRoot, param);
     }
+
+    @Override
+    public int getInc() {
+        return this.checker.getInc();
+    }
+
+    @Override
+    public void reset() {
+        cuMemFree(this.deviceBranchSize);
+        this.gpuPatternMemory.free();
+        super.reset();
+    }
+
 }
