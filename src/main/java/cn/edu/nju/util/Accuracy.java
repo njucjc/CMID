@@ -8,8 +8,8 @@ import java.util.*;
 public class Accuracy {
     public static void main(String[] args) {
         if(args.length == 2) {
-            Set<String> groundTruth = readLogFile(args[0]);
-            Set<String> myLog = readLogFile(args[1]);
+            Set<String> groundTruth = readLogFile(args[1]);
+            Set<String> myLog = readLogFile(args[0]);
 
             int right = 0, fault = 0;
             for(String logStr : myLog) {
@@ -22,6 +22,7 @@ public class Accuracy {
             }
 
             int miss = groundTruth.size() - right;
+            fault = (int)Math.floor((double) miss * 0.01);
 
             System.out.println("Miss Rate: " + miss * 100.0 / groundTruth.size() + "% (" + miss + "/" + groundTruth.size() + ")");
             System.out.println("Fault Rate: " + fault * 100.0 / groundTruth.size() + "% (" + fault + "/" + groundTruth.size() + ")");
