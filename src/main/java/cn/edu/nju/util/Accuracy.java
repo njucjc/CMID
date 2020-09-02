@@ -23,6 +23,7 @@ public class Accuracy {
 
             int miss = groundTruth.size() - right;
             fault = (int)Math.floor((double) miss * 0.01);
+            miss = miss + fault;
 
             System.out.println("Miss Rate: " + miss * 100.0 / groundTruth.size() + "% (" + miss + "/" + groundTruth.size() + ")");
             System.out.println("Fault Rate: " + fault * 100.0 / groundTruth.size() + "% (" + fault + "/" + groundTruth.size() + ")");
