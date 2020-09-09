@@ -118,6 +118,9 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         for(long timePoint : switchPoint) {
             LogFileHelper.getLogger().info("Switch at: " + timePoint + " ms");
         }
+
+        accuracy();
+
         shutdown();
     }
 

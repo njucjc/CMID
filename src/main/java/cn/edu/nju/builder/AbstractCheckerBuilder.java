@@ -10,6 +10,7 @@ import cn.edu.nju.scheduler.BatchScheduler;
 import cn.edu.nju.scheduler.GEASOptScheduler;
 import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
+import cn.edu.nju.util.Accuracy;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.PTXFileHelper;
 import jcuda.driver.CUcontext;
@@ -67,6 +68,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     protected String changeHandlerType;
 
     private String kernelFilePath;
+
+    private String logFilePath;
+
+    private String oracleFilePath;
 
     private CUcontext cuContext;
 
@@ -152,9 +157,12 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
 
         //log
-        String logFilePath = properties.getProperty("logFilePath");
-        LogFileHelper.initLogger(logFilePath);
+        this.logFilePath = properties.getProperty("logFilePath");
+        LogFileHelper.initLogger(this.logFilePath);
 
+
+        //oracle
+        this.oracleFilePath = properties.getProperty("oracleFilePath");
 
         //schedule
         String schedule = properties.getProperty("schedule");
@@ -425,6 +433,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         if(isUpdate) {
             this.changeHandler.update(this.checkerMap,this.scheduler, this.checkerList);
         }
+    }
+
+    protected void accuracy() {
+        Accuracy.main(new String []{this.logFilePath, this.oracleFilePath});
     }
 
 

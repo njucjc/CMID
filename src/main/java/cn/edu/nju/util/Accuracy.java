@@ -25,10 +25,13 @@ public class Accuracy {
             fault = (int)Math.floor((double) miss * 0.01);
             miss = miss + fault;
 
-            System.out.println("Miss Rate: " + miss * 100.0 / groundTruth.size() + "% (" + miss + "/" + groundTruth.size() + ")");
-            System.out.println("Fault Rate: " + fault * 100.0 / groundTruth.size() + "% (" + fault + "/" + groundTruth.size() + ")");
-
-
+            if(fault == 0 && miss == 0) {
+                LogFileHelper.getLogger().info("oracle验证通过");
+            }
+            else {
+                LogFileHelper.getLogger().info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")");
+                LogFileHelper.getLogger().info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")");
+            }
         }
         else {
             System.out.println("Usage: java Accuracy groundTruth.log myLog.log");
