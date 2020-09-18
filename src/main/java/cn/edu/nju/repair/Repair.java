@@ -13,7 +13,7 @@ import java.util.*;
  */
 public class Repair {
 
-    public static List<Integer> repairStep0(Properties properties, List<Integer> status) {
+    public static void repairStep0(Properties properties) {
         String dataPath = properties.getProperty("dataFilePath");
         List<String> dataList = FileHelper.readFile(dataPath);
         List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
@@ -42,35 +42,26 @@ public class Repair {
         // init datalist and status
         for (int i = 0; i < dataList.size();i++) {
             if (oppoSet.contains(i)) {
-                status.add(1); // modify status
                 String code = TrafficGraph.getOppo(dataList.get(i).split(",")[0]);
                 int type = TrafficGraph.getNodeType(code);
                 dataList.set(i, code + "," + type);
             }
-            else {
-                status.add(0); // ori status
-            }
         }
         List<String> res = new ArrayList<>();
-        List<Integer> newStatus = new ArrayList<>();
 
         for (int i = 0; i < dataList.size();i++) {
             res.add(dataList.get(i));
-            newStatus.add(status.get(i)); //
             if (missMap.keySet().contains(i)) {
                 String code = missMap.get(i);
                 int type = TrafficGraph.getNodeType(code);
                 res.add(code + "," + type);
-                newStatus.add(2); //add status
             }
         }
 
-        FileHelper.writeFile(dataPath.split("\\.")[0] + "_repair.txt", res);
-
-        return newStatus;
+        FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
     }
 
-    public static List<Integer> repairStep1(Properties properties, List<Integer> status) {
+    public static void repairStep1(Properties properties) {
         String dataPath = properties.getProperty("dataFilePath");
         List<String> dataList = FileHelper.readFile(dataPath);
         List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
@@ -86,20 +77,17 @@ public class Repair {
         }
 
         List<String> res = new ArrayList<>();
-        List<Integer> newStatus = new ArrayList<>();
 
         for (int i = 0; i < dataList.size(); i++) {
             if (!redundantSet.contains(i)) {
                 res.add(dataList.get(i));
-                newStatus.add(status.get(i));
             }
         }
 
-        FileHelper.writeFile(dataPath.split("_1")[0] + "_2.txt", res);
-        return newStatus;
+        FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
     }
 
-    public static List<Integer> repairStep2(Properties properties, List<Integer> status) {
+    public static void repairStep2(Properties properties) {
         String dataPath = properties.getProperty("dataFilePath");
         List<String> dataList = FileHelper.readFile(dataPath);
         List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
@@ -140,25 +128,21 @@ public class Repair {
         }
 
         List<String> res = new ArrayList<>();
-        List<Integer> newStatus = new ArrayList<>();
         for (int i = 0; i < dataList.size();i++) {
             res.add(dataList.get(i));
-            newStatus.add(status.get(i)); // ori status
             if (missMap.keySet().contains(i)) {
                 for (String c : missMap.get(i)) {
                     int type = TrafficGraph.getNodeType(c);
                     res.add(c + "," + type);
-                    newStatus.add(2); // add status
                 }
             }
         }
 
-        FileHelper.writeFile(dataPath.split("_2")[0] + "_3.txt", res);
-        return newStatus;
+        FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
     }
 
 
-    public static List<Integer> repairStep3(Properties properties, List<Integer> status) {
+    public static void repairStep3(Properties properties) {
         String dataPath = properties.getProperty("dataFilePath");
         List<String> dataList = FileHelper.readFile(dataPath);
         List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
@@ -174,16 +158,12 @@ public class Repair {
             deleteSet.add(index);
         }
         List<String> res = new ArrayList<>();
-        List<Integer> newStatus = new ArrayList<>();
         for (int i = 0; i < dataList.size(); i++) {
             if (!deleteSet.contains(i)) {
                 res.add(dataList.get(i));
-                newStatus.add(status.get(i));
             }
         }
-        res = deleteCycle(res, newStatus);
-        FileHelper.writeFile(dataPath.split("_3")[0] + "_4.txt", res);
-        return newStatus;
+        FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
     }
 
     private static List<String> deleteCycle(List<String> dataList, List<Integer> status) {
@@ -225,10 +205,24 @@ public class Repair {
 
     public static void main(String[] args) {
         if (args.length == 1) {
-            Main.main(args);
-            long start = System.nanoTime();
             Properties properties = ConfigHelper.getConfig(args[0]);
-            repairStep0(properties, new ArrayList<>());
+            Main.check(args[0], properties);
+
+            long start = System.nanoTime();
+            int step = Integer.parseInt(properties.getProperty("step"));
+            if (step == 0) {
+                repairStep0(properties);
+            }
+            else if (step == 1) {
+                repairStep1(properties);
+            }
+            else if (step == 2) {
+                repairStep2(properties);
+            }
+            else if (step == 3) {
+                repairStep3(properties);
+            }
+
             long end = System.nanoTime();
             LogFileHelper.getLogger().info("Repair time: " + (end - start) / 1000000 + " ms");
         }
