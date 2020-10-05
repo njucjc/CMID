@@ -201,7 +201,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             Document document = db.parse(patternFilePath);
 
             NodeList patternList = document.getElementsByTagName("pattern");
-            System.out.println("[DEBUG] There is " + patternList.getLength() + " patterns");
+            // System.out.println("[DEBUG] There is " + patternList.getLength() + " patterns");
             for (int i = 0; i < patternList.getLength(); i++) {
                 Node patNode = patternList.item(i);
                 NodeList childNodes = patNode.getChildNodes();
@@ -217,9 +217,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 patternMap.put(id, new Pattern(id, freshness, category, subject, predicate, object, site));
             }
 
-            for(String key : patternMap.keySet()) {
+            /* for(String key : patternMap.keySet()) {
                 System.out.println("[DEBUG] " + patternMap.get(key));
-            }
+            } */
         }
         catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -279,8 +279,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                     checkerMap.put(stMap.get(key).getContextSetName(), checker);
                 }
 
-                System.out.println("[DEBUG] " + checker.getName());
-                checker.printSyntaxTree();
+                //System.out.println("[DEBUG] " + checker.getName());
+                //checker.printSyntaxTree();
             }
         } catch (ParserConfigurationException e) {
             e.printStackTrace();

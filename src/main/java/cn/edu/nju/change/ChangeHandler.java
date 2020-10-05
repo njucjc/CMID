@@ -54,20 +54,10 @@ public abstract class ChangeHandler {
     }
     public void doCheck() {
         long start = System.nanoTime();
-        boolean hasCheck = false;
         for(Checker checker : checkerList) {
             if(scheduler.schedule(checker.getName())) {
-                boolean value = checker.doCheck();
-                if (value) {
-                    System.out.println("[" + checkerName + " + " + schedulerName + "] " + checker.getName() + ": Pass!");
-                } else {
-                    System.out.println("[" + checkerName + " + " + schedulerName + "] " + checker.getName() + ": Failed!");
-                }
-                hasCheck = true;
+                checker.doCheck();
             }
-        }
-        if (hasCheck) {
-            System.out.println("============================================================================================");
         }
         long end = System.nanoTime();
         timeCount += (end -start);
