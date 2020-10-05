@@ -24,10 +24,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -188,6 +185,16 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.out.println("[INFO] 数据文件无配置：" + null);
             System.exit(1);
         }
+        else {
+            if(!isFileExists(this.dataFilePath)) {
+                System.out.println("[INFO] 文件不存在：" + this.dataFilePath);
+                System.exit(1);
+            }
+            else if (!isFileExists(this.changeFilePath)) {
+                System.out.println("[INFO] 文件不存在：" + this.changeFilePath);
+                System.exit(1);
+            }
+        }
 
         if(this.checkType == GAIN_TYPE) {
             //开启异常捕获
@@ -227,6 +234,11 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         configChangeHandler();
 
         System.out.println("配置文件解析完毕......");
+    }
+
+    private boolean isFileExists(String fileName) {
+        File file = new File(fileName);
+        return file.exists();
     }
 
     private void configChangeHandler() {
