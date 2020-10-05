@@ -265,6 +265,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             /* for(String key : patternMap.keySet()) {
                 System.out.println("[DEBUG] " + patternMap.get(key));
             } */
+
         }
         catch (ParserConfigurationException e) {
             e.printStackTrace();
@@ -272,6 +273,11 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             e.printStackTrace();
         } catch (IOException e) {
             System.out.println("[INFO] pattern文件不存在");
+            System.exit(1);
+        }
+
+        if (patternMap.isEmpty()) {
+            System.out.println("[INFO] pattern文件中没有pattern");
             System.exit(1);
         }
     }
@@ -334,6 +340,11 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             e.printStackTrace();
         } catch (IOException e) {
             System.out.println("[INFO] rule文件不存在");
+            System.exit(1);
+        }
+
+        if (checkerList.isEmpty()) {
+            System.out.println("[INFO] rule文件中没有rule");
             System.exit(1);
         }
     }

@@ -23,10 +23,6 @@ public abstract class ChangeHandler {
 
     protected ContextParser contextParser;
 
-    private String schedulerName;
-
-    private String checkerName;
-
     public long timeCount = 0L;
 
     public ChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
@@ -35,8 +31,7 @@ public abstract class ChangeHandler {
         this.scheduler = scheduler;
         this.checkerList = checkerList;
         this.contextParser = new ContextParser();
-        this.schedulerName = getClassString(scheduler.getClass().toString());
-        this.checkerName = getClassString(checkerList.get(0).getClass().toString());
+
     }
 
     private String getClassString(String str) {
@@ -87,8 +82,6 @@ public abstract class ChangeHandler {
         this.checkerMap = checkerMap;
         this.scheduler = scheduler;
         this.checkerList = checkerList;
-        this.checkerName = getClassString(checkerList.get(0).getClass().toString());
-        this.schedulerName = getClassString(scheduler.getClass().toString());
     }
 
 }
