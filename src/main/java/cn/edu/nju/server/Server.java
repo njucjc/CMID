@@ -40,6 +40,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long timeSum = 0;
         try {
             while (running) {
+                System.out.println("Sever启动完毕，等待Client连接......");
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 serverSocket.receive(packet);
 
@@ -93,14 +94,13 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }
 
         changeHandler.shutdown();
-
-
         int inc = 0;
         long time = 0L;
         for (Checker checker : checkerList) {
             inc += checker.getInc();
             time = time + checker.getTimeCount();
         }
+        System.out.println();
         LogFileHelper.getLogger().info("Total Inc: " + inc, true);
         LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms", true);
         shutdown();

@@ -58,7 +58,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     private int scheduleType;
 
 
-    private int taskNum;
+    private int taskNum = 8;
 
     private ExecutorService checkExecutorService;
 
@@ -79,6 +79,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
     private void parseConfigFile(String configFilePath) {
+        System.out.println("系统启动，开始解析配置文件......");
         //不要随意更换处理顺序
         Properties properties = new Properties();
         try {
@@ -91,35 +92,89 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
         //check type
         String technique = properties.getProperty("technique");
-        if("PCC".equals(technique)) {
+        if (technique == null) {
+            System.out.println("[INFO] 检测技术配置无配置：" + null);
+            System.exit(1);
+        }
+        else if("pcc".equals(technique.toLowerCase())) {
             this.checkType = PCC_TYPE;
-        } else if("ECC".equals(technique)){
+        } else if("ecc".equals(technique.toLowerCase())){
             this.checkType = ECC_TYPE;
-        } else if("Con-C".equals(technique)) {
+        } else if("con-c".equals(technique.toLowerCase())) {
             this.checkType = CON_TYPE;
-        } else if("GAIN".equals(technique)) {
+        } else if("gain".equals(technique.toLowerCase())) {
             this.checkType = GAIN_TYPE;
-        } else if ("CPCC".equals(technique)) {
+        } else if ("cpcc".equals(technique.toLowerCase())) {
             this.checkType = CONPCC_TYPE;
         }else {
-            assert false:"[DEBUG] Checking technique error: " + technique;
+            System.out.println("[INFO] 检测技术配置错误：" + technique);
+            System.exit(1);
         }
+
+        System.out.println("[INFO] 检测技术：" + technique);
+
+        //schedule
+        String schedule = properties.getProperty("schedule");
+        //change handler
+        this.changeHandlerType = properties.getProperty("changeHandlerType");
+        if (this.changeHandlerType == null) {
+            System.out.println("[INFO] changeHandlerType无配置: " + null);
+            System.exit(1);
+        }
+        if (schedule == null) {
+            System.out.println("[INFO] 调度策略无配置: " + null);
+            System.exit(1);
+        }
+        else if ("immed".equals(schedule.toLowerCase())) {
+            this.scheduler = new BatchScheduler(1);
+            this.scheduleType = 1;
+        }
+        else if(schedule.toLowerCase().matches("batch-[0-9]+")) {
+            this.scheduler = new BatchScheduler(Integer.parseInt(schedule.split("-")[1]));
+            this.scheduleType = Integer.parseInt(schedule.split("-")[1]);
+        }
+        else if ("geas-ori".equals(schedule.toLowerCase()) && this.changeHandlerType.contains("change-based")) {
+            this.scheduler = new GEAScheduler(this.checkerList);
+            this.scheduleType = 0;
+        }
+        else if ("geas-opt".equals(schedule.toLowerCase()) && this.changeHandlerType.contains("change-based")) {
+            this.scheduler = new GEASOptScheduler(this.checkerList);
+            this.scheduleType = -2;
+        }
+        else {
+            this.scheduleType = -1;
+            System.out.println("[INFO] 调度策略错误: " + schedule);
+            System.exit(1);
+        }
+
+        System.out.println("[INFO] 调度策略：" + schedule);
 
         //taskNum
         String taskNumStr = properties.getProperty("taskNum");
-        if(taskNumStr.matches("[0-9]+")) {
+        if (taskNumStr == null) {
+            System.out.println("[INFO] taskNum无配置：" + null);
+            System.exit(1);
+        }
+        else if(taskNumStr.matches("[0-9]+")) {
             this.taskNum = Integer.parseInt(taskNumStr);
             if (taskNum == 0) {
-                assert false:"[DEBUG] taskNum error: " + taskNumStr;
+                System.out.println("[INFO] taskNum配置错误: " + taskNumStr);
+                System.exit(1);
             }
-            System.out.println("[DEBUG] " + taskNum);
         } else {
-            assert false:"[DEBUG] taskNum error: " + taskNumStr;
+            if (!"-1".equals(taskNumStr)) {
+                System.out.println("[INFO] taskNum配置错误: " + taskNumStr);
+                System.exit(1);
+            }
         }
 
         this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
         //pattern
         String patternFilePath = properties.getProperty("patternFilePath");
+        if (patternFilePath == null) {
+            System.out.println("[INFO] pattern文件无配置：" + null);
+            System.exit(1);
+        }
         parsePatternFile(patternFilePath);
 
         String cudaSourceFilePath = "src/main/kernel/kernel.cu";
@@ -128,6 +183,11 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         //context file path
         this.dataFilePath = properties.getProperty("dataFilePath");
         this.changeFilePath = properties.getProperty("changeFilePath");
+
+        if (this.dataFilePath == null || this.changeFilePath == null) {
+            System.out.println("[INFO] 数据文件无配置：" + null);
+            System.exit(1);
+        }
 
         if(this.checkType == GAIN_TYPE) {
             //开启异常捕获
@@ -148,40 +208,25 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
         //rule
         String ruleFilePath = properties.getProperty("ruleFilePath");
+        if (ruleFilePath == null) {
+            System.out.println("[INFO] rule文件无配置：" + null);
+            System.exit(1);
+        }
         parseRuleFile(ruleFilePath);
-
 
         //log
         String logFilePath = properties.getProperty("logFilePath");
+        if (logFilePath == null) {
+            System.out.println("[INFO] 日志文件无配置：" + null);
+            System.exit(1);
+        }
         LogFileHelper.initLogger(logFilePath);
 
 
-        //schedule
-        String schedule = properties.getProperty("schedule");
-        //change handler
-        this.changeHandlerType = properties.getProperty("changeHandlerType");
-        if(schedule.matches("[0-9]+")) {
-            this.scheduler = new BatchScheduler(Integer.parseInt(schedule));
-            this.scheduleType = Integer.parseInt(schedule);
-            System.out.println("[DEBUG] " + schedule);
-        }
-        else if ("GEAS-ori".equals(schedule) && this.changeHandlerType.contains("change-based")) {
-            this.scheduler = new GEAScheduler(this.checkerList);
-            this.scheduleType = 0;
-            System.out.println("[DEBUG] " + schedule);
-        }
-        else if ("GEAS-opt".equals(schedule) && this.changeHandlerType.contains("change-based")) {
-            this.scheduler = new GEASOptScheduler(this.checkerList);
-            this.scheduleType = -2;
-            System.out.println("[DEBUG] " + schedule);
-        }
-        else {
-            this.scheduleType = -1;
-            assert false:"[DEBUG] Schedule error: " + schedule;
-        }
-
         //change handle
         configChangeHandler();
+
+        System.out.println("配置文件解析完毕......");
     }
 
     private void configChangeHandler() {
@@ -201,7 +246,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             Document document = db.parse(patternFilePath);
 
             NodeList patternList = document.getElementsByTagName("pattern");
-            // System.out.println("[DEBUG] There is " + patternList.getLength() + " patterns");
+            System.out.println("[INFO] pattern文件'" + patternFilePath + "'，总共" + patternList.getLength() + "个patterns");
             for (int i = 0; i < patternList.getLength(); i++) {
                 Node patNode = patternList.item(i);
                 NodeList childNodes = patNode.getChildNodes();
@@ -226,7 +271,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[INFO] pattern文件不存在");
+            System.exit(1);
         }
     }
 
@@ -240,7 +286,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             Document document = db.parse(ruleFilePath);
 
             NodeList ruleList = document.getElementsByTagName("rule");
-            System.out.println("[DEBUG] There is " + ruleList.getLength() + " rules here.");
+            System.out.println("[INFO] rule文件'" + ruleFilePath + "'，总共" + ruleList.getLength() + "条rules");
 
             for(int i = 0; i < ruleList.getLength(); i++){
                 STNode treeHead = new STNode();
@@ -253,7 +299,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 Map<String,STNode> stMap = new HashMap<>();
                 buildSyntaxTree(formulaNode.getChildNodes(), treeHead, stMap);
 
-                assert treeHead.hasChildNodes():"[DEBUG] Create syntax tree failed !";
+                assert treeHead.hasChildNodes():"[INFO] Create syntax tree failed !";
 
                 STNode root = (STNode)treeHead.getFirstChild();
                 root.setParentTreeNode(null);
@@ -287,7 +333,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[INFO] rule文件不存在");
+            System.exit(1);
         }
     }
 
