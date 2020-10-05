@@ -118,7 +118,8 @@ public class BFuncHelper {
                 value = BFuncHelper.szLocDistNeq(context1, context2);
                 break;
             default:
-                assert  false:"[DEBUG] Illegal bfunc: " + name;
+                System.out.println("[INFO] Illegal bfunc: " + name);
+                System.exit(1);
                 break;
         }
         return value;

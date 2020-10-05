@@ -264,7 +264,15 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 NodeList childNodes = patNode.getChildNodes();
 
                 String id = childNodes.item(1).getTextContent();
-                long freshness = Long.parseLong(childNodes.item(3).getTextContent());
+
+                long freshness = 0L;
+                try {
+                    freshness = Long.parseLong(childNodes.item(3).getTextContent());
+                } catch (NumberFormatException e) {
+                    System.out.println("[INFO] freshness格式错误");
+                    System.exit(1);
+                }
+
                 String category = childNodes.item(5).getTextContent();
                 String subject = childNodes.item(7).getTextContent();
                 String predicate = childNodes.item(9).getTextContent();
