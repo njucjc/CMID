@@ -385,7 +385,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                         stNode = new STNode(e.getAttribute("name"), STNode.BFUNC_NODE);
                         break;
                     default:
-                        assert false : "[DEBUG] Syntax tree node type error!";
+                        System.out.println("[INFO] Syntax tree node type error!");
+                        System.exit(1);
                         break;
                 }
 
