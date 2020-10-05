@@ -1,33 +1,38 @@
 package cn.edu.nju.util;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-import java.util.logging.*;
+import java.io.File;
+import java.util.Scanner;
 
 /**
  * Created by njucjc on 2017/10/13.
  */
 public class LogFileHelper {
     private LogFileHelper() {}
-    private static Logger LOGGER = Logger.getLogger(LogFileHelper.class.getName());
+    private static Logger LOGGER;
     public static void  initLogger(String logFilePath) {
-        try{
-            //Creating  and fileHandler
-            Handler fileHandler  = new FileHandler(logFilePath);
-
-            //Assigning handlers to LOGGER object
-            LOGGER.addHandler(fileHandler);
-
-            //Setting levels to handlers and LOGGER
-            fileHandler.setLevel(Level.ALL);
-            LOGGER.setLevel(Level.ALL);
-
-            fileHandler.setFormatter(new MyFormatter());
-
-        }catch(IOException exception){
-            LOGGER.log(Level.SEVERE, "Error occur in FileHandler.", exception);
+        File file = new File(logFilePath);
+        if (file.exists()) {
+            System.out.println("[INFO] 日志文件" + "'" + logFilePath + "'" + "已存在，是否覆盖（Y/N）：");
+            Scanner in = new Scanner(System.in);
+            String str;
+            while (true) {
+                str = in.nextLine();
+                if("y".equals(str.toLowerCase())) {
+                    break;
+                }
+                else if ("n".equals(str.toLowerCase())) {
+                    do {
+                        System.out.println("[INFO] 请输入新的日志文件路径：");
+                        logFilePath = in.nextLine();
+                    } while (logFilePath.equals(""));
+                    break;
+                }
+                else {
+                    System.out.println("[INFO] 是否覆盖，请输入（Y/N）：");
+                }
+            }
         }
+        LOGGER = new Logger(logFilePath);
     }
 
     public synchronized static Logger getLogger() {
@@ -35,16 +40,9 @@ public class LogFileHelper {
     }
 
     public static void main(String  args[]) {
-        getLogger().info("Hello World.");
-        LOGGER.info("123");
+        getLogger().info("Hello World.", false);
+        LOGGER.info("123", false);
     }
 
 }
 
-class MyFormatter extends Formatter {
-    @Override
-    public String format(LogRecord record) {
-        return /*"[" + record.getLevel() +  "] " + */
-                record.getMessage() + "\n";
-    }
-}
