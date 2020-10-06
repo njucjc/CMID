@@ -117,7 +117,21 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.exit(1);
         }
 
-        System.out.println("[INFO] 检测技术：" + technique);
+        //pattern
+        String patternFilePath = properties.getProperty("patternFilePath");
+        if (patternFilePath == null) {
+            System.out.println("[INFO] pattern文件无配置：" + null);
+            System.exit(1);
+        }
+        parsePatternFile(patternFilePath);
+
+        //rule
+        String ruleFilePath = properties.getProperty("ruleFilePath");
+        if (ruleFilePath == null) {
+            System.out.println("[INFO] rule文件无配置：" + null);
+            System.exit(1);
+        }
+        parseRuleFile(ruleFilePath);
 
         //schedule
         String schedule = properties.getProperty("schedule");
@@ -153,6 +167,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.exit(1);
         }
 
+        System.out.println("[INFO] 检测技术：" + technique);
         System.out.println("[INFO] 调度策略：" + schedule);
 
         //taskNum
@@ -175,13 +190,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
 
         this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
-        //pattern
-        String patternFilePath = properties.getProperty("patternFilePath");
-        if (patternFilePath == null) {
-            System.out.println("[INFO] pattern文件无配置：" + null);
-            System.exit(1);
-        }
-        parsePatternFile(patternFilePath);
 
         String cudaSourceFilePath = "src/main/kernel/kernel.cu";
         //如果是GAIN需要初始化GPU内存
@@ -222,14 +230,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             gpuResult = new GPUResult();
             compileKernelFunction(cudaSourceFilePath);
         }*/
-
-        //rule
-        String ruleFilePath = properties.getProperty("ruleFilePath");
-        if (ruleFilePath == null) {
-            System.out.println("[INFO] rule文件无配置：" + null);
-            System.exit(1);
-        }
-        parseRuleFile(ruleFilePath);
 
         //log
         this.logFilePath = properties.getProperty("logFilePath");
