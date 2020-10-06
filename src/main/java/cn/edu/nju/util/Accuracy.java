@@ -26,6 +26,11 @@ public class Accuracy {
             fault = (int)Math.floor((double) miss * 0.01);
             miss = miss + fault;
 
+            if (miss >= groundTruth.size()) {
+                miss = groundTruth.size() - right;
+                fault = 0;
+            }
+
             System.out.println("oracle验证结束，结果为：");
             if(fault == 0 && miss == 0) {
                 LogFileHelper.getLogger().info("oracle验证通过", true);
