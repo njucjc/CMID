@@ -9,7 +9,9 @@ import java.util.Scanner;
 public class LogFileHelper {
     private LogFileHelper() {}
     private static Logger LOGGER;
-    public static void  initLogger(String logFilePath) {
+    public static String logFilePath;
+    public static void  initLogger(String log) {
+        logFilePath = log;
         File file = new File(logFilePath);
         if (file.exists()) {
             System.out.println("[INFO] 日志文件" + "'" + logFilePath + "'" + "已存在，是否覆盖（Y/N）：");

@@ -105,7 +105,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("Total Inc: " + inc, true);
         LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms", true);
 
-        accuracy();
+        accuracy(LogFileHelper.logFilePath);
         shutdown();
     }
 
