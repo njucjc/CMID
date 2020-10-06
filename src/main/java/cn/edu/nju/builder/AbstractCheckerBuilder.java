@@ -277,7 +277,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             Document document = db.parse(patternFilePath);
 
             NodeList patternList = document.getElementsByTagName("pattern");
-            System.out.println("[INFO] pattern文件'" + patternFilePath + "'，总共" + patternList.getLength() + "个patterns");
+            System.out.println("[INFO] pattern文件：" + patternFilePath + "，总共" + patternList.getLength() + "个patterns");
             for (int i = 0; i < patternList.getLength(); i++) {
                 Node patNode = patternList.item(i);
                 NodeList childNodes = patNode.getChildNodes();
@@ -331,7 +331,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             Document document = db.parse(ruleFilePath);
 
             NodeList ruleList = document.getElementsByTagName("rule");
-            System.out.println("[INFO] rule文件'" + ruleFilePath + "'，总共" + ruleList.getLength() + "条rules");
+            System.out.println("[INFO] rule文件：" + ruleFilePath + "，总共" + ruleList.getLength() + "条rules");
 
             for(int i = 0; i < ruleList.getLength(); i++){
                 STNode treeHead = new STNode();
