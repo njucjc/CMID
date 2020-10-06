@@ -35,7 +35,7 @@ public class LogFileHelper {
                 }
             }
         }
-        System.out.println("[INFO] 日志文件为：" + logFilePath);
+        System.out.println("[INFO] 日志文件：" + logFilePath);
         LOGGER = new Logger(logFilePath);
     }
 
