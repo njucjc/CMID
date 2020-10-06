@@ -77,6 +77,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     private List<String> contexts;
 
     public AbstractCheckerBuilder(String configFilePath) {
+        if (!isFileExists(configFilePath)) {
+            System.out.println("[INFO] 配置文件不存在: " + configFilePath);
+            System.exit(1);
+        }
         parseConfigFile(configFilePath);
     }
 
