@@ -10,6 +10,7 @@ import cn.edu.nju.scheduler.BatchScheduler;
 import cn.edu.nju.scheduler.GEASOptScheduler;
 import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
+import cn.edu.nju.util.Accuracy;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.PTXFileHelper;
 import jcuda.driver.CUcontext;
@@ -64,6 +65,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     protected String changeHandlerType;
 
     private String kernelFilePath;
+
+    private String logFilePath;
+
+    private String oracleFilePath;
 
     private CUcontext cuContext;
 
@@ -226,13 +231,25 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
 
         //log
-        String logFilePath = properties.getProperty("logFilePath");
-        if (logFilePath == null) {
+        this.logFilePath = properties.getProperty("logFilePath");
+        if (this.logFilePath == null) {
             System.out.println("[INFO] 日志文件无配置：" + null);
             System.exit(1);
         }
-        LogFileHelper.initLogger(logFilePath);
+        LogFileHelper.initLogger(this.logFilePath);
 
+        //oracle
+        this.oracleFilePath = properties.getProperty("oracleFilePath");
+        if (this.oracleFilePath == null) {
+            System.out.println("[INFO] oracle文件无配置：" + null);
+            System.exit(1);
+        }
+        else {
+            if(!isFileExists(this.oracleFilePath)) {
+                System.out.println("[INFO] 文件不存在：" + this.oracleFilePath);
+                System.exit(1);
+            }
+        }
 
         //change handle
         configChangeHandler();
@@ -508,6 +525,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         if(isUpdate) {
             this.changeHandler.update(this.checkerMap,this.scheduler, this.checkerList);
         }
+    }
+
+    protected void accuracy() {
+        Accuracy.main(new String []{this.logFilePath, this.oracleFilePath});
     }
 
 

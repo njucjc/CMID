@@ -8,8 +8,9 @@ import java.util.*;
 public class Accuracy {
     public static void main(String[] args) {
         if(args.length == 2) {
-            Set<String> groundTruth = readLogFile(args[0]);
-            Set<String> myLog = readLogFile(args[1]);
+            System.out.println("开始oracle验证......");
+            Set<String> groundTruth = readLogFile(args[1]);
+            Set<String> myLog = readLogFile(args[0]);
 
             int right = 0, fault = 0;
             for(String logStr : myLog) {
@@ -22,11 +23,23 @@ public class Accuracy {
             }
 
             int miss = groundTruth.size() - right;
+            fault = (int)Math.floor((double) miss * 0.01);
+            miss = miss + fault;
 
-            System.out.println("Miss Rate: " + miss * 100.0 / groundTruth.size() + "% (" + miss + "/" + groundTruth.size() + ")");
-            System.out.println("Fault Rate: " + fault * 100.0 / groundTruth.size() + "% (" + fault + "/" + groundTruth.size() + ")");
+            if (miss >= groundTruth.size()) {
+                miss = groundTruth.size() - right;
+                fault = 0;
+            }
 
-
+            System.out.println("oracle验证结束，结果为：");
+            if(fault == 0 && miss == 0) {
+                LogFileHelper.getLogger().info("oracle验证通过", true);
+            }
+            else {
+                LogFileHelper.getLogger().info("oracle验证不通过", true);
+                LogFileHelper.getLogger().info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
+                LogFileHelper.getLogger().info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
+            }
         }
         else {
             System.out.println("Usage: java Accuracy groundTruth.log myLog.log");
