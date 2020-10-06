@@ -31,6 +31,7 @@ public class Accuracy {
                 LogFileHelper.getLogger().info("oracle验证通过", true);
             }
             else {
+                LogFileHelper.getLogger().info("oracle验证不通过", true);
                 LogFileHelper.getLogger().info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
                 LogFileHelper.getLogger().info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
             }
