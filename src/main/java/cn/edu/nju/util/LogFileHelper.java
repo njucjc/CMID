@@ -18,13 +18,14 @@ public class LogFileHelper {
             while (true) {
                 str = in.nextLine();
                 if("y".equals(str.toLowerCase())) {
+                    file.delete();
                     break;
                 }
                 else if ("n".equals(str.toLowerCase())) {
                     do {
                         System.out.println("[INFO] 请输入新的日志文件路径：");
                         logFilePath = in.nextLine();
-                    } while (logFilePath.equals(""));
+                    } while (logFilePath.equals("") || new File(logFilePath).exists());
                     break;
                 }
                 else {

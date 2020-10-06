@@ -24,8 +24,15 @@ public class Logger {
 
         try {
             out.write(msg + "\n");
-        }catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
     }
 }
