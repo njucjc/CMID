@@ -45,7 +45,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         System.out.println("一致性检测完毕......");
         LogFileHelper.getLogger().info("Total INC: " + incCount, true);
         LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms", true);
-        accuracy();
+        accuracy(LogFileHelper.logFilePath);
         shutdown();
     }
 

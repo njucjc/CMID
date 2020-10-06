@@ -66,8 +66,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     private String kernelFilePath;
 
-    private String logFilePath;
-
     private String oracleFilePath;
 
     private CUcontext cuContext;
@@ -231,12 +229,12 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
 
         //log
-        this.logFilePath = properties.getProperty("logFilePath");
-        if (this.logFilePath == null) {
+        String logFilePath = properties.getProperty("logFilePath");
+        if (logFilePath == null) {
             System.out.println("[INFO] 日志文件无配置：" + null);
             System.exit(1);
         }
-        LogFileHelper.initLogger(this.logFilePath);
+        LogFileHelper.initLogger(logFilePath);
 
         //oracle
         this.oracleFilePath = properties.getProperty("oracleFilePath");
@@ -527,8 +525,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
     }
 
-    protected void accuracy() {
-        Accuracy.main(new String []{this.logFilePath, this.oracleFilePath});
+    protected void accuracy(String logFilePath) {
+        Accuracy.main(new String []{logFilePath, this.oracleFilePath});
     }
 
 
