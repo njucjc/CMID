@@ -8,6 +8,7 @@ import java.util.*;
 public class Accuracy {
     public static void main(String[] args) {
         if(args.length == 2) {
+            System.out.println("开始oracle验证......");
             Set<String> groundTruth = readLogFile(args[1]);
             Set<String> myLog = readLogFile(args[0]);
 
@@ -25,12 +26,14 @@ public class Accuracy {
             fault = (int)Math.floor((double) miss * 0.01);
             miss = miss + fault;
 
+            System.out.println("oracle验证结束，结果为：");
             if(fault == 0 && miss == 0) {
-                LogFileHelper.getLogger().info("oracle验证通过");
+                LogFileHelper.getLogger().info("oracle验证通过", true);
             }
             else {
-                LogFileHelper.getLogger().info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")");
-                LogFileHelper.getLogger().info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")");
+                LogFileHelper.getLogger().info("oracle验证不通过", true);
+                LogFileHelper.getLogger().info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
+                LogFileHelper.getLogger().info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
             }
         }
         else {

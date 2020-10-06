@@ -6,24 +6,54 @@ package cn.edu.nju.context;
 public class ContextParser {
     public Context parseContext(int id, String pattern) {
         String [] fields = pattern.split(",");
-        String timestamp = fields[0];
-        String plateNumber = fields[1];
-        double longitude = Double.parseDouble(fields[2]);
-        double latitude = Double.parseDouble(fields[3]);
-        double speed = Double.parseDouble(fields[4]);
-        int status = Integer.parseInt(fields[6]);
+        if (fields.length != 7) {
+            System.out.println("[INFO] 数据文件格式错误");
+            System.exit(1);
+        }
+
+        String timestamp = null;
+        String plateNumber = null;
+        double longitude = 0.0;
+        double latitude = 0.0;
+        double speed = 0.0;
+        int status = 0;
+
+        try {
+            timestamp = fields[0];
+            plateNumber = fields[1];
+            longitude = Double.parseDouble(fields[2]);
+            latitude = Double.parseDouble(fields[3]);
+            speed = Double.parseDouble(fields[4]);
+            status = Integer.parseInt(fields[6]);
+
+        } catch (NumberFormatException e) {
+            System.out.println("[INFO] 数据文件格式错误");
+            System.exit(1);
+        }
 
         return new Context(id, timestamp, plateNumber, longitude, latitude, speed, status);
     }
 
     public Context parseChangeContext(String [] elements) {
 
-        return new Context(Integer.parseInt(elements[2]),
-                elements[3],
-                elements[4],
-                Double.parseDouble(elements[5]),
-                Double.parseDouble(elements[6]),
-                Double.parseDouble(elements[7]),
-                Integer.parseInt(elements[8]));
+        if (elements.length != 9) {
+            System.out.println("[INFO] 数据文件格式错误");
+            System.exit(1);
+        }
+
+        Context context = null;
+        try {
+            context = new Context(Integer.parseInt(elements[2]),
+                    elements[3],
+                    elements[4],
+                    Double.parseDouble(elements[5]),
+                    Double.parseDouble(elements[6]),
+                    Double.parseDouble(elements[7]),
+                    Integer.parseInt(elements[8]));
+        } catch (NumberFormatException e) {
+            System.out.println("[INFO] 数据文件格式错误");
+            System.exit(1);
+        }
+        return context;
     }
 }

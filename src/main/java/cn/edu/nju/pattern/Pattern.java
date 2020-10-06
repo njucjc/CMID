@@ -149,7 +149,6 @@ public class Pattern {
         if(!isBelong(context)) {
             return false;
         }
-        System.out.println("[DEBUG] '+' " + id + " " + context);
         contextList.add(context);
         return true;
     }
@@ -163,7 +162,6 @@ public class Pattern {
         for (Context context : contextList) {
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) >= freshness) {
                 isDel = true;
-                System.out.println("[DEBUG] '-' " + id + " "+ context.toString());
                 contextList.remove(context);
             }
             else {
