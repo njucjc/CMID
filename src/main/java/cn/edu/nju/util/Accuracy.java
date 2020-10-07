@@ -57,10 +57,10 @@ public class Accuracy {
 
             String line;
             while ((line = bufferedReader.readLine()) != null) {
-                String [] strs = line.split(" ");
+                String [] strs = line.trim().split(" ");
                 if(strs.length >= 2) {
                     if(strs[1].split("_")[0].equals("ctx")) {
-                        strLines.add(line);
+                        strLines.add(line.trim());
                     }
                 }
 

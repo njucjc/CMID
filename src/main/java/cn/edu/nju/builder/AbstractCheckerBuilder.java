@@ -115,6 +115,66 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.exit(1);
         }
 
+        //taskNum
+        String taskNumStr = properties.getProperty("taskNum");
+        if (taskNumStr == null) {
+            System.out.println("[INFO] taskNum无配置：" + null);
+            System.exit(1);
+        }
+        else if(taskNumStr.matches("[0-9]+")) {
+            this.taskNum = Integer.parseInt(taskNumStr);
+            if (taskNum == 0) {
+                System.out.println("[INFO] taskNum配置错误: " + taskNumStr);
+                System.exit(1);
+            }
+        } else {
+            if (!"-1".equals(taskNumStr)) {
+                System.out.println("[INFO] taskNum配置错误: " + taskNumStr);
+                System.exit(1);
+            }
+        }
+
+        this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
+
+
+        //context file path
+        this.dataFilePath = properties.getProperty("dataFilePath");
+        this.changeFilePath = properties.getProperty("changeFilePath");
+
+        if (this.dataFilePath == null || this.changeFilePath == null) {
+            System.out.println("[INFO] 数据文件无配置：" + null);
+            System.exit(1);
+        }
+        else {
+            if(!isFileExists(this.dataFilePath)) {
+                System.out.println("[INFO] 文件不存在：" + this.dataFilePath);
+                System.exit(1);
+            }
+            else if (!isFileExists(this.changeFilePath)) {
+                System.out.println("[INFO] 文件不存在：" + this.changeFilePath);
+                System.exit(1);
+            }
+        }
+        
+        String cudaSourceFilePath = "src/main/kernel/kernel.cu";
+        //如果是GAIN需要初始化GPU内存
+        if(this.checkType == GAIN_TYPE) {
+            //开启异常捕获
+            JCudaDriver.setExceptionsEnabled(true);
+
+            //初始化设备
+            cuInit(0);
+            CUdevice device = new CUdevice();
+            cuDeviceGet(device, 0);
+            cuContext = new CUcontext();
+            cuCtxCreate(cuContext, 0, device);
+
+            // initGPUMemory();
+            contexts = fileReader(this.dataFilePath);
+            gpuResult = new GPUResult();
+            compileKernelFunction(cudaSourceFilePath);
+        }
+
         //pattern
         String patternFilePath = properties.getProperty("patternFilePath");
         if (patternFilePath == null) {
@@ -168,66 +228,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         System.out.println("[INFO] 检测技术：" + technique);
         System.out.println("[INFO] 调度策略：" + schedule);
 
-        //taskNum
-        String taskNumStr = properties.getProperty("taskNum");
-        if (taskNumStr == null) {
-            System.out.println("[INFO] taskNum无配置：" + null);
-            System.exit(1);
-        }
-        else if(taskNumStr.matches("[0-9]+")) {
-            this.taskNum = Integer.parseInt(taskNumStr);
-            if (taskNum == 0) {
-                System.out.println("[INFO] taskNum配置错误: " + taskNumStr);
-                System.exit(1);
-            }
-        } else {
-            if (!"-1".equals(taskNumStr)) {
-                System.out.println("[INFO] taskNum配置错误: " + taskNumStr);
-                System.exit(1);
-            }
-        }
-
-        this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
-
-        String cudaSourceFilePath = "src/main/kernel/kernel.cu";
-        //如果是GAIN需要初始化GPU内存
-
-        //context file path
-        this.dataFilePath = properties.getProperty("dataFilePath");
-        this.changeFilePath = properties.getProperty("changeFilePath");
-
-        if (this.dataFilePath == null || this.changeFilePath == null) {
-            System.out.println("[INFO] 数据文件无配置：" + null);
-            System.exit(1);
-        }
-        else {
-            if(!isFileExists(this.dataFilePath)) {
-                System.out.println("[INFO] 文件不存在：" + this.dataFilePath);
-                System.exit(1);
-            }
-            else if (!isFileExists(this.changeFilePath)) {
-                System.out.println("[INFO] 文件不存在：" + this.changeFilePath);
-                System.exit(1);
-            }
-        }
-
-        /*if(this.checkType == GAIN_TYPE) {
-
-            //开启异常捕获
-            JCudaDriver.setExceptionsEnabled(true);
-
-            //初始化设备
-            cuInit(0);
-            CUdevice device = new CUdevice();
-            cuDeviceGet(device, 0);
-            cuContext = new CUcontext();
-            cuCtxCreate(cuContext, 0, device);
-
-           // initGPUMemory();
-            contexts = fileReader(this.dataFilePath);
-            gpuResult = new GPUResult();
-            compileKernelFunction(cudaSourceFilePath);
-        }*/
 
         //log
         String logFilePath = properties.getProperty("logFilePath");
@@ -459,12 +459,12 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     public void shutdown() {
         checkExecutorService.shutdown();
-        /*if(checkType == GAIN_TYPE) {
-            GPUContextMemory.getInstance(contexts).free();
+        if(checkType == GAIN_TYPE) {
+            /*GPUContextMemory.getInstance(contexts).free();
             for (Checker checker : checkerList) {
                 checker.reset();
-            }
-        }*/
+            }*/
+        }
     }
 
     protected void update(int checkType, int scheduleType) {
