@@ -137,6 +137,25 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
 
 
+        //context file path
+        this.dataFilePath = properties.getProperty("dataFilePath");
+        this.changeFilePath = properties.getProperty("changeFilePath");
+
+        if (this.dataFilePath == null || this.changeFilePath == null) {
+            System.out.println("[INFO] 数据文件无配置：" + null);
+            System.exit(1);
+        }
+        else {
+            if(!isFileExists(this.dataFilePath)) {
+                System.out.println("[INFO] 文件不存在：" + this.dataFilePath);
+                System.exit(1);
+            }
+            else if (!isFileExists(this.changeFilePath)) {
+                System.out.println("[INFO] 文件不存在：" + this.changeFilePath);
+                System.exit(1);
+            }
+        }
+        
         String cudaSourceFilePath = "src/main/kernel/kernel.cu";
         //如果是GAIN需要初始化GPU内存
         if(this.checkType == GAIN_TYPE) {
@@ -209,25 +228,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         System.out.println("[INFO] 检测技术：" + technique);
         System.out.println("[INFO] 调度策略：" + schedule);
 
-
-        //context file path
-        this.dataFilePath = properties.getProperty("dataFilePath");
-        this.changeFilePath = properties.getProperty("changeFilePath");
-
-        if (this.dataFilePath == null || this.changeFilePath == null) {
-            System.out.println("[INFO] 数据文件无配置：" + null);
-            System.exit(1);
-        }
-        else {
-            if(!isFileExists(this.dataFilePath)) {
-                System.out.println("[INFO] 文件不存在：" + this.dataFilePath);
-                System.exit(1);
-            }
-            else if (!isFileExists(this.changeFilePath)) {
-                System.out.println("[INFO] 文件不存在：" + this.changeFilePath);
-                System.exit(1);
-            }
-        }
 
         //log
         String logFilePath = properties.getProperty("logFilePath");
