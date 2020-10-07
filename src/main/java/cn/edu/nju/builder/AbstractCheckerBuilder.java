@@ -460,10 +460,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     public void shutdown() {
         checkExecutorService.shutdown();
         if(checkType == GAIN_TYPE) {
-            GPUContextMemory.getInstance(contexts).free();
+            /*GPUContextMemory.getInstance(contexts).free();
             for (Checker checker : checkerList) {
                 checker.reset();
-            }
+            }*/
         }
     }
 
