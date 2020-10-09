@@ -47,6 +47,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
                 String msg = new String(packet.getData(),0, packet.getLength());
                 if ("exit".equals(msg)) {
+                    System.out.println();
                     System.out.println("[INFO] 一致性检测结束，Server关闭......");
                     running = false;
                     break;
@@ -101,7 +102,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
             inc += checker.getInc();
             time = time + checker.getTimeCount();
         }
-        System.out.println();
         LogFileHelper.getLogger().info("Total Inc: " + inc, true);
         LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms", true);
         accuracy(LogFileHelper.logFilePath);
