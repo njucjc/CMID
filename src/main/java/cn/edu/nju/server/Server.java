@@ -40,13 +40,13 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long timeSum = 0;
         try {
             while (running) {
-                System.out.println("Sever启动完毕，等待Client连接......");
+                System.out.println("[INFO] Sever启动完毕，等待Client连接并启动一致性检测......");
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 serverSocket.receive(packet);
 
                 String msg = new String(packet.getData(),0, packet.getLength());
                 if ("exit".equals(msg)) {
-                    System.out.println("Good bye! Server closed at " + new Date());
+                    System.out.println("[INFO] 一致性检测结束，Server关闭......");
                     running = false;
                     break;
                 }
@@ -80,7 +80,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                     inc += checker.getInc();
                 }
 
-                System.out.print( "Send/Receive: " + (num + 1) + "/" + count +
+                System.out.print( "[INFO] Send/Receive: " + (num + 1) + "/" + count +
                         "\tTotal inc: "+ inc +
                         "\tTotal Checking time: " + (timeSum/1000000)  +" ms\r");
 

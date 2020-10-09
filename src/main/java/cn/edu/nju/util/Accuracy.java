@@ -8,7 +8,7 @@ import java.util.*;
 public class Accuracy {
     public static void main(String[] args) {
         if(args.length == 2) {
-            System.out.println("开始oracle验证......");
+            System.out.println("[INFO] 开始oracle验证......");
             Set<String> groundTruth = readLogFile(args[1]);
             Set<String> myLog = readLogFile(args[0]);
 
@@ -31,7 +31,7 @@ public class Accuracy {
                 fault = 0;
             }
 
-            System.out.println("oracle验证结束，结果为：");
+            System.out.println("[INFO] oracle验证结束，结果为：");
             if(fault == 0 && miss == 0) {
                 LogFileHelper.getLogger().info("oracle验证通过", true);
             }
