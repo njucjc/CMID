@@ -38,9 +38,10 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long count = 0;
 
         long timeSum = 0;
+
+        System.out.println("[INFO] Sever启动完毕，等待Client连接并启动一致性检测......");
         try {
             while (running) {
-                System.out.println("[INFO] Sever启动完毕，等待Client连接并启动一致性检测......");
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 serverSocket.receive(packet);
 
@@ -64,7 +65,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 //                    switchTimeCount += endUpdate - startUpdate;
 //                }
 
-                msg = msg.substring(msg.indexOf(",") + 1);
+                msg = msg.substring(msg.indexOf(",") + 1, msg.lastIndexOf(","));
 
                 long start = System.nanoTime();
 
