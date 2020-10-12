@@ -310,7 +310,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 String site = null;
                 member.put("site", false);
 
-                for(int j = 1; j < childNodes.getLength(); j += 2) {
+                for(int j = 0; j < childNodes.getLength(); j++) {
                     if (childNodes.item(j).getNodeName().startsWith("#")) {
                         continue;
                     }
