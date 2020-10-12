@@ -1,5 +1,6 @@
 package cn.edu.nju.change;
 
+import cn.edu.nju.builder.AbstractCheckerBuilder;
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.Scheduler;
@@ -32,7 +33,7 @@ public class ChangebasedChangeHandler extends ChangeHandler {
             deleteChange(parseContext(num, change).getTimestamp(), patternId);
         }
         else {
-            System.out.println("[INFO] change数据中的操作类型错误：" + op);
+            System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件中存在不可识别操作类型：" + op);
             System.exit(1);
         }
 

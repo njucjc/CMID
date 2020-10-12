@@ -42,9 +42,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     /*调度checker的策略*/
     protected Scheduler scheduler;
 
-    protected String dataFilePath; //context data
+    public static String dataFilePath; //context data
 
-    protected String changeFilePath; //context change
+    public static String changeFilePath; //context change
 
     /*所有pattern*/
     protected Map<String, Pattern> patternMap;
@@ -287,21 +287,81 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 Node patNode = patternList.item(i);
                 NodeList childNodes = patNode.getChildNodes();
 
-                String id = childNodes.item(1).getTextContent();
+                Map<String, Boolean> member = new HashMap<>();
+
+                String id = null;
+                member.put("id", false);
 
                 long freshness = 0L;
-                try {
-                    freshness = Long.parseLong(childNodes.item(3).getTextContent());
-                } catch (NumberFormatException e) {
-                    System.out.println("[INFO] freshness格式错误");
-                    System.exit(1);
+                member.put("freshness", false);
+
+                String category = null;
+                member.put("category", false);
+
+                String subject = null;
+                member.put("subject", false);
+
+                String predicate = null;
+                member.put("predicate", false);
+
+                String object = null;
+                member.put("object", false);
+
+                String site = null;
+                member.put("site", false);
+
+                for(int j = 1; j < childNodes.getLength(); j += 2) {
+                    if (childNodes.item(j).getNodeName().startsWith("#")) {
+                        continue;
+                    }
+                    switch (childNodes.item(j).getNodeName()) {
+                        case "id":
+                            member.put("id", true);
+                            id = childNodes.item(j).getTextContent();
+                            break;
+                        case "freshness":
+                            try {
+                                member.put("freshness", true);
+                                freshness = Long.parseLong(childNodes.item(j).getTextContent());
+                            } catch (NumberFormatException e) {
+                                System.out.println("[INFO] pattern的freshness配置错误");
+                                System.exit(1);
+                            }
+                            break;
+                        case "category":
+                            member.put("category", true);
+                            category = childNodes.item(j).getTextContent();
+                            break;
+                        case "subject":
+                            member.put("subject", true);
+                            subject = childNodes.item(j).getTextContent();
+                            break;
+                        case "predicate":
+                            member.put("predicate", true);
+                            predicate = childNodes.item(j).getTextContent();
+                            break;
+                        case "object":
+                            member.put("object", true);
+                            object = childNodes.item(j).getTextContent();
+                            break;
+                        case "site":
+                            member.put("site", true);
+                            site = childNodes.item(j).getTextContent();
+                            break;
+                        default:
+                            System.out.println("[INFO] '" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName());
+                            System.exit(1);
+                    }
                 }
 
-                String category = childNodes.item(5).getTextContent();
-                String subject = childNodes.item(7).getTextContent();
-                String predicate = childNodes.item(9).getTextContent();
-                String object = childNodes.item(11).getTextContent();
-                String site = childNodes.item(13).getTextContent();
+                for(String key : member.keySet()) {
+                    if (!member.get(key)) {
+                        System.out.println("[INFO] '" + patternFilePath + "'文件中缺少pattern标识符：" + key);
+                        System.exit(1);
+                    }
+                }
+
+
 
                 patternMap.put(id, new Pattern(id, freshness, category, subject, predicate, object, site));
             }
@@ -347,7 +407,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 Node formulaNode = ruleNode.getChildNodes().item(3);
 
                 Map<String,STNode> stMap = new HashMap<>();
-                buildSyntaxTree(formulaNode.getChildNodes(), treeHead, stMap);
+                buildSyntaxTree(formulaNode.getChildNodes(), treeHead, stMap, ruleFilePath);
 
                 assert treeHead.hasChildNodes():"[INFO] Create syntax tree failed !";
 
@@ -411,7 +471,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         return list;
     }
 
-    private void buildSyntaxTree(NodeList list, STNode root, Map<String,STNode> stMap) {
+    private void buildSyntaxTree(NodeList list, STNode root, Map<String,STNode> stMap, String ruleFilePath) {
         for(int i = 0; i < list.getLength(); i++) {
             if (list.item(i).getNodeType() == Node.ELEMENT_NODE && !list.item(i).getNodeName().equals("param")) {
                 Element e = (Element)list.item(i);
@@ -440,12 +500,12 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                         stNode = new STNode(e.getAttribute("name"), STNode.BFUNC_NODE);
                         break;
                     default:
-                        System.out.println("[INFO] 非法的一致性规则标识符：" + nodeName);
+                        System.out.println("[INFO] '" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName);
                         System.exit(1);
                         break;
                 }
 
-                buildSyntaxTree(e.getChildNodes(), stNode, stMap);
+                buildSyntaxTree(e.getChildNodes(), stNode, stMap, ruleFilePath);
                 root.addChildeNode(stNode);
             }
         }
