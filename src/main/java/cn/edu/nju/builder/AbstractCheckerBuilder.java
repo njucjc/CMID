@@ -407,7 +407,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 Node formulaNode = ruleNode.getChildNodes().item(3);
 
                 Map<String,STNode> stMap = new HashMap<>();
-                buildSyntaxTree(formulaNode.getChildNodes(), treeHead, stMap);
+                buildSyntaxTree(formulaNode.getChildNodes(), treeHead, stMap, ruleFilePath);
 
                 assert treeHead.hasChildNodes():"[INFO] Create syntax tree failed !";
 
@@ -471,7 +471,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         return list;
     }
 
-    private void buildSyntaxTree(NodeList list, STNode root, Map<String,STNode> stMap) {
+    private void buildSyntaxTree(NodeList list, STNode root, Map<String,STNode> stMap, String ruleFilePath) {
         for(int i = 0; i < list.getLength(); i++) {
             if (list.item(i).getNodeType() == Node.ELEMENT_NODE && !list.item(i).getNodeName().equals("param")) {
                 Element e = (Element)list.item(i);
@@ -500,12 +500,12 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                         stNode = new STNode(e.getAttribute("name"), STNode.BFUNC_NODE);
                         break;
                     default:
-                        System.out.println("[INFO] 非法的一致性规则标识符：" + nodeName);
+                        System.out.println("[INFO] '" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName);
                         System.exit(1);
                         break;
                 }
 
-                buildSyntaxTree(e.getChildNodes(), stNode, stMap);
+                buildSyntaxTree(e.getChildNodes(), stNode, stMap, ruleFilePath);
                 root.addChildeNode(stNode);
             }
         }
