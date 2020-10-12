@@ -287,21 +287,45 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 Node patNode = patternList.item(i);
                 NodeList childNodes = patNode.getChildNodes();
 
-                String id = childNodes.item(1).getTextContent();
-
+                String id = null;
                 long freshness = 0L;
-                try {
-                    freshness = Long.parseLong(childNodes.item(3).getTextContent());
-                } catch (NumberFormatException e) {
-                    System.out.println("[INFO] freshness格式错误");
-                    System.exit(1);
+                String category = null;
+                String subject = null;
+                String predicate = null;
+                String object = null;
+                String site = null;
+                for(int j = 1; j < childNodes.getLength(); j += 2) {
+                    switch (childNodes.item(j).getNodeName()) {
+                        case "id":
+                            id = childNodes.item(j).getTextContent();
+                            break;
+                        case "freshness":
+                            try {
+                                freshness = Long.parseLong(childNodes.item(j).getTextContent());
+                            } catch (NumberFormatException e) {
+                                System.out.println("[INFO] pattern的freshness配置错误");
+                                System.exit(1);
+                            }
+                            break;
+                        case "category":
+                            category = childNodes.item(j).getTextContent();
+                            break;
+                        case "subject":
+                            subject = childNodes.item(j).getTextContent();
+                            break;
+                        case "predicate":
+                            predicate = childNodes.item(j).getTextContent();
+                            break;
+                        case "object":
+                            object = childNodes.item(j).getTextContent();
+                            break;
+                        case "site":
+                            site = childNodes.item(j).getTextContent();
+                        default:
+                            System.out.println("[INFO] '" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName());
+                            System.exit(1);
+                    }
                 }
-
-                String category = childNodes.item(5).getTextContent();
-                String subject = childNodes.item(7).getTextContent();
-                String predicate = childNodes.item(9).getTextContent();
-                String object = childNodes.item(11).getTextContent();
-                String site = childNodes.item(13).getTextContent();
 
                 patternMap.put(id, new Pattern(id, freshness, category, subject, predicate, object, site));
             }
