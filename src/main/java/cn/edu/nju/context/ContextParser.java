@@ -1,5 +1,7 @@
 package cn.edu.nju.context;
 
+import cn.edu.nju.builder.AbstractCheckerBuilder;
+
 /**
  * Created by njucjc on 2017/10/23.
  */
@@ -7,7 +9,7 @@ public class ContextParser {
     public Context parseContext(int id, String pattern) {
         String [] fields = pattern.split(",");
         if (fields.length != 7) {
-            System.out.println("[INFO] 原始数据文件格式错误");
+            System.out.println("[INFO] '"+ AbstractCheckerBuilder.dataFilePath + "'文件格式错误");
             System.exit(1);
         }
 
@@ -27,7 +29,7 @@ public class ContextParser {
             status = Integer.parseInt(fields[6]);
 
         } catch (NumberFormatException e) {
-            System.out.println("[INFO] 原始数据文件格式错误");
+            System.out.println("[INFO] '"+ AbstractCheckerBuilder.dataFilePath + "'文件格式错误");
             System.exit(1);
         }
 
@@ -37,7 +39,7 @@ public class ContextParser {
     public Context parseChangeContext(String [] elements) {
 
         if (elements.length != 9) {
-            System.out.println("[INFO] change数据文件格式错误");
+            System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件格式错误");
             System.exit(1);
         }
 
@@ -51,7 +53,7 @@ public class ContextParser {
                     Double.parseDouble(elements[7]),
                     Integer.parseInt(elements[8]));
         } catch (NumberFormatException e) {
-            System.out.println("[INFO] change数据文件格式错误");
+            System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件格式错误");
             System.exit(1);
         }
         return context;
