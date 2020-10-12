@@ -287,20 +287,41 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 Node patNode = patternList.item(i);
                 NodeList childNodes = patNode.getChildNodes();
 
+                Map<String, Boolean> member = new HashMap<>();
+
                 String id = null;
+                member.put("id", false);
+
                 long freshness = 0L;
+                member.put("freshness", false);
+
                 String category = null;
+                member.put("category", false);
+
                 String subject = null;
+                member.put("subject", false);
+
                 String predicate = null;
+                member.put("predicate", false);
+
                 String object = null;
+                member.put("object", false);
+
                 String site = null;
+                member.put("site", false);
+
                 for(int j = 1; j < childNodes.getLength(); j += 2) {
+                    if (childNodes.item(j).getNodeName().startsWith("#")) {
+                        continue;
+                    }
                     switch (childNodes.item(j).getNodeName()) {
                         case "id":
+                            member.put("id", true);
                             id = childNodes.item(j).getTextContent();
                             break;
                         case "freshness":
                             try {
+                                member.put("freshness", true);
                                 freshness = Long.parseLong(childNodes.item(j).getTextContent());
                             } catch (NumberFormatException e) {
                                 System.out.println("[INFO] pattern的freshness配置错误");
@@ -308,24 +329,39 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                             }
                             break;
                         case "category":
+                            member.put("category", true);
                             category = childNodes.item(j).getTextContent();
                             break;
                         case "subject":
+                            member.put("subject", true);
                             subject = childNodes.item(j).getTextContent();
                             break;
                         case "predicate":
+                            member.put("predicate", true);
                             predicate = childNodes.item(j).getTextContent();
                             break;
                         case "object":
+                            member.put("object", true);
                             object = childNodes.item(j).getTextContent();
                             break;
                         case "site":
+                            member.put("site", true);
                             site = childNodes.item(j).getTextContent();
+                            break;
                         default:
                             System.out.println("[INFO] '" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName());
                             System.exit(1);
                     }
                 }
+
+                for(String key : member.keySet()) {
+                    if (!member.get(key)) {
+                        System.out.println("[INFO] '" + patternFilePath + "'文件中缺少pattern标识符：" + key);
+                        System.exit(1);
+                    }
+                }
+
+
 
                 patternMap.put(id, new Pattern(id, freshness, category, subject, predicate, object, site));
             }
