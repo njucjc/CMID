@@ -1,5 +1,6 @@
 package cn.edu.nju.change;
 
+import cn.edu.nju.builder.AbstractCheckerBuilder;
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.context.Context;
 import cn.edu.nju.context.ContextParser;
@@ -23,10 +24,6 @@ public abstract class ChangeHandler {
 
     protected ContextParser contextParser;
 
-    private String schedulerName;
-
-    private String checkerName;
-
     public long timeCount = 0L;
 
     public ChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
@@ -35,8 +32,6 @@ public abstract class ChangeHandler {
         this.scheduler = scheduler;
         this.checkerList = checkerList;
         this.contextParser = new ContextParser();
-        this.schedulerName = getClassString(scheduler.getClass().toString());
-        this.checkerName = getClassString(checkerList.get(0).getClass().toString());
     }
 
     private String getClassString(String str) {
@@ -54,27 +49,22 @@ public abstract class ChangeHandler {
     }
     public void doCheck() {
         long start = System.nanoTime();
-        boolean hasCheck = false;
         for(Checker checker : checkerList) {
             if(scheduler.schedule(checker.getName())) {
-                boolean value = checker.doCheck();
-                if (value) {
-                    System.out.println("[" + checkerName + " + " + schedulerName + "] " + checker.getName() + ": Pass!");
-                } else {
-                    System.out.println("[" + checkerName + " + " + schedulerName + "] " + checker.getName() + ": Failed!");
-                }
-                hasCheck = true;
+                checker.doCheck();
             }
         }
-        if (hasCheck) {
-            System.out.println("============================================================================================");
-        }
+
         long end = System.nanoTime();
         timeCount += (end -start);
     }
 
     protected final void deleteChange(String timestamp, String  patternId) {
         Pattern pattern = patternMap.get(patternId);
+        if (pattern == null) {
+            System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件中存在不可识别操作内容：" + patternId);
+            System.exit(1);
+        }
         Checker checker = checkerMap.get(patternId);
         checker.delete(patternId, timestamp);
      //   pattern.deleteFirstByTime(timestamp);
@@ -82,6 +72,10 @@ public abstract class ChangeHandler {
 
     protected final void additionChange(String patternId, Context context) {
         Pattern pattern = patternMap.get(patternId);
+        if (pattern == null) {
+            System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件中存在不可识别操作内容：" + patternId);
+            System.exit(1);
+        }
         if(pattern.isBelong(context)) {
     //        pattern.addContext(context);
             Checker checker = checkerMap.get(pattern.getId());
@@ -97,8 +91,6 @@ public abstract class ChangeHandler {
         this.checkerMap = checkerMap;
         this.scheduler = scheduler;
         this.checkerList = checkerList;
-        this.checkerName = getClassString(checkerList.get(0).getClass().toString());
-        this.schedulerName = getClassString(scheduler.getClass().toString());
     }
 
 }

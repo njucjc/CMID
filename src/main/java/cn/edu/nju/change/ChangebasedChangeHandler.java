@@ -1,5 +1,6 @@
 package cn.edu.nju.change;
 
+import cn.edu.nju.builder.AbstractCheckerBuilder;
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.Scheduler;
@@ -19,18 +20,21 @@ public class ChangebasedChangeHandler extends ChangeHandler {
     public void doContextChange(int num, String change) {
         scheduler.update(change);
         doCheck();
-        
-        Context context = parseContext(num, change);
+
         String [] strs = change.split(",");
 
         String op = strs[0];
         String patternId = strs[1];
 
         if (op.equals("+")) {
-            additionChange(patternId, context);
+            additionChange(patternId, parseContext(num, change));
+        }
+        else if (op.equals("-")) {
+            deleteChange(parseContext(num, change).getTimestamp(), patternId);
         }
         else {
-            deleteChange(context.getTimestamp(), patternId);
+            System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件中存在不可识别操作类型：" + op);
+            System.exit(1);
         }
 
     }

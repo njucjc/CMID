@@ -51,7 +51,7 @@ public class EccChecker extends Checker{
                 addCriticalSet(link);
 
                 if (addIncLink(link)) {
-                    LogFileHelper.getLogger().info(getName() + " " + link);
+                    LogFileHelper.getLogger().info(getName() + " " + link, false);
                 }
             }
 

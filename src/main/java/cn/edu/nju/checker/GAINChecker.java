@@ -285,7 +285,7 @@ public class GAINChecker extends Checker {
             addCriticalSet(link);
 
             if(addIncLink(link)) {
-                LogFileHelper.getLogger().info(getName() + " " + link);
+                LogFileHelper.getLogger().info(getName() + " " + link, false);
             }
             //link = link.substring(0, link.length() - 1);
         }
