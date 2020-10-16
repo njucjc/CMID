@@ -58,11 +58,17 @@
 										<param pos = "2" var = "v4" field = "id" op = "" default_value = ""/>
 										<param pos = "3" var = ""   field = ""   op = "" default_value = "2"/>
 								</bfunction>
-								<bfunction name = "conn">
-									<param pos = "1" var = "v1" field = "code" op = "" default_value = ""/>
-									<param pos = "2" var = "v4" field = "code" op = "" default_value = ""/>
-									<param pos = "3" var = ""   field = ""     op = "" default_value = "3"/>
-								</bfunction>
+								<and>
+									<bfunction name = "conn">
+										<param pos = "1" var = "v1" field = "code" op = "" default_value = ""/>
+										<param pos = "2" var = "v4" field = "code" op = "" default_value = ""/>
+										<param pos = "3" var = ""   field = ""     op = "" default_value = "3"/>
+									</bfunction>
+									<bfunction name = "gate">
+										<param pos = "1" var = "v1" field = "type" op = "" default_value = ""/>
+										<param pos = "2" var = "v4" field = "type" op = "" default_value = ""/>
+									</bfunction>
+								</and>
 							</and>
 							<and>
 								<not>
