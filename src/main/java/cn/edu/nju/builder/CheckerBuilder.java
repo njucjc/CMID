@@ -25,9 +25,11 @@ public class CheckerBuilder  extends AbstractCheckerBuilder{
         else {
             contextList = fileReader(this.changeFilePath);
         }
+        System.out.println("[INFO] 开始一致性检测......");
         int count = 0;
         long startTime = System.nanoTime();
         for(String change : contextList) {
+            System.out.print("[INFO] 当前进度: " + (count + 1) + "/" + contextList.size() + '\r');
             changeHandler.doContextChange(count, change);
             count++;
         }
@@ -37,11 +39,13 @@ public class CheckerBuilder  extends AbstractCheckerBuilder{
         int incCount = 0;
         for(Checker checker : checkerList) {
             incCount += checker.getInc();
-            LogFileHelper.getLogger().info(checker.getName() + ": INC = " + checker.getInc() + " times");
         }
-        LogFileHelper.getLogger().info("Total INC: " + incCount + " times");
-        LogFileHelper.getLogger().info("Win size: " + scheduler.getWinSize());
-        LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms");
+
+        System.out.println();
+        System.out.println("[INFO] 一致性检测完毕......");
+        LogFileHelper.getLogger().info("Total INC: " + incCount + " times", true);
+        LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms", true);
+        accuracy(LogFileHelper.logFilePath);
         shutdown();
     }
 

@@ -208,6 +208,7 @@ public class Repair {
             Properties properties = ConfigHelper.getConfig(args[0]);
             Main.check(args[0], properties);
 
+            System.out.println("[INFO] 开始一致性修复......");
             long start = System.nanoTime();
             int step = Integer.parseInt(properties.getProperty("step"));
             if (step == 0) {
@@ -224,7 +225,8 @@ public class Repair {
             }
 
             long end = System.nanoTime();
-            LogFileHelper.getLogger().info("Repair time: " + (end - start) / 1000000 + " ms");
+            System.out.println("[INFO] 致性修复成功结束......");
+            LogFileHelper.getLogger().info("Repair time: " + (end - start) / 1000000 + " ms", true);
         }
         else {
             System.out.println("Usage: java Main [configFilePath].");

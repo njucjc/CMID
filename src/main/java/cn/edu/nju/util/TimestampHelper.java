@@ -15,14 +15,27 @@ public class TimestampHelper {
      * @return 两个时间戳的时间差
      */
     public static int timestampDiff(String timestamp1, String timestamp2) {
-        int diff = Integer.parseInt(timestamp1) - Integer.parseInt(timestamp2);
+        int diff = 0;
+        try {
+            diff = Integer.parseInt(timestamp1) - Integer.parseInt(timestamp2);
+        } catch (NumberFormatException e) {
+            System.out.println("[INFO] 时间戳格式错误");
+            System.exit(1);
+        }
         return diff > 0 ? diff : -diff;
     }
 
 
 
     public static int timestampCmp(String timestamp1, String timestamp2) {
-        long diff = Integer.parseInt(timestamp1) - Integer.parseInt(timestamp2);
+        int diff = 0;
+        try {
+            diff = Integer.parseInt(timestamp1) - Integer.parseInt(timestamp2);
+        } catch (NumberFormatException e) {
+            System.out.println("[INFO] 时间戳格式错误");
+            System.exit(1);
+        }
+
         if(diff < 0) {
             return -1;
         } else if(diff > 0) {
@@ -34,7 +47,13 @@ public class TimestampHelper {
 
 
     public static String plus(String timestamp, int freshness) {
-        int n = Integer.parseInt(timestamp) + freshness;
+        int n = 0;
+        try {
+            n = Integer.parseInt(timestamp) + freshness;
+        } catch (NumberFormatException e) {
+            System.out.println("[INFO] 时间戳格式错误");
+            System.exit(1);
+        }
         return n + "";
     }
 
