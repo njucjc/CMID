@@ -265,7 +265,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
 
         //step
-        String stepStr = properties.getProperty("tep");
+        String stepStr = properties.getProperty("step");
         if (stepStr == null) {
             System.out.println("[INFO] step项无配置");
             System.exit(1);
