@@ -14,8 +14,7 @@ public class Main  {
 
     public static void main(String[] args) {
         if (args.length == 1) {
-            Properties properties = ConfigHelper.getConfig(args[0]);
-            check(args[0], properties);
+            check(args[0]);
         }
         else {
             System.out.println("Usage: java Main [configFilePath].");
@@ -23,10 +22,7 @@ public class Main  {
 
     }
 
-    public static void check(String path, Properties properties) {
-        ChangeFileHelper changeFileHelper = new ChangeFileHelper(properties.getProperty("patternFilePath"));
-        changeFileHelper.parseChangeFile(properties.getProperty("dataFilePath"), properties.getProperty("changeFilePath"));
-
+    public static void check(String path) {
         new CheckerBuilder(path).run();
     }
 }

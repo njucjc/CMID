@@ -11,10 +11,7 @@ import cn.edu.nju.scheduler.BatchScheduler;
 import cn.edu.nju.scheduler.GEASOptScheduler;
 import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
-import cn.edu.nju.util.Accuracy;
-import cn.edu.nju.util.ConfigHelper;
-import cn.edu.nju.util.LogFileHelper;
-import cn.edu.nju.util.PTXFileHelper;
+import cn.edu.nju.util.*;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdevice;
 import jcuda.driver.JCudaDriver;
@@ -139,6 +136,21 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
         this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
 
+        //pattern
+        String patternFilePath = properties.getProperty("patternFilePath");
+        if (patternFilePath == null) {
+            System.out.println("[INFO] patternFilePath项无配置");
+            System.exit(1);
+        }
+        parsePatternFile(patternFilePath);
+
+        //rule
+        String ruleFilePath = properties.getProperty("ruleFilePath");
+        if (ruleFilePath == null) {
+            System.out.println("[INFO] ruleFilePath项无配置");
+            System.exit(1);
+        }
+        parseRuleFile(ruleFilePath);
 
         //context file path
         this.dataFilePath = properties.getProperty("dataFilePath");
@@ -158,8 +170,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 System.exit(1);
             }
             else if (!isFileExists(this.changeFilePath)) {
-                System.out.println("[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath);
-                System.exit(1);
+                ChangeFileHelper changeFileHelper = new ChangeFileHelper(patternFilePath);
+                changeFileHelper.parseChangeFile(this.dataFilePath, this.changeFilePath);
             }
         }
 
@@ -181,22 +193,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             gpuResult = new GPUResult();
             compileKernelFunction(cudaSourceFilePath);
         }*/
-
-        //pattern
-        String patternFilePath = properties.getProperty("patternFilePath");
-        if (patternFilePath == null) {
-            System.out.println("[INFO] patternFilePath项无配置");
-            System.exit(1);
-        }
-        parsePatternFile(patternFilePath);
-
-        //rule
-        String ruleFilePath = properties.getProperty("ruleFilePath");
-        if (ruleFilePath == null) {
-            System.out.println("[INFO] ruleFilePath项无配置");
-            System.exit(1);
-        }
-        parseRuleFile(ruleFilePath);
 
         //schedule
         String schedule = properties.getProperty("schedule");

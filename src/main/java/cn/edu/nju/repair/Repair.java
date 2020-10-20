@@ -206,7 +206,7 @@ public class Repair {
     public static void main(String[] args) {
         if (args.length == 1) {
             Properties properties = ConfigHelper.getConfig(args[0]);
-            Main.check(args[0], properties);
+            Main.check(args[0]);
 
             System.out.println("[INFO] 开始一致性修复......");
             long start = System.nanoTime();
