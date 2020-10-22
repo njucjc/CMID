@@ -225,7 +225,8 @@ public class Repair {
             }
 
             long end = System.nanoTime();
-            System.out.println("[INFO] 致性修复成功结束......");
+            System.out.println("[INFO] 一致性修复结束......");
+            LogFileHelper.getLogger().info("一致性修复成功", true);
             LogFileHelper.getLogger().info("Repair time: " + (end - start) / 1000000 + " ms", true);
         }
         else {
