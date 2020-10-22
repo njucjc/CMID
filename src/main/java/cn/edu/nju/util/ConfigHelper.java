@@ -1,5 +1,7 @@
 package cn.edu.nju.util;
 
+import cn.edu.nju.builder.AbstractCheckerBuilder;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -11,6 +13,11 @@ import java.util.Properties;
  */
 public class ConfigHelper {
     public static Properties getConfig(String configFile) {
+        if (!AbstractCheckerBuilder.isFileExists(configFile)) {
+            System.out.println("[INFO] 配置文件不存在: " + configFile);
+            System.exit(1);
+        }
+
         Properties properties = new Properties();
         try {
             FileInputStream fis = new FileInputStream(configFile);

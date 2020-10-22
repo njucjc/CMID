@@ -286,7 +286,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     }
 
-    private boolean isFileExists(String fileName) {
+    public static boolean isFileExists(String fileName) {
         File file = new File(fileName);
         return file.exists();
     }
