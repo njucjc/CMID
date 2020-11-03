@@ -177,22 +177,22 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
         String cudaSourceFilePath = "src/main/kernel/kernel.cu";
         //如果是GAIN需要初始化GPU内存
-        /*if(this.checkType == GAIN_TYPE) {
+        if(this.checkType == GAIN_TYPE) {
             //开启异常捕获
             JCudaDriver.setExceptionsEnabled(true);
 
             //初始化设备
             cuInit(0);
-            CUdevice device = new CUdevice();
-            cuDeviceGet(device, 0);
-            cuContext = new CUcontext();
-            cuCtxCreate(cuContext, 0, device);
-
-            // initGPUMemory();
-            contexts = fileReader(this.dataFilePath);
-            gpuResult = new GPUResult();
-            compileKernelFunction(cudaSourceFilePath);
-        }*/
+//            CUdevice device = new CUdevice();
+//            cuDeviceGet(device, 0);
+//            cuContext = new CUcontext();
+//            cuCtxCreate(cuContext, 0, device);
+//
+//            // initGPUMemory();
+//            contexts = fileReader(this.dataFilePath);
+//            gpuResult = new GPUResult();
+//            compileKernelFunction(cudaSourceFilePath);
+        }
 
         //schedule
         String schedule = properties.getProperty("schedule");
@@ -257,6 +257,16 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         String repairedFilePath = properties.getProperty("repairedFilePath");
         if (repairedFilePath == null) {
             System.out.println("[INFO] repairedFilePath项无配置");
+            System.exit(1);
+        }
+
+        String trueFilePath = properties.getProperty("trueFilePath");
+        if (trueFilePath == null) {
+            System.out.println("[INFO] trueFilePath项无配置");
+            System.exit(1);
+        }
+        else if (!isFileExists(trueFilePath)) {
+            System.out.println("[INFO] trueFilePath配置中的文件不存在：" + trueFilePath);
             System.exit(1);
         }
 

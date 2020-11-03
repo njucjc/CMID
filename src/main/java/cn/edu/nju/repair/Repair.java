@@ -208,8 +208,6 @@ public class Repair {
             Properties properties = ConfigHelper.getConfig(args[0]);
             Main.check(args[0]);
 
-            System.out.println("[INFO] 开始一致性修复......");
-            long start = System.nanoTime();
             int step = Integer.parseInt(properties.getProperty("step"));
             if (step == 0) {
                 repairStep0(properties);
@@ -222,15 +220,44 @@ public class Repair {
             }
             else if (step == 3) {
                 repairStep3(properties);
+
+                for (int i = 0; i < 3; ++i) {
+                    System.out.println();
+                }
+                String repairedPath = properties.getProperty("repairedFilePath");
+                String truePath = properties.getProperty("trueFilePath");
+                System.out.println("[INFO] 高速路径检测和修复完成，开始比对修复路径文件'" + repairedPath + "'和真实路径文件’" + truePath + "'，等待对比结果......");
+
+                if (comparePath(repairedPath, truePath)) {
+                    System.out.println("[INFO] 对比结束，结果为：");
+                    LogFileHelper.getLogger().info("修复路径与真实路径一致，修复成功", true);
+                }
+                else {
+                    System.out.println("[INFO] 对比结束，结果为：");
+                    LogFileHelper.getLogger().info("修复路径与真实路径不一致，修复失败", true);
+                }
             }
 
-            long end = System.nanoTime();
-            System.out.println("[INFO] 一致性修复结束......");
-            LogFileHelper.getLogger().info("一致性修复成功", true);
-            LogFileHelper.getLogger().info("Repair time: " + (end - start) / 1000000 + " ms", true);
         }
         else {
             System.out.println("Usage: java Main [configFilePath].");
         }
+    }
+
+    private static boolean comparePath(String path1, String path2) {
+        List<String> p1 = FileHelper.readFile(path1);
+        List<String> p2 = FileHelper.readFile(path2);
+
+        if (p1.size() != p2.size()) {
+            return false;
+        }
+        else {
+            for(int i = 0; i < p1.size(); ++i) {
+                if (!p1.get(i).equals(p2.get(i))) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
