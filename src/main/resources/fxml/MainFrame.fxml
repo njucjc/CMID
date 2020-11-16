@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.shape.*?>
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.text.*?>
+<?import java.lang.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="960.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.edu.nju.view.MainFrameController">
+   <children>
+      <SplitPane dividerPositions="0.4791231732776618" orientation="VERTICAL" prefHeight="480.0" prefWidth="630.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <Label layoutX="873.0" layoutY="308.0" text="检测时间：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="110.0" layoutY="379.0" text="检测进度：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <ProgressBar layoutX="260.0" layoutY="381.0" prefHeight="32.0" prefWidth="406.0" progress="0.0" />
+                  <Button layoutX="873.0" layoutY="371.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="190.0" text="导出日志">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Button>
+                  <Label layoutX="1030.0" layoutY="308.0" prefHeight="32.0" prefWidth="335.0" text="0 ms">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="688.0" layoutY="379.0" prefHeight="32.0" prefWidth="89.0" text="0%">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <BarChart fx:id="dataChart" categoryGap="180.0" layoutX="21.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="450.0" title="数据量">
+                    <xAxis>
+                      <CategoryAxis side="BOTTOM" />
+                    </xAxis>
+                    <yAxis>
+                      <NumberAxis side="LEFT" />
+                    </yAxis>
+                  </BarChart>
+                  <BarChart fx:id="incChart" categoryGap="5.0" layoutX="804.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="423.0" title="INC数">
+                     <xAxis>
+                        <CategoryAxis side="BOTTOM" />
+                     </xAxis>
+                     <yAxis>
+                        <NumberAxis side="LEFT" />
+                     </yAxis>
+                  </BarChart>
+                  <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="116.0" layoutX="493.0" layoutY="71.0" stroke="BLACK" strokeType="INSIDE" width="258.0" />
+                  <Label layoutX="547.0" layoutY="86.0" text="Rule数：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="506.0" layoutY="137.0" text="Pattern数：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="671.0" layoutY="86.0" prefHeight="32.0" prefWidth="89.0" text="0">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="671.0" layoutY="137.0" prefHeight="32.0" prefWidth="89.0" text="0">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="110.0" layoutY="308.0" text="数据间隔：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="260.0" layoutY="308.0" prefHeight="32.0" prefWidth="141.0" text="0 ms">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+               </children></AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+               <children>
+                  <ComboBox layoutX="278.0" layoutY="268.0" prefHeight="48.0" prefWidth="190.0" />
+                  <ComboBox layoutX="278.0" layoutY="196.0" prefHeight="48.0" prefWidth="190.0" />
+                  <Label layoutX="116.0" layoutY="52.0" text="Rule文件：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="69.0" layoutY="124.0" text="Pattern文件：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="115.0" layoutY="200.0" text="检测技术：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="115.0" layoutY="272.0" text="调度策略：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Button layoutX="278.0" layoutY="42.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="190.0" text="选择文件">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Button>
+                  <Button layoutX="278.0" layoutY="116.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="190.0" text="选择文件">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Button>
+                  <Label layoutX="718.0" layoutY="52.0" text="运行方式：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Label layoutX="720.0" layoutY="124.0" text="数据文件：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <ComboBox layoutX="870.0" layoutY="44.0" prefHeight="48.0" prefWidth="190.0" />
+                  <Button layoutX="870.0" layoutY="116.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="190.0" text="选择文件">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Button>
+                  <Button layoutX="278.0" layoutY="367.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="190.0" text="开始">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Button>
+                  <Button layoutX="553.0" layoutY="367.0" mnemonicParsing="false" prefHeight="56.0" prefWidth="208.0" text="停止">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Button>
+                  <Button layoutX="874.0" layoutY="367.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="190.0" text="退出">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Button>
+                  <Label layoutX="684.0" layoutY="200.0" text="Oracle文件：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <Button layoutX="870.0" layoutY="192.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="190.0" text="选择文件">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Button>
+                  <Label layoutX="717.0" layoutY="280.0" text="并发线程：">
+                     <font>
+                        <Font size="30.0" />
+                     </font></Label>
+                  <ComboBox layoutX="870.0" layoutY="270.0" prefHeight="48.0" prefWidth="190.0" />
+               </children></AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
