@@ -4,6 +4,13 @@ import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.stage.FileChooser;
+
+import java.awt.*;
+import java.io.File;
+import java.io.IOException;
 
 public class MainFrameController {
 
@@ -42,7 +49,13 @@ public class MainFrameController {
     private Button ruleFileSelect;
 
     @FXML
+    private Hyperlink ruleFileLink;
+
+    @FXML
     private Button patternFileSelect;
+
+    @FXML
+    private Hyperlink patternFileLink;
 
     @FXML
     private ComboBox<String> techSelect;
@@ -57,7 +70,13 @@ public class MainFrameController {
     private Button dataFileSelect;
 
     @FXML
+    private Hyperlink dataFileLink;
+
+    @FXML
     private Button oracleFileSelect;
+
+    @FXML
+    private Hyperlink oracleFileLink;
 
     @FXML
     private ComboBox<Integer> concurrentSelect;
@@ -96,9 +115,12 @@ public class MainFrameController {
 
             if (newValue.contains("static")) {
                 oracleFileSelect.setDisable(true);
+                oracleFileLink.setDisable(true);
+                oracleFileLink.setText("");
             }
             else {
                 oracleFileSelect.setDisable(false);
+                oracleFileLink.setDisable(false);
             }
         });
 
@@ -116,6 +138,11 @@ public class MainFrameController {
 
         schedSelect.setValue("Immed");
         schedSelect.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> { schedSelect.setValue(newValue); });
+
+        ruleFileLink.setText("");
+        patternFileLink.setText("");
+        dataFileLink.setText("");
+        oracleFileLink.setText("");
 
         concurrentSelect.setValue(2);
         concurrentSelect.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> { concurrentSelect.setValue(newValue); });
@@ -153,8 +180,11 @@ public class MainFrameController {
         schedSelect.setDisable(disable);
         runTypeSelect.setDisable(disable);
         dataFileSelect.setDisable(disable);
+        logExport.setDisable(disable);
         if (!disable) {
             oracleFileSelect.setDisable(!runTypeSelect.getValue().contains("dynamic"));
+            oracleFileLink.setDisable(!runTypeSelect.getValue().contains("dynamic"));
+
             concurrentSelect.setDisable(!techSelect.getValue().equals("Con-C") && !techSelect.getValue().equals("CPCC"));
         }
         else {
@@ -163,6 +193,69 @@ public class MainFrameController {
         }
     }
 
+    private String chooseFile(String oldPath, String type, String suffix) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("打开" + type + "文件");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(type + "文件", suffix));
+        File file = fileChooser.showOpenDialog(MainApp.stageController.getStage("环境上下文一致性错误检测平台"));
+
+        if (file == null) {
+            return oldPath;
+        }
+        else {
+            return file.getAbsolutePath();
+        }
+    }
+
+    private void  openFile(String path) {
+        if (path != null && !path.equals("")) {
+            try {
+                Desktop.getDesktop().open(new File(path));
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    @FXML
+    private void handleRuleFileSelect() {
+        ruleFileLink.setText(chooseFile(ruleFileLink.getText(),"rule", "*.xml"));
+    }
+
+    @FXML
+    private void handlePatternFileSelect() {
+        patternFileLink.setText(chooseFile(patternFileLink.getText(),"pattern", "*.xml"));
+    }
+
+    @FXML
+    private void handleDataFileSelect() {
+        dataFileLink.setText(chooseFile(dataFileLink.getText(),"data", "*.txt"));
+    }
+
+    @FXML
+    private void handleOracleFileSelect() {
+        oracleFileLink.setText(chooseFile(oracleFileLink.getText(),"oracle", "*.log"));
+    }
+
+    @FXML
+    private void handleRuleFileOpen() {
+        openFile(ruleFileLink.getText());
+    }
+
+    @FXML
+    private void handlePatternFileOpen() {
+        openFile(patternFileLink.getText());
+    }
+
+    @FXML
+    private void handleDataFileOpen() {
+        openFile(dataFileLink.getText());
+    }
+
+    @FXML
+    private void handleOracleFileOpen() {
+        openFile(oracleFileLink.getText());
+    }
     /**
      * 开始系统
      */

@@ -96,11 +96,11 @@
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <Button fx:id="ruleFileSelect" layoutX="244.0" layoutY="43.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="190.0" text="选择文件">
+                  <Button fx:id="ruleFileSelect" layoutX="244.0" layoutY="43.0" mnemonicParsing="false" onAction="#handleRuleFileSelect" prefHeight="48.0" prefWidth="190.0" text="选择文件">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Button fx:id="patternFileSelect" layoutX="242.0" layoutY="115.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="190.0" text="选择文件">
+                  <Button fx:id="patternFileSelect" layoutX="242.0" layoutY="115.0" mnemonicParsing="false" onAction="#handlePatternFileSelect" prefHeight="48.0" prefWidth="190.0" text="选择文件">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
@@ -113,7 +113,7 @@
                         <Font size="25.0" />
                      </font></Label>
                   <ComboBox fx:id="runTypeSelect" layoutX="850.0" layoutY="42.0" prefHeight="51.0" prefWidth="196.0" promptText="static-change-based" style="-fx-font-size: 13;" visibleRowCount="12" />
-                  <Button fx:id="dataFileSelect" layoutX="850.0" layoutY="115.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="196.0" text="选择文件">
+                  <Button fx:id="dataFileSelect" layoutX="850.0" layoutY="115.0" mnemonicParsing="false" onAction="#handleDataFileSelect" prefHeight="51.0" prefWidth="196.0" text="选择文件">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
@@ -133,7 +133,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <Button fx:id="oracleFileSelect" layoutX="850.0" layoutY="193.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="196.0" text="选择文件">
+                  <Button fx:id="oracleFileSelect" layoutX="850.0" layoutY="193.0" mnemonicParsing="false" onAction="#handleOracleFileSelect" prefHeight="51.0" prefWidth="196.0" text="选择文件">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
@@ -142,6 +142,26 @@
                         <Font size="25.0" />
                      </font></Label>
                   <ComboBox fx:id="concurrentSelect" layoutX="850.0" layoutY="273.0" prefHeight="51.0" prefWidth="196.0" promptText="2" style="-fx-font-size: 25;" />
+                  <Hyperlink fx:id="ruleFileLink" layoutX="447.0" layoutY="47.0" onAction="#handleRuleFileOpen" prefHeight="42.0" prefWidth="196.0">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Hyperlink>
+                  <Hyperlink fx:id="patternFileLink" layoutX="453.0" layoutY="120.0" onAction="#handlePatternFileOpen" prefHeight="42.0" prefWidth="196.0">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Hyperlink>
+                  <Hyperlink fx:id="dataFileLink" layoutX="1068.0" layoutY="118.0" onAction="#handleDataFileOpen" prefHeight="42.0" prefWidth="196.0">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Hyperlink>
+                  <Hyperlink fx:id="oracleFileLink" layoutX="1068.0" layoutY="200.0" onAction="#handleOracleFileOpen" prefHeight="42.0" prefWidth="196.0">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Hyperlink>
                </children></AnchorPane>
         </items>
       </SplitPane>
