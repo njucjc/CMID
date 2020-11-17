@@ -1,5 +1,6 @@
 package cn.edu.nju.view;
 import cn.edu.nju.MainApp;
+import cn.edu.nju.util.FileHelper;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
@@ -7,6 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
 import java.awt.*;
 import java.io.File;
@@ -92,6 +94,8 @@ public class MainFrameController {
 
     @FXML
     private SplitPane splitPane;
+
+    private String logFilePath = FileHelper.createTempFile("tempLog", ".log");
 
     @FXML
     private void initialize() {
@@ -197,7 +201,7 @@ public class MainFrameController {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("打开" + type + "文件");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(type + "文件", suffix));
-        File file = fileChooser.showOpenDialog(MainApp.stageController.getStage("环境上下文一致性错误检测平台"));
+        File file = fileChooser.showOpenDialog(new Stage());
 
         if (file == null) {
             return oldPath;
@@ -256,6 +260,25 @@ public class MainFrameController {
     private void handleOracleFileOpen() {
         openFile(oracleFileLink.getText());
     }
+
+    @FXML
+    private void handleLogExport() {
+        FileChooser fileChooser = new FileChooser();
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("日志文件", "*.log");
+
+        fileChooser.getExtensionFilters().add(extFilter);
+        Stage s = new Stage();
+        File file = fileChooser.showSaveDialog(s);
+        if (file == null)
+            return;
+        if(file.exists()){//文件已存在，则删除覆盖文件
+            file.delete();
+        }
+        String exportFilePath = file.getAbsolutePath();
+
+        FileHelper.copyFile(logFilePath, exportFilePath);
+    }
+
     /**
      * 开始系统
      */

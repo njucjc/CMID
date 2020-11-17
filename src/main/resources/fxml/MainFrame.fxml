@@ -22,7 +22,7 @@
                         <Font size="25.0" />
                      </font></Label>
                   <ProgressBar fx:id="checkProgressBar" layoutX="235.0" layoutY="383.0" prefHeight="32.0" prefWidth="406.0" progress="0.0" />
-                  <Button fx:id="logExport" layoutX="851.0" layoutY="370.0" mnemonicParsing="false" prefHeight="48.0" prefWidth="190.0" text="导出日志">
+                  <Button fx:id="logExport" layoutX="851.0" layoutY="370.0" mnemonicParsing="false" onAction="#handleLogExport" prefHeight="48.0" prefWidth="190.0" text="导出日志">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
