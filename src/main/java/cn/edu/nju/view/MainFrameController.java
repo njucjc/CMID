@@ -106,7 +106,7 @@ public class MainFrameController {
         techSelect.setValue("ECC");
         techSelect.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             techSelect.setValue(newValue);
-            if (newValue.equals("Con-C")) {
+            if (newValue.equals("Con-C") || newValue.equals("CPCC")) {
                 concurrentSelect.setDisable(false);
             }
             else {
@@ -155,7 +155,7 @@ public class MainFrameController {
         dataFileSelect.setDisable(disable);
         if (!disable) {
             oracleFileSelect.setDisable(!runTypeSelect.getValue().contains("dynamic"));
-            concurrentSelect.setDisable(!techSelect.getValue().equals("Con-C"));
+            concurrentSelect.setDisable(!techSelect.getValue().equals("Con-C") && !techSelect.getValue().equals("CPCC"));
         }
         else {
             oracleFileSelect.setDisable(true);

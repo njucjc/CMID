@@ -80,7 +80,7 @@
                <children>
                   <ComboBox fx:id="schedSelect" layoutX="240.0" layoutY="265.0" prefHeight="48.0" prefWidth="190.0" promptText="Immed" style="-fx-font-size: 20;" />
                   <ComboBox fx:id="techSelect" layoutX="240.0" layoutY="198.0" prefHeight="48.0" prefWidth="190.0" promptText="PCC" style="-fx-font-size: 20;" />
-                  <Label layoutX="116.0" layoutY="52.0" text="Rule文件：">
+                  <Label layoutX="115.0" layoutY="52.0" text="Rule文件：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
@@ -104,7 +104,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Label layoutX="718.0" layoutY="52.0" text="运行方式：">
+                  <Label layoutX="717.0" layoutY="52.0" text="运行方式：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
@@ -112,7 +112,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <ComboBox fx:id="runTypeSelect" layoutX="850.0" layoutY="42.0" prefHeight="51.0" prefWidth="196.0" promptText="static-change-based" style="-fx-font-size: 13;" />
+                  <ComboBox fx:id="runTypeSelect" layoutX="850.0" layoutY="42.0" prefHeight="51.0" prefWidth="196.0" promptText="static-change-based" style="-fx-font-size: 13;" visibleRowCount="12" />
                   <Button fx:id="dataFileSelect" layoutX="850.0" layoutY="115.0" mnemonicParsing="false" prefHeight="51.0" prefWidth="196.0" text="选择文件">
                      <font>
                         <Font size="25.0" />
@@ -137,7 +137,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Label layoutX="639.0" layoutY="282.0" text="Con-C并发线程：">
+                  <Label layoutX="717.0" layoutY="282.0" text="并发线程：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
