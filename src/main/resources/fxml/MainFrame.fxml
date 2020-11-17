@@ -9,7 +9,7 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="960.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.edu.nju.view.MainFrameController">
    <children>
-      <SplitPane dividerPositions="0.4791231732776618" orientation="VERTICAL" prefHeight="480.0" prefWidth="630.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <SplitPane fx:id="splitPane" dividerPositions="0.4791231732776618" orientation="VERTICAL" prefHeight="480.0" prefWidth="630.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <items>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
                <children>
@@ -117,11 +117,11 @@
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Button fx:id="start" layoutX="239.0" layoutY="367.0" mnemonicParsing="false" prefHeight="59.0" prefWidth="190.0" text="开始">
+                  <Button fx:id="start" layoutX="239.0" layoutY="367.0" mnemonicParsing="false" onAction="#handleStartSystem" prefHeight="59.0" prefWidth="190.0" text="开始">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Button fx:id="end" layoutX="535.0" layoutY="369.0" mnemonicParsing="false" prefHeight="56.0" prefWidth="208.0" text="停止">
+                  <Button fx:id="stop" layoutX="535.0" layoutY="369.0" mnemonicParsing="false" onAction="#handleStopSystem" prefHeight="56.0" prefWidth="208.0" text="停止">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
@@ -141,7 +141,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <ComboBox fx:id="concurrentSelect" layoutX="850.0" layoutY="273.0" prefHeight="51.0" prefWidth="196.0" promptText="4" style="-fx-font-size: 25;" />
+                  <ComboBox fx:id="concurrentSelect" layoutX="850.0" layoutY="273.0" prefHeight="51.0" prefWidth="196.0" promptText="2" style="-fx-font-size: 25;" />
                </children></AnchorPane>
         </items>
       </SplitPane>
