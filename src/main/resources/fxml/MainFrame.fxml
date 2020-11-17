@@ -117,15 +117,15 @@
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Button fx:id="start" layoutX="239.0" layoutY="367.0" mnemonicParsing="false" onAction="#handleStartSystem" prefHeight="59.0" prefWidth="190.0" text="开始">
+                  <Button fx:id="start" layoutX="128.0" layoutY="367.0" mnemonicParsing="false" onAction="#handleStartSystem" prefHeight="59.0" prefWidth="190.0" text="启动">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Button fx:id="stop" layoutX="535.0" layoutY="369.0" mnemonicParsing="false" onAction="#handleStopSystem" prefHeight="56.0" prefWidth="208.0" text="停止">
+                  <Button layoutX="358.0" layoutY="371.0" mnemonicParsing="false" onAction="#handleStopSystem" prefHeight="56.0" prefWidth="208.0" text="终止">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Button fx:id="exit" layoutX="849.0" layoutY="367.0" mnemonicParsing="false" onAction="#handleExitSystem" prefHeight="59.0" prefWidth="196.0" text="退出">
+                  <Button layoutX="613.0" layoutY="369.0" mnemonicParsing="false" onAction="#handleExitSystem" prefHeight="59.0" prefWidth="196.0" text="退出">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
@@ -162,6 +162,11 @@
                         <Font size="20.0" />
                      </font>
                   </Hyperlink>
+                  <Button layoutX="850.0" layoutY="367.0" mnemonicParsing="false" onAction="#handleHelp" prefHeight="59.0" prefWidth="196.0" text="帮助">
+                     <font>
+                        <Font size="25.0" />
+                     </font>
+                  </Button>
                </children></AnchorPane>
         </items>
       </SplitPane>

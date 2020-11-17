@@ -13,6 +13,7 @@ import javafx.stage.Stage;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 public class MainFrameController {
 
@@ -87,18 +88,15 @@ public class MainFrameController {
     private Button start;
 
     @FXML
-    private Button stop;
-
-    @FXML
-    private Button exit;
-
-    @FXML
     private SplitPane splitPane;
 
     private String logFilePath = FileHelper.createTempFile("tempLog", ".log");
 
+    boolean isPaused;
+
     @FXML
     private void initialize() {
+        isPaused = true;
         techSelect.getItems().addAll("ECC", "Con-C", "GAIN", "PCC", "CPCC");
         schedSelect.getItems().addAll("Immed", "GEAS-ori", "GEAS-opt");
         runTypeSelect.getItems().addAll("static-change-based", "dynamic-change-based", "static-time-based", "dynamic-time-based");
@@ -184,7 +182,6 @@ public class MainFrameController {
         schedSelect.setDisable(disable);
         runTypeSelect.setDisable(disable);
         dataFileSelect.setDisable(disable);
-        logExport.setDisable(disable);
         if (!disable) {
             oracleFileSelect.setDisable(!runTypeSelect.getValue().contains("dynamic"));
             oracleFileLink.setDisable(!runTypeSelect.getValue().contains("dynamic"));
@@ -284,9 +281,21 @@ public class MainFrameController {
      */
     @FXML
     private void handleStartSystem() {
-        start.setDisable(true);
+        //TODO: initial checker (is null or not)
+
+        if (isPaused) {
+            start.setText("暂停");
+            //TODO: consistency checking go
+        }
+        else {
+            start.setText("启动");
+            //TODO: consistency checking pause
+        }
+
         setDisableSelect(true);
-        //TODO：stopped = false
+        logExport.setDisable(isPaused);
+
+        isPaused = !isPaused;
     }
 
     /**
@@ -294,9 +303,13 @@ public class MainFrameController {
      */
     @FXML
     private void handleStopSystem() {
+        isPaused = true;
+        start.setText("启动");
         start.setDisable(false);
         setDisableSelect(false);
-        //TODO: stopped = true
+        logExport.setDisable(false);
+
+        //TODO: consistency checking stop and set checker null
     }
 
     /**
@@ -308,5 +321,14 @@ public class MainFrameController {
             MainApp.stageController.closeStage(name);
         }
         System.exit(0);
+    }
+
+    @FXML
+    private void handleHelp() {
+        try {
+            Desktop.getDesktop().browse(getClass().getClassLoader().getResource("manual/manual.pdf").toURI());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }
