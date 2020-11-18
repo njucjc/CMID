@@ -2,6 +2,7 @@ package cn.edu.nju.server;
 
 import cn.edu.nju.builder.AbstractCheckerBuilder;
 import cn.edu.nju.checker.Checker;
+import cn.edu.nju.util.FileHelper;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.TimestampHelper;
 
@@ -21,8 +22,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     private int port = 8000;
     private byte [] buf = new byte[256];
 
-    public Server(String configFilePath)  {
-        super(configFilePath);
+
+    public Server() {
         try {
             serverSocket = new DatagramSocket(port);
         }catch(IOException e) {
@@ -111,9 +112,20 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
     public static void main(String[] args) {
         if(args.length == 1) {
-            Thread serverThread = new Thread(new Server(args[0]));
-            serverThread.setPriority(Thread.MAX_PRIORITY);
-            serverThread.start();
+            Server server = new Server();
+            if (!FileHelper.isFileExists(args[0])) {
+                System.out.println("[INFO] 配置文件不存在: " + args[0]);
+                System.exit(1);
+            }
+            String msg = server.parseConfigFile(args[0]);
+            if (msg == null) {
+                Thread checkerThread = new Thread(server);
+                checkerThread.setPriority(Thread.MAX_PRIORITY);
+                checkerThread.start();
+            }
+            else {
+                System.exit(1);
+            }
         }
         else {
             System.out.println("Usage: java Server [configFilePath].");

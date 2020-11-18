@@ -17,6 +17,9 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         super(configFilePath);
     }
 
+    public CheckerBuilder() {
+    }
+
     @Override
     public void run() {
         List<String> contextList;

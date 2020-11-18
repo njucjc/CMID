@@ -1,5 +1,6 @@
 package cn.edu.nju.client;
 
+import cn.edu.nju.util.FileHelper;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.io.*;
@@ -107,7 +108,7 @@ public class Client implements Runnable{
         if (args.length == 1) {
             Properties properties = new Properties();
             try {
-                if (!new File(args[0]).exists()) {
+                if (!FileHelper.isFileExists(args[0])) {
                     System.out.println("[INFO] 配置文件不存在: " + args[0]);
                     System.exit(1);
                 }

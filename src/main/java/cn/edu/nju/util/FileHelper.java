@@ -46,4 +46,9 @@ public class FileHelper {
 
     }
 
+    public static boolean isFileExists(String fileName) {
+        File file = new File(fileName);
+        return file.exists();
+    }
+
 }
