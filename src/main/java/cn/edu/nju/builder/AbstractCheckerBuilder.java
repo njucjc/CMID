@@ -179,20 +179,20 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         this.dataFilePath = properties.getProperty("dataFilePath");
         this.changeFilePath = properties.getProperty("changeFilePath");
 
-        if (changeHandlerType.contains("time") && this.dataFilePath == null) {
+        if (changeHandlerType.contains("static-time") && this.dataFilePath == null) {
             System.out.println("[INFO] dataFilePath项无配置");
             return "[INFO] dataFilePath项无配置";
         }
-        else if (changeHandlerType.contains("change") && this.changeFilePath == null) {
+        else if (changeHandlerType.contains("static-change") && this.changeFilePath == null) {
             System.out.println("[INFO] changeFilePath项无配置");
             return "[INFO] changeFilePath项无配置";
         }
         else {
-            if(changeHandlerType.contains("time") && !FileHelper.isFileExists(this.dataFilePath) ) {
+            if(changeHandlerType.contains("static-time") && !FileHelper.isFileExists(this.dataFilePath) ) {
                 System.out.println("[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath);
                 return "[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath;
             }
-            else if (changeHandlerType.contains("change") && !FileHelper.isFileExists(this.changeFilePath)) {
+            else if (changeHandlerType.contains("static-change") && !FileHelper.isFileExists(this.changeFilePath)) {
                 System.out.println("[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath);
                 return "[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath;
             }

@@ -131,10 +131,17 @@ public class MainFrameController {
                 oracleFileSelect.setDisable(true);
                 oracleFileLink.setDisable(true);
                 oracleFileLink.setText("");
+
+                dataFileSelect.setDisable(false);
+                dataFileLink.setDisable(false);
             }
             else {
                 oracleFileSelect.setDisable(false);
                 oracleFileLink.setDisable(false);
+
+                dataFileSelect.setDisable(true);
+                dataFileLink.setDisable(true);
+                dataFileLink.setText("");
             }
         });
 
