@@ -188,7 +188,6 @@ public class MainFrameController {
         missIncSeries.setName("漏报：0          ");
         missIncSeries.getData().add(new XYChart.Data<>("  ",0));
 
-
         dataChart.getData().addAll(inDataSeries);
         incChart.getData().addAll(showIncSeries, faultIncSeries, missIncSeries);
 

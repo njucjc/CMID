@@ -52,7 +52,7 @@ public class DrawProcess implements Runnable{
             patternNum.setText(padding(AbstractCheckerBuilder.patternNum, 3));
             interval.setText(padding(AbstractCheckerBuilder.interval, 0) + " ms");
             checkTime.setText(padding(AbstractCheckerBuilder.totalTime / 1000000, 0) + " ms");
-            checkProgress.setText(new DecimalFormat("##0%").format(AbstractCheckerBuilder.progress));
+            checkProgress.setText(new DecimalFormat("##0.0%").format(AbstractCheckerBuilder.progress));
             checkProgressBar.setProgress(AbstractCheckerBuilder.progress);
 
 
@@ -92,7 +92,7 @@ public class DrawProcess implements Runnable{
         while(true) {
             repaint();
             try {
-                TimeUnit.MILLISECONDS.sleep(200);
+                TimeUnit.MILLISECONDS.sleep(150);
             } catch (Exception e) {
                 e.printStackTrace();
             }
