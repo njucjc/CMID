@@ -34,7 +34,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <BarChart fx:id="dataChart" animated="false" categoryGap="210.0" layoutX="21.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="450.0" title="数据量">
+                  <BarChart fx:id="dataChart" animated="false" categoryGap="200.0" layoutX="21.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="450.0" title="数据量">
                     <xAxis>
                       <CategoryAxis side="BOTTOM" />
                     </xAxis>
@@ -80,11 +80,11 @@
                <children>
                   <ComboBox fx:id="schedSelect" layoutX="240.0" layoutY="265.0" prefHeight="48.0" prefWidth="190.0" promptText="Immed" style="-fx-font-size: 20;" />
                   <ComboBox fx:id="techSelect" layoutX="240.0" layoutY="198.0" prefHeight="48.0" prefWidth="190.0" promptText="PCC" style="-fx-font-size: 20;" />
-                  <Label layoutX="115.0" layoutY="52.0" text="Rule文件：">
+                  <Label layoutX="114.0" layoutY="125.0" text="Rule文件：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <Label layoutX="79.0" layoutY="124.0" text="Pattern文件：">
+                  <Label layoutX="78.0" layoutY="52.0" text="Pattern文件：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
@@ -96,11 +96,11 @@
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <Button fx:id="ruleFileSelect" layoutX="244.0" layoutY="43.0" mnemonicParsing="false" onAction="#handleRuleFileSelect" prefHeight="48.0" prefWidth="190.0" text="选择文件">
+                  <Button fx:id="ruleFileSelect" layoutX="240.0" layoutY="114.0" mnemonicParsing="false" onAction="#handleRuleFileSelect" prefHeight="48.0" prefWidth="190.0" text="选择文件">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Button fx:id="patternFileSelect" layoutX="242.0" layoutY="115.0" mnemonicParsing="false" onAction="#handlePatternFileSelect" prefHeight="48.0" prefWidth="190.0" text="选择文件">
+                  <Button fx:id="patternFileSelect" layoutX="240.0" layoutY="43.0" mnemonicParsing="false" onAction="#handlePatternFileSelect" prefHeight="48.0" prefWidth="190.0" text="选择文件">
                      <font>
                         <Font size="25.0" />
                      </font></Button>
@@ -142,17 +142,17 @@
                         <Font size="25.0" />
                      </font></Label>
                   <ComboBox fx:id="concurrentSelect" layoutX="850.0" layoutY="273.0" prefHeight="51.0" prefWidth="196.0" promptText="2" style="-fx-font-size: 25;" />
-                  <Hyperlink fx:id="ruleFileLink" layoutX="447.0" layoutY="47.0" onAction="#handleRuleFileOpen" prefHeight="42.0" prefWidth="196.0">
+                  <Hyperlink fx:id="ruleFileLink" layoutX="443.0" layoutY="120.0" onAction="#handleRuleFileOpen" prefHeight="42.0" prefWidth="196.0">
                      <font>
                         <Font size="20.0" />
                      </font>
                   </Hyperlink>
-                  <Hyperlink fx:id="patternFileLink" layoutX="453.0" layoutY="120.0" onAction="#handlePatternFileOpen" prefHeight="42.0" prefWidth="196.0">
+                  <Hyperlink fx:id="patternFileLink" layoutX="443.0" layoutY="48.0" onAction="#handlePatternFileOpen" prefHeight="42.0" prefWidth="196.0">
                      <font>
                         <Font size="20.0" />
                      </font>
                   </Hyperlink>
-                  <Hyperlink fx:id="dataFileLink" layoutX="1068.0" layoutY="118.0" onAction="#handleDataFileOpen" prefHeight="42.0" prefWidth="196.0">
+                  <Hyperlink fx:id="dataFileLink" layoutX="1063.0" layoutY="118.0" onAction="#handleDataFileOpen" prefHeight="42.0" prefWidth="196.0">
                      <font>
                         <Font size="20.0" />
                      </font>

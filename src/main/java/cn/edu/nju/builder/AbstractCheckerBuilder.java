@@ -181,28 +181,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
             return "[INFO] changeHandlerType项无配置";
         }
 
-        //context file path
-        this.dataFilePath = properties.getProperty("dataFilePath");
-        this.changeFilePath = properties.getProperty("changeFilePath");
-
-        if (changeHandlerType.contains("static-time") && this.dataFilePath == null) {
-            System.out.println("[INFO] dataFilePath项无配置");
-            return "[INFO] dataFilePath项无配置";
-        }
-        else if (changeHandlerType.contains("static-change") && this.changeFilePath == null) {
-            System.out.println("[INFO] changeFilePath项无配置");
-            return "[INFO] changeFilePath项无配置";
-        }
-        else {
-            if(changeHandlerType.contains("static-time") && !FileHelper.isFileExists(this.dataFilePath) ) {
-                System.out.println("[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath);
-                return "[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath;
-            }
-            else if (changeHandlerType.contains("static-change") && !FileHelper.isFileExists(this.changeFilePath)) {
-                System.out.println("[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath);
-                return "[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath;
-            }
-        }
         
         String cudaSourceFilePath = "src/main/kernel/kernel.cu";
         //如果是GAIN需要初始化GPU内存
@@ -276,6 +254,29 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
         System.out.println("[INFO] 检测技术：" + technique);
         System.out.println("[INFO] 调度策略：" + schedule);
+
+        //context file path
+        this.dataFilePath = properties.getProperty("dataFilePath");
+        this.changeFilePath = properties.getProperty("changeFilePath");
+
+        if (changeHandlerType.contains("static-time") && this.dataFilePath == null) {
+            System.out.println("[INFO] dataFilePath项无配置");
+            return "[INFO] dataFilePath项无配置";
+        }
+        else if (changeHandlerType.contains("static-change") && this.changeFilePath == null) {
+            System.out.println("[INFO] changeFilePath项无配置");
+            return "[INFO] changeFilePath项无配置";
+        }
+        else {
+            if(changeHandlerType.contains("static-time") && !FileHelper.isFileExists(this.dataFilePath) ) {
+                System.out.println("[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath);
+                return "[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath;
+            }
+            else if (changeHandlerType.contains("static-change") && !FileHelper.isFileExists(this.changeFilePath)) {
+                System.out.println("[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath);
+                return "[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath;
+            }
+        }
 
 
         //log
