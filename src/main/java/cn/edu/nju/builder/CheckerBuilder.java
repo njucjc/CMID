@@ -13,10 +13,6 @@ import java.util.List;
  */
 public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
 
-    public CheckerBuilder(String configFilePath) {
-        super(configFilePath);
-    }
-
     public CheckerBuilder() {
     }
 
@@ -56,7 +52,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
     }
 
     public static void main(String[] args) {
-        CheckerBuilder checkerBuilder = new CheckerBuilder("config.properties");
+
     }
 
 
