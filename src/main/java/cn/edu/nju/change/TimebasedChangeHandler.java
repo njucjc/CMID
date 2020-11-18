@@ -38,7 +38,7 @@ public class TimebasedChangeHandler extends ChangeHandler{
         }
 
         //在相关的pattern里添加context
-        System.out.println("[DEBUG] '+' " + context.toString());
+        // System.out.println("[DEBUG] '+' " + context.toString());
         for(String patternId : patternMap.keySet()) {
             additionChange(patternId, context);
         }
