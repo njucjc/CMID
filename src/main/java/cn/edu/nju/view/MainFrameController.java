@@ -124,6 +124,7 @@ public class MainFrameController {
             if (newValue.contains("time")) {
                 schedSelect.getItems().remove(0, schedSelect.getItems().size());
                 schedSelect.getItems().addAll("Immed");
+                schedSelect.setValue("Immed");
             }
             else {
                 schedSelect.getItems().remove(0, schedSelect.getItems().size());
