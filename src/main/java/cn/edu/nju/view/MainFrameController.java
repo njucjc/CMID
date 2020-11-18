@@ -129,6 +129,7 @@ public class MainFrameController {
             else {
                 schedSelect.getItems().remove(0, schedSelect.getItems().size());
                 schedSelect.getItems().addAll("Immed", "GEAS-ori", "GEAS-opt");
+                schedSelect.setValue("Immed");
             }
 
             if (newValue.contains("static")) {
