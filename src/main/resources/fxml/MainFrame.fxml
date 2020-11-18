@@ -34,7 +34,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <BarChart fx:id="dataChart" categoryGap="180.0" layoutX="21.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="450.0" title="数据量">
+                  <BarChart fx:id="dataChart" animated="false" categoryGap="180.0" layoutX="21.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="450.0" title="数据量">
                     <xAxis>
                       <CategoryAxis side="BOTTOM" />
                     </xAxis>
@@ -42,7 +42,7 @@
                       <NumberAxis side="LEFT" />
                     </yAxis>
                   </BarChart>
-                  <BarChart fx:id="incChart" categoryGap="5.0" layoutX="804.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="423.0" title="INC数">
+                  <BarChart fx:id="incChart" animated="false" categoryGap="5.0" layoutX="804.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="423.0" title="INC数">
                      <xAxis>
                         <CategoryAxis side="BOTTOM" />
                      </xAxis>

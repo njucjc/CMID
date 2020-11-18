@@ -2,8 +2,10 @@ package cn.edu.nju.view;
 import cn.edu.nju.MainApp;
 import cn.edu.nju.builder.AbstractCheckerBuilder;
 import cn.edu.nju.builder.CheckerBuilder;
+import cn.edu.nju.draw.DrawProcess;
 import cn.edu.nju.server.Server;
 import cn.edu.nju.util.FileHelper;
+import cn.edu.nju.util.LogFileHelper;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
@@ -109,6 +111,7 @@ public class MainFrameController {
     private void initialize() {
         isPaused = true;
         isFinished = true;
+        LogFileHelper.initLogger(logFilePath);
         techSelect.getItems().addAll("ECC", "Con-C", "GAIN", "PCC", "CPCC");
         schedSelect.getItems().addAll("Immed", "GEAS-ori", "GEAS-opt");
         runTypeSelect.getItems().addAll("static-change-based", "dynamic-change-based", "static-time-based", "dynamic-time-based");
@@ -173,21 +176,24 @@ public class MainFrameController {
 
 
         // 数据展示区初始化
-        inDataSeries.setName("已检测:0");
+        inDataSeries.setName("已检测：0                  ");
         inDataSeries.getData().add(new XYChart.Data<>("", 0));
 
-        showIncSeries.setName("汇报INC:0");
+        showIncSeries.setName("汇报INC：0          ");
         showIncSeries.getData().add(new XYChart.Data<>(" ",0));
 
-        faultIncSeries.setName("误报:0");
+        faultIncSeries.setName("误报：0          ");
         faultIncSeries.getData().add( new XYChart.Data<>("",0));
 
-        missIncSeries.setName("漏报:0");
+        missIncSeries.setName("漏报：0          ");
         missIncSeries.getData().add(new XYChart.Data<>("  ",0));
 
 
         dataChart.getData().addAll(inDataSeries);
         incChart.getData().addAll(showIncSeries, faultIncSeries, missIncSeries);
+
+        new Thread(new DrawProcess(ruleNum, patternNum, interval, checkTime, checkProgress, checkProgressBar,
+                 inDataSeries, showIncSeries, faultIncSeries, missIncSeries)).start();
 
         //  missIncSeries.setName("漏报:10");
         //  missIncSeries.getData().set(0, new XYChart.Data<>("  ",10));

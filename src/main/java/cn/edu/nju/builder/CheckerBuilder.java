@@ -49,12 +49,14 @@ public class CheckerBuilder  extends AbstractCheckerBuilder{
                 progress = ((double) dataCount) / contextList.size();
 
                 long endTime = System.nanoTime(); //获取结束时间
-                totalTime += (endTime - startTime);
+                totalTime += (endTime - startTime) ;
             }
 
         }
 
-        progress = 1.0;
+        if (!isFinished) {
+            progress = 1.0;
+        }
         scheduler.reset();
         changeHandler.doCheck();
 

@@ -88,7 +88,10 @@ public class Server extends AbstractCheckerBuilder{
 
 
             }
-            progress = 1.0;
+
+            if (!isFinished) {
+                progress = 1.0;
+            }
             scheduler.reset();
             changeHandler.doCheck();
         }
