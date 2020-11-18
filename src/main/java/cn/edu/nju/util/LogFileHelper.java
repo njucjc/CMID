@@ -12,7 +12,7 @@ public class LogFileHelper {
     public static String logFilePath;
     public static void  initLogger(String log) {
         logFilePath = log;
-        File file = new File(logFilePath);
+        /*File file = new File(logFilePath);
         if (file.exists()) {
             System.out.println("[INFO] 日志文件" + "'" + logFilePath + "'" + "已存在，是否覆盖（Y/N）：");
             Scanner in = new Scanner(System.in);
@@ -34,7 +34,7 @@ public class LogFileHelper {
                     System.out.println("[INFO] 是否覆盖，请输入（Y/N）：");
                 }
             }
-        }
+        } */
         System.out.println("[INFO] 日志文件：" + logFilePath);
         LOGGER = new Logger(logFilePath);
     }

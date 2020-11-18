@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import static jcuda.driver.JCudaDriver.*;
 
-public abstract class AbstractCheckerBuilder implements CheckerType{
+public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
 
 
@@ -88,7 +88,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     public static boolean isFinished;
 
-    public static void reset() {
+    public static synchronized void reset() {
         dataCount = 0;
         totalTime = 0L;
         interval = 0;
@@ -97,8 +97,20 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         isFinished = false;
     }
 
-    public AbstractCheckerBuilder() {
+    public static synchronized void go() {
+        isPaused = false;
+    }
 
+    public static synchronized void pause() {
+        isPaused = true;
+    }
+
+    public static synchronized void finish() {
+        isFinished = true;
+    }
+
+    public AbstractCheckerBuilder() {
+        reset();
     }
 
     public String parseConfigFile(String configFilePath) {
@@ -167,20 +179,20 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         this.dataFilePath = properties.getProperty("dataFilePath");
         this.changeFilePath = properties.getProperty("changeFilePath");
 
-        if (this.dataFilePath == null && changeHandlerType.contains("time")) {
+        if (changeHandlerType.contains("time") && this.dataFilePath == null) {
             System.out.println("[INFO] dataFilePath项无配置");
             return "[INFO] dataFilePath项无配置";
         }
-        else if (this.changeFilePath == null && changeHandlerType.contains("change")) {
+        else if (changeHandlerType.contains("change") && this.changeFilePath == null) {
             System.out.println("[INFO] changeFilePath项无配置");
             return "[INFO] changeFilePath项无配置";
         }
         else {
-            if(!FileHelper.isFileExists(this.dataFilePath) && changeHandlerType.contains("time")) {
+            if(changeHandlerType.contains("time") && !FileHelper.isFileExists(this.dataFilePath) ) {
                 System.out.println("[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath);
                 return "[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath;
             }
-            else if (!FileHelper.isFileExists(this.changeFilePath) && changeHandlerType.contains("change")) {
+            else if (changeHandlerType.contains("change") && !FileHelper.isFileExists(this.changeFilePath)) {
                 System.out.println("[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath);
                 return "[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath;
             }

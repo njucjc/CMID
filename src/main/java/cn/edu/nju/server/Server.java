@@ -17,7 +17,7 @@ import java.util.*;
  */
 
 
-public class Server extends AbstractCheckerBuilder implements Runnable{
+public class Server extends AbstractCheckerBuilder{
     private DatagramSocket serverSocket;
     private int port = 8000;
     private byte [] buf = new byte[256];
@@ -34,9 +34,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     @Override
     public void run() {
 
-        dataCount = 0;
-        totalTime = 0L;
-        interval = 0L;
         String startTime = "2007-10-26 11:00:00:000";
         String endTime = "2007-10-26 23:01:00:111";
 

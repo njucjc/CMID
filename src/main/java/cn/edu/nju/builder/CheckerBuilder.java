@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Created by njucjc on 2017/10/23.
  */
-public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
+public class CheckerBuilder  extends AbstractCheckerBuilder{
 
     public CheckerBuilder() {
     }
@@ -30,10 +30,6 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         System.out.println("[INFO] 开始一致性检测......");
 
 
-        dataCount = 0;
-        totalTime = 0L;
-        interval = 0L;
-        progress = 0.0;
         while (dataCount < contextList.size()) {
             System.out.print("[INFO] 当前进度: " + (dataCount + 1) + "/" + contextList.size() + '\r');
 

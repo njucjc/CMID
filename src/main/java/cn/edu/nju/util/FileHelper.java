@@ -1,6 +1,7 @@
 package cn.edu.nju.util;
 
 import java.io.*;
+import java.util.List;
 
 public class FileHelper {
     /**
@@ -21,7 +22,7 @@ public class FileHelper {
             return "";
         }
         else {
-            return tempfile.getAbsolutePath();
+            return tempfile.getAbsolutePath().replaceAll("\\\\", "/");
         }
     }
 
@@ -49,6 +50,25 @@ public class FileHelper {
     public static boolean isFileExists(String fileName) {
         File file = new File(fileName);
         return file.exists();
+    }
+
+    public static void writeFile(String path, List<String> content) {
+        try {
+            File file = new File(path);
+            if (file.exists()) {
+                file.delete();
+            }
+            file.createNewFile();
+            FileWriter fw = new FileWriter(file, true);
+
+            for (String line : content) {
+                fw.write(line + '\n');
+            }
+
+            fw.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
 }

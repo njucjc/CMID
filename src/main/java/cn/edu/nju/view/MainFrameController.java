@@ -1,5 +1,8 @@
 package cn.edu.nju.view;
 import cn.edu.nju.MainApp;
+import cn.edu.nju.builder.AbstractCheckerBuilder;
+import cn.edu.nju.builder.CheckerBuilder;
+import cn.edu.nju.server.Server;
 import cn.edu.nju.util.FileHelper;
 import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
@@ -14,6 +17,8 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainFrameController {
 
@@ -92,11 +97,18 @@ public class MainFrameController {
 
     private String logFilePath = FileHelper.createTempFile("tempLog", ".log");
 
-    boolean isPaused;
+    private String configFilePath = FileHelper.createTempFile("tempConfig", ".properties");
+
+    private boolean isPaused;
+
+    private boolean isFinished;
+
+    private AbstractCheckerBuilder checker;
 
     @FXML
     private void initialize() {
         isPaused = true;
+        isFinished = true;
         techSelect.getItems().addAll("ECC", "Con-C", "GAIN", "PCC", "CPCC");
         schedSelect.getItems().addAll("Immed", "GEAS-ori", "GEAS-opt");
         runTypeSelect.getItems().addAll("static-change-based", "dynamic-change-based", "static-time-based", "dynamic-time-based");
@@ -218,24 +230,63 @@ public class MainFrameController {
         }
     }
 
+    private String genConfig() {
+        List<String> content = new ArrayList<>();
+
+        if (!"".equals(ruleFileLink.getText())) {
+            content.add("ruleFilePath=" + ruleFileLink.getText());
+        }
+
+
+
+        if (!"".equals(patternFileLink.getText())) {
+            content.add("patternFilePath=" + patternFileLink.getText());
+        }
+
+        content.add("technique=" + techSelect.getValue());
+        content.add("schedule=" + schedSelect.getValue());
+        content.add("changeHandlerType=" + runTypeSelect.getValue());
+
+        if (!"".equals(dataFileLink.getText())) {
+            if (runTypeSelect.getValue().contains("change")) {
+                content.add("changeFilePath=" + dataFileLink.getText());
+            }
+            else {
+                content.add("dataFilePath=" + dataFileLink.getText());
+            }
+        }
+
+        if (!"".equals(oracleFileLink.getText())) {
+            content.add("oracleFilePath=" + oracleFileLink.getText());
+        }
+
+        content.add("taskNum=" + concurrentSelect.getValue());
+
+        content.add("logFilePath=" + logFilePath);
+
+        FileHelper.writeFile(configFilePath, content);
+
+        return configFilePath;
+    }
+
     @FXML
     private void handleRuleFileSelect() {
-        ruleFileLink.setText(chooseFile(ruleFileLink.getText(),"rule", "*.xml"));
+        ruleFileLink.setText(chooseFile(ruleFileLink.getText(),"rule", "*.xml").replaceAll("\\\\", "/"));
     }
 
     @FXML
     private void handlePatternFileSelect() {
-        patternFileLink.setText(chooseFile(patternFileLink.getText(),"pattern", "*.xml"));
+        patternFileLink.setText(chooseFile(patternFileLink.getText(),"pattern", "*.xml").replaceAll("\\\\", "/"));
     }
 
     @FXML
     private void handleDataFileSelect() {
-        dataFileLink.setText(chooseFile(dataFileLink.getText(),"data", "*.txt"));
+        dataFileLink.setText(chooseFile(dataFileLink.getText(),"data", "*.txt").replaceAll("\\\\", "/"));
     }
 
     @FXML
     private void handleOracleFileSelect() {
-        oracleFileLink.setText(chooseFile(oracleFileLink.getText(),"oracle", "*.log"));
+        oracleFileLink.setText(chooseFile(oracleFileLink.getText(),"oracle", "*.log").replaceAll("\\\\", "/"));
     }
 
     @FXML
@@ -285,17 +336,39 @@ public class MainFrameController {
 
         if (isPaused) {
             start.setText("暂停");
-            //TODO: consistency checking go
+            checker.go();
         }
         else {
             start.setText("启动");
-            //TODO: consistency checking pause
+            checker.pause();
         }
 
         setDisableSelect(true);
-        logExport.setDisable(isPaused);
 
         isPaused = !isPaused;
+
+        if (isFinished) {
+
+            if (runTypeSelect.getValue().contains("static")) {
+                checker = new CheckerBuilder();
+            }
+            else {
+                checker = new Server();
+            }
+
+            if (checker.parseConfigFile(genConfig()) == null) {
+                isFinished = false;
+                new Thread(checker).start();
+            }
+            else {
+                isPaused = true;
+                start.setText("启动");
+                start.setDisable(false);
+                setDisableSelect(false);
+            }
+        }
+
+
     }
 
     /**
@@ -304,12 +377,13 @@ public class MainFrameController {
     @FXML
     private void handleStopSystem() {
         isPaused = true;
+        isFinished = true;
+
+        checker.finish();
         start.setText("启动");
         start.setDisable(false);
         setDisableSelect(false);
-        logExport.setDisable(false);
 
-        //TODO: consistency checking stop and set checker null
     }
 
     /**
