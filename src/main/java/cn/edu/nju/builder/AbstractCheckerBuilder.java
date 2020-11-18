@@ -76,6 +76,21 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     private List<String> contexts;
 
 
+    public static int dataCount;
+
+    public static double progress;
+
+    public static boolean isPaused;
+
+    public static boolean isFinished;
+
+    public static void reset() {
+        dataCount = 0;
+        progress = 0;
+        isPaused = false;
+        isFinished = false;
+    }
+
     public AbstractCheckerBuilder() {
 
     }
