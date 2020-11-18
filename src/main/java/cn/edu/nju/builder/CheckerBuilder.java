@@ -1,6 +1,7 @@
 package cn.edu.nju.builder;
 
 import cn.edu.nju.checker.Checker;
+import cn.edu.nju.util.Accuracy;
 import cn.edu.nju.util.LogFileHelper;
 
 import java.io.BufferedReader;
@@ -46,7 +47,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("Total INC: " + incCount, true);
         LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms", true);
 
-        accuracy(LogFileHelper.logFilePath);
+        Accuracy.accuracy(LogFileHelper.logFilePath, this.oracleFilePath, true);
         shutdown();
 
     }

@@ -2,6 +2,7 @@ package cn.edu.nju.server;
 
 import cn.edu.nju.builder.AbstractCheckerBuilder;
 import cn.edu.nju.checker.Checker;
+import cn.edu.nju.util.Accuracy;
 import cn.edu.nju.util.FileHelper;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.TimestampHelper;
@@ -106,7 +107,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("Total Inc: " + inc, true);
         LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms", true);
 
-        accuracy(LogFileHelper.logFilePath);
+        Accuracy.accuracy(LogFileHelper.logFilePath, this.oracleFilePath, true);
         shutdown();
     }
 
