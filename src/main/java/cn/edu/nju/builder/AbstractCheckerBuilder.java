@@ -88,6 +88,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
     public static boolean isFinished;
 
+    public static int ruleNum;
+
+    public static int patternNum;
+
     public static synchronized void reset() {
         dataCount = 0;
         totalTime = 0L;
@@ -95,6 +99,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         progress = 0;
         isPaused = false;
         isFinished = false;
+        ruleNum = 0;
+        patternNum = 0;
     }
 
     public static synchronized void go() {
@@ -308,6 +314,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
             Document document = db.parse(patternFilePath);
 
             NodeList patternList = document.getElementsByTagName("pattern");
+            patternNum = patternList.getLength();
             System.out.println("[INFO] pattern文件：" + patternFilePath + "，总共" + patternList.getLength() + "个patterns");
             for (int i = 0; i < patternList.getLength(); i++) {
                 Node patNode = patternList.item(i);
@@ -419,6 +426,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
             Document document = db.parse(ruleFilePath);
 
             NodeList ruleList = document.getElementsByTagName("rule");
+            ruleNum = ruleList.getLength();
             System.out.println("[INFO] rule文件：" + ruleFilePath + "，总共" + ruleList.getLength() + "条rules");
 
             for(int i = 0; i < ruleList.getLength(); i++){
