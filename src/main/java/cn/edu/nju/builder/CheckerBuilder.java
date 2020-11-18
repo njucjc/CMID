@@ -33,6 +33,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         dataCount = 0;
         totalTime = 0L;
         interval = 0L;
+        progress = 0.0;
         while (dataCount < contextList.size()) {
             System.out.print("[INFO] 当前进度: " + (dataCount + 1) + "/" + contextList.size() + '\r');
 
@@ -49,6 +50,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
                     interval = diff(contextList.get(dataCount), contextList.get(dataCount - 1));
                 }
                 dataCount++;
+                progress = ((double) dataCount) / contextList.size();
 
                 long endTime = System.nanoTime(); //获取结束时间
                 totalTime += (endTime - startTime);
@@ -56,6 +58,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
 
         }
 
+        progress = 1.0;
         scheduler.reset();
         changeHandler.doCheck();
 

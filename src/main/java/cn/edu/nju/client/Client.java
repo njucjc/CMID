@@ -64,6 +64,11 @@ public class Client implements Runnable{
         long totalTime = 0;
         long startTime = System.nanoTime();
         long endTime = 0;
+
+        for (int i = 0; i < 10000; i++) {
+            sendMsg("timeFlag," + getTimestamp(contextStrList.get(0)) + "," + contextStrList.get(contextStrList.size() - 1));
+        }
+
         for (int i = 0; i < contextStrList.size(); i++){
 
             System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + " ms");
@@ -101,6 +106,15 @@ public class Client implements Runnable{
             socket.send(packet);
         }catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private String getTimestamp(String chg) {
+        if (chg.contains("+") || chg.contains("-")) {
+            return chg.split(",")[0];
+        }
+        else {
+            return chg.split(",")[3];
         }
     }
 

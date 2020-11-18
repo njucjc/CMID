@@ -19,7 +19,6 @@ import java.util.*;
 
 public class Server extends AbstractCheckerBuilder implements Runnable{
     private DatagramSocket serverSocket;
-    private boolean running;
     private int port = 8000;
     private byte [] buf = new byte[256];
 
@@ -34,16 +33,16 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
     @Override
     public void run() {
-        running = true;
 
-
-        long count = 0;
-
-        long timeSum = 0;
+        dataCount = 0;
+        totalTime = 0L;
+        interval = 0L;
+        String startTime = "2007-10-26 11:00:00:000";
+        String endTime = "2007-10-26 23:01:00:111";
 
         System.out.println("[INFO] Sever启动完毕，等待Client连接并启动一致性检测......");
         try {
-            while (running) {
+            while (!isFinished) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 serverSocket.receive(packet);
 
@@ -51,45 +50,48 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 if ("exit".equals(msg)) {
                     System.out.println();
                     System.out.println("[INFO] 一致性检测结束，Server关闭......");
-                    running = false;
+                    isFinished = true;
                     break;
                 }
 
+                if (msg.contains("timeFlag")) {
+                    startTime = msg.split(",")[1];
+                    endTime = msg.split(",")[2];
+                    continue;
+                }
+
+                if (isPaused) {
+                    continue;
+                }
 
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
-                long interval = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
-                assert count != -1:"counter overflow.";
-//                if(onDemand && switcher.isSwitch(num, interval)) {
-//
-//                    switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
-//                    long startUpdate = System.nanoTime();
-//                    update(switcher.getCheckerType(), switcher.getSchedulerType());
-//                    long endUpdate = System.nanoTime();
-//                    switchTimeCount += endUpdate - startUpdate;
-//                }
+                interval = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
+                assert dataCount != -1:"counter overflow.";
 
                 msg = msg.substring(msg.indexOf(",") + 1, msg.lastIndexOf(","));
+                progress = ((double) diff(msg, startTime)) / TimestampHelper.timestampDiff(startTime, endTime);
 
                 long start = System.nanoTime();
 
                 changeHandler.doContextChange(num, msg);
-                count++;
+                dataCount++;
 
                 long end = System.nanoTime();
                 long checkTime = (end - start);
-                timeSum += checkTime;
+                totalTime += checkTime;
 
                 int inc = 0;
                 for (Checker checker : checkerList) {
                     inc += checker.getInc();
                 }
 
-                System.out.print( "[INFO] Send/Receive: " + (num + 1) + "/" + count +
+                System.out.print( "[INFO] Send/Receive: " + (num + 1) + "/" + dataCount +
                         "\tTotal inc: "+ inc +
-                        "\tTotal Checking time: " + (timeSum/1000000)  +" ms\r");
+                        "\tTotal Checking time: " + (totalTime / 1000000)  +" ms\r");
 
 
             }
+            progress = 1.0;
             scheduler.reset();
             changeHandler.doCheck();
         }
@@ -99,17 +101,27 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
         changeHandler.shutdown();
         int inc = 0;
-        long time = 0L;
         for (Checker checker : checkerList) {
             inc += checker.getInc();
-            time = time + checker.getTimeCount();
         }
         LogFileHelper.getLogger().info("Total Inc: " + inc, true);
-        LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms", true);
+        LogFileHelper.getLogger().info("Total checking time: " +  totalTime / 1000000 + " ms", true);
 
         accuracy(true);
         shutdown();
     }
+
+    private long diff(String chg1, String timestamp) {
+        String [] elem1 = chg1.split(",");
+
+        if (changeHandlerType.contains("time")) {
+            return TimestampHelper.timestampDiff(elem1[0], timestamp);
+        }
+        else {
+            return TimestampHelper.timestampDiff(elem1[3], timestamp);
+        }
+    }
+
 
     public static void main(String[] args) {
         if(args.length == 1) {
