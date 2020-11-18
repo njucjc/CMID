@@ -47,7 +47,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("Total INC: " + incCount, true);
         LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms", true);
 
-        Accuracy.accuracy(LogFileHelper.logFilePath, this.oracleFilePath, true);
+        accuracy(true);
         shutdown();
 
     }

@@ -67,7 +67,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     private String kernelFilePath;
 
-    protected String oracleFilePath;
+    public static String oracleFilePath;
 
     private CUcontext cuContext;
 
@@ -248,7 +248,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         LogFileHelper.initLogger(logFilePath);
 
         //oracle
-        this.oracleFilePath = properties.getProperty("oracleFilePath");
+        oracleFilePath = properties.getProperty("oracleFilePath");
 
         //change handle
         configChangeHandler();
@@ -593,7 +593,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
     }
 
-
+    public static int [] accuracy(boolean toEnd) {
+        return Accuracy.accuracy(LogFileHelper.logFilePath, oracleFilePath, toEnd);
+    }
 
     protected int computeWorkload() {
         int workload = 0;

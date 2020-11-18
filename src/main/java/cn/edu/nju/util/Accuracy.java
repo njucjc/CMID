@@ -7,18 +7,20 @@ import java.util.*;
 
 public class Accuracy {
     public static int [] accuracy(String myLogFile, String groundTruthFile, boolean toEnd) {
+        List<String> myLog = readLogFile(myLogFile);
+
         if (groundTruthFile == null) {
-            return new int [] {0, 0};
+            return new int [] {myLog.size(), 0, 0};
         }
 
         List<String> groundTruth = readLogFile(groundTruthFile);
-        List<String> myLog = readLogFile(myLogFile);
+
 
         if (groundTruth.size() == 0) {
-            return new int [] {myLog.size(), 0};
+            return new int [] {myLog.size(), myLog.size(), 0};
         }
         else if (myLog.size() == 0) {
-            return new int [] {0, 0};
+            return new int [] {0, 0, 0};
         }
 
         int groundTruthSize = groundTruth.size();
@@ -55,7 +57,7 @@ public class Accuracy {
         }
 
         if (!toEnd) {
-            return new int [] {fault, miss};
+            return new int [] {myLog.size(), fault, miss};
         }
 
         System.out.println("[INFO] oracle验证结束，结果为：");
@@ -68,7 +70,7 @@ public class Accuracy {
             LogFileHelper.getLogger().info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruthSize) + "% (" + fault + "/" + groundTruthSize + ")", true);
         }
 
-        return new int [] {fault, miss};
+        return new int [] {myLog.size(), fault, miss};
     }
 
     public static List<String> readLogFile (String filePath) {
