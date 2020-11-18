@@ -368,11 +368,18 @@ public class MainFrameController {
                 checker = new Server();
             }
 
-            if (checker.parseConfigFile(genConfig()) == null) {
+            String msg = checker.parseConfigFile(genConfig());
+            if (msg == null) {
                 isFinished = false;
                 new Thread(checker).start();
             }
             else {
+
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setContentText(msg);
+                alert.show();
+
                 isPaused = true;
                 start.setText("启动");
                 start.setDisable(false);
