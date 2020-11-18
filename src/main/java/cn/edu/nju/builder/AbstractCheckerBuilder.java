@@ -78,6 +78,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     public static int dataCount;
 
+    public static long totalTime;
+
+    public static long interval;
+
     public static double progress;
 
     public static boolean isPaused;
@@ -86,6 +90,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     public static void reset() {
         dataCount = 0;
+        totalTime = 0L;
+        interval = 0;
         progress = 0;
         isPaused = false;
         isFinished = false;
