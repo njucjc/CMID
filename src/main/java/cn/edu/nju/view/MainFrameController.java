@@ -216,7 +216,7 @@ public class MainFrameController {
         }
         else {
             oracleFileSelect.setDisable(true);
-            oracleFileSelect.setDisable(true);
+            oracleFileLink.setDisable(true);
         }
     }
 
