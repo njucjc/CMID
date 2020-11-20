@@ -111,10 +111,10 @@ public class Client implements Runnable{
 
     private String getTimestamp(String chg) {
         if (chg.contains("+") || chg.contains("-")) {
-            return chg.split(",")[0];
+            return chg.split(",")[3];
         }
         else {
-            return chg.split(",")[3];
+            return chg.split(",")[0];
         }
     }
 
