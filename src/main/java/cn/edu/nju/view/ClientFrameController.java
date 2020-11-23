@@ -29,14 +29,12 @@ public class ClientFrameController {
     @FXML
     private Label progressLabel;
 
-    private boolean isPaused;
     private boolean isFinished;
 
     private Client client;
 
     @FXML
     private void initialize() {
-        isPaused = true;
         isFinished = true;
 
         dataFileLink.setText("");
@@ -67,16 +65,9 @@ public class ClientFrameController {
 
     @FXML
     private void handleStartClient() {
-        if (isPaused) {
-            start.setText("暂停");
-            client.go();
-        }
-        else {
-            start.setText("启动");
-            client.pause();
-        }
+        start.setDisable(true);
         dataFileSelect.setDisable(true);
-        isPaused = !isPaused;
+        port.setDisable(true);
 
         if (isFinished) {
             if (!dataFileLink.getText().equals("")) {
@@ -90,23 +81,22 @@ public class ClientFrameController {
                 alert.setContentText("请选择数据文件路径");
                 alert.show();
 
-                isPaused = true;
-                start.setText("启动");
                 start.setDisable(false);
                 dataFileSelect.setDisable(false);
+                port.setDisable(false);
             }
         }
     }
 
     @FXML
     private void handleStopClient() {
-        isPaused = true;
         isFinished = true;
 
         client.finish();
-        start.setText("启动");
+
         start.setDisable(false);
         dataFileSelect.setDisable(false);
+        port.setDisable(false);
     }
 
     @FXML

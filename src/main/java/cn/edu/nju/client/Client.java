@@ -28,14 +28,6 @@ public class Client implements Runnable{
 
     public static double progress;
 
-    public static synchronized void go() {
-        isPaused = false;
-    }
-
-    public static synchronized void pause() {
-        isPaused = true;
-    }
-
     public static synchronized void finish() {
         isFinished = true;
     }
@@ -48,6 +40,7 @@ public class Client implements Runnable{
 
     public Client(int port, String contextFilePath)  {
         reset();
+        this.port = port;
         this.contextStrList = new ArrayList<>();
         this.sleepTime = new ArrayList<>();
 
@@ -96,28 +89,27 @@ public class Client implements Runnable{
                 break;
             }
 
-            if (!isPaused) {
-                System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + " ms");
-                sleepMillis = sleepTime.get(i);
-                sendMsg(i + "," + contextStrList.get(i) + "," + sleepMillis);
-                endTime = System.nanoTime();
 
-                long diff = (endTime - startTime) - totalTime * 1000000;
-                totalTime += sleepMillis;
+            System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + " ms");
+            sleepMillis = sleepTime.get(i);
+            sendMsg(i + "," + contextStrList.get(i) + "," + sleepMillis);
+            endTime = System.nanoTime();
+
+            long diff = (endTime - startTime) - totalTime * 1000000;
+            totalTime += sleepMillis;
 
 //            assert diff >= 0 : "Time error !";
 
-                sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 0;
+            sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 0;
 
-                try {
+            try {
                     Thread.sleep(sleepMillis);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                progress = ((double) i) / contextStrList.size();
-                i++;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+
+            progress = ((double) i) / contextStrList.size();
+            i++;
 
         }
         endTime = System.nanoTime();
