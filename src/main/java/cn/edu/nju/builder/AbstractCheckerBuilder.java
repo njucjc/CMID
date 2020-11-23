@@ -136,7 +136,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         String technique = properties.getProperty("technique");
         if (technique == null) {
             System.out.println("[INFO] technique项无配置");
-            return "[INFO] technique项无配置";
+            return "检测技术无配置";
         }
         else if("pcc".equals(technique.toLowerCase())) {
             this.checkType = PCC_TYPE;
@@ -150,25 +150,25 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
             this.checkType = CONPCC_TYPE;
         }else {
             System.out.println("[INFO] technique项配置错误：" + technique);
-            return "[INFO] technique项配置错误：" + technique;
+            return "检测技术配置错误：" + technique;
         }
 
         //taskNum
         String taskNumStr = properties.getProperty("taskNum");
         if (taskNumStr == null) {
             System.out.println("[INFO] taskNum项无配置");
-            return "[INFO] taskNum项无配置";
+            return "并发线程无配置";
         }
         else if(taskNumStr.matches("[0-9]+")) {
             this.taskNum = Integer.parseInt(taskNumStr);
             if (taskNum == 0) {
                 System.out.println("[INFO] taskNum项配置错误: " + taskNumStr);
-                return "[INFO] taskNum项配置错误: " + taskNumStr;
+                return "并发线程配置错误: " + taskNumStr;
             }
         } else {
             if (!"-1".equals(taskNumStr)) {
                 System.out.println("[INFO] taskNum项配置错误: " + taskNumStr);
-                return "[INFO] taskNum项配置错误: " + taskNumStr;
+                return "并发线程配置错误: " + taskNumStr;
             }
         }
 
@@ -178,7 +178,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         this.changeHandlerType = properties.getProperty("changeHandlerType");
         if (this.changeHandlerType == null) {
             System.out.println("[INFO] changeHandlerType项无配置");
-            return "[INFO] changeHandlerType项无配置";
+            return "运行方式无配置";
         }
 
         
@@ -205,7 +205,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         String patternFilePath = properties.getProperty("patternFilePath");
         if (patternFilePath == null) {
             System.out.println("[INFO] patternFilePath项无配置");
-            return "[INFO] patternFilePath项无配置";
+            return "Pattern文件路径无配置";
         }
         String msg1 = parsePatternFile(patternFilePath);
         if (msg1 != null) {
@@ -216,7 +216,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         String ruleFilePath = properties.getProperty("ruleFilePath");
         if (ruleFilePath == null) {
             System.out.println("[INFO] ruleFilePath项无配置");
-            return "[INFO] ruleFilePath项无配置";
+            return "Rule文件路径无配置";
         }
         String msg2 = parseRuleFile(ruleFilePath);
         if (msg2 != null) {
@@ -228,7 +228,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
         if (schedule == null) {
             System.out.println("[INFO] schedule项无配置");
-            return "[INFO] schedule项无配置";
+            return "调度策略无配置";
         }
         else if ("immed".equals(schedule.toLowerCase())) {
             this.scheduler = new BatchScheduler(1);
@@ -249,7 +249,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         else {
             this.scheduleType = -1;
             System.out.println("[INFO] schedule项配置错误: " + schedule);
-            return "[INFO] schedule项配置错误: " + schedule;
+            return "调度策略配置错误: " + schedule;
         }
 
         System.out.println("[INFO] 检测技术：" + technique);
@@ -261,20 +261,20 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
         if (changeHandlerType.contains("static-time") && this.dataFilePath == null) {
             System.out.println("[INFO] dataFilePath项无配置");
-            return "[INFO] dataFilePath项无配置";
+            return "数据文件路径无配置";
         }
         else if (changeHandlerType.contains("static-change") && this.changeFilePath == null) {
             System.out.println("[INFO] changeFilePath项无配置");
-            return "[INFO] changeFilePath项无配置";
+            return "数据文件路径无配置";
         }
         else {
             if(changeHandlerType.contains("static-time") && !FileHelper.isFileExists(this.dataFilePath) ) {
                 System.out.println("[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath);
-                return "[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath;
+                return "数据文件路径配置中的文件不存在：" + this.dataFilePath;
             }
             else if (changeHandlerType.contains("static-change") && !FileHelper.isFileExists(this.changeFilePath)) {
                 System.out.println("[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath);
-                return "[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath;
+                return "数据文件路径配置中的文件不存在：" + this.changeFilePath;
             }
         }
 
@@ -283,7 +283,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         String logFilePath = properties.getProperty("logFilePath");
         if (logFilePath == null) {
             System.out.println("[INFO] logFilePath项无配置");
-            return "[INFO] logFilePath项无配置";
+            return "日志文件路径无配置";
         }
         LogFileHelper.initLogger(logFilePath);
 
@@ -384,14 +384,14 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
                             break;
                         default:
                             System.out.println("[INFO] '" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName());
-                            return "[INFO] '" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName();
+                            return "'" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName();
                     }
                 }
 
                 for(String key : member.keySet()) {
                     if (!member.get(key)) {
                         System.out.println("[INFO] '" + patternFilePath + "'文件中缺少pattern标识符：" + key);
-                        return "[INFO] '" + patternFilePath + "'文件中缺少pattern标识符：" + key;
+                        return "'" + patternFilePath + "'文件中缺少pattern标识符：" + key;
                     }
                 }
 
@@ -411,7 +411,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
         if (patternMap.isEmpty()) {
             System.out.println("[INFO] pattern文件中没有pattern");
-            return "[INFO] pattern文件中没有pattern";
+            return "Pattern文件中没有pattern";
         }
 
         return null;
@@ -485,7 +485,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
         if (checkerList.isEmpty()) {
             System.out.println("[INFO] rule文件中没有rule");
-            return "[INFO] rule文件中没有rule";
+            return "Rule文件中没有rule";
         }
 
         return null;
@@ -539,7 +539,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
                         break;
                     default:
                         System.out.println("[INFO] '" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName);
-                        return "[INFO] '" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName;
+                        return "'" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName;
                 }
 
                 String msg = buildSyntaxTree(e.getChildNodes(), stNode, stMap, ruleFilePath);
