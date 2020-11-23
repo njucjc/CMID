@@ -220,29 +220,7 @@ public class MainFrameController {
         }
     }
 
-    private String chooseFile(String oldPath, String type, String suffix) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("打开" + type + "文件");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(type + "文件", suffix));
-        File file = fileChooser.showOpenDialog(new Stage());
 
-        if (file == null) {
-            return oldPath;
-        }
-        else {
-            return file.getAbsolutePath();
-        }
-    }
-
-    private void  openFile(String path) {
-        if (path != null && !path.equals("")) {
-            try {
-                Desktop.getDesktop().open(new File(path));
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-        }
-    }
 
     private String genConfig() {
         List<String> content = new ArrayList<>();
@@ -285,42 +263,42 @@ public class MainFrameController {
 
     @FXML
     private void handleRuleFileSelect() {
-        ruleFileLink.setText(chooseFile(ruleFileLink.getText(),"rule", "*.xml").replaceAll("\\\\", "/"));
+        ruleFileLink.setText(FileGUIHelper.chooseFile(ruleFileLink.getText(),"rule", "*.xml").replaceAll("\\\\", "/"));
     }
 
     @FXML
     private void handlePatternFileSelect() {
-        patternFileLink.setText(chooseFile(patternFileLink.getText(),"pattern", "*.xml").replaceAll("\\\\", "/"));
+        patternFileLink.setText(FileGUIHelper.chooseFile(patternFileLink.getText(),"pattern", "*.xml").replaceAll("\\\\", "/"));
     }
 
     @FXML
     private void handleDataFileSelect() {
-        dataFileLink.setText(chooseFile(dataFileLink.getText(),"data", "*.txt").replaceAll("\\\\", "/"));
+        dataFileLink.setText(FileGUIHelper.chooseFile(dataFileLink.getText(),"data", "*.txt").replaceAll("\\\\", "/"));
     }
 
     @FXML
     private void handleOracleFileSelect() {
-        oracleFileLink.setText(chooseFile(oracleFileLink.getText(),"oracle", "*.log").replaceAll("\\\\", "/"));
+        oracleFileLink.setText(FileGUIHelper.chooseFile(oracleFileLink.getText(),"oracle", "*.log").replaceAll("\\\\", "/"));
     }
 
     @FXML
     private void handleRuleFileOpen() {
-        openFile(ruleFileLink.getText());
+        FileGUIHelper.openFile(ruleFileLink.getText());
     }
 
     @FXML
     private void handlePatternFileOpen() {
-        openFile(patternFileLink.getText());
+        FileGUIHelper.openFile(patternFileLink.getText());
     }
 
     @FXML
     private void handleDataFileOpen() {
-        openFile(dataFileLink.getText());
+        FileGUIHelper.openFile(dataFileLink.getText());
     }
 
     @FXML
     private void handleOracleFileOpen() {
-        openFile(oracleFileLink.getText());
+        FileGUIHelper.openFile(oracleFileLink.getText());
     }
 
     @FXML

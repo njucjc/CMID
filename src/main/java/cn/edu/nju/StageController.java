@@ -1,15 +1,19 @@
 package cn.edu.nju;
 
+import cn.edu.nju.client.ClientApp;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
+import java.util.Map;
 
 public class StageController {
 
-    private HashMap<String, Stage> stages = new HashMap<>();
+    private Map<String, Stage> stages = new HashMap<>();
+
+    private Map<String, String> allStages;
 
     public void addStage(String name, Stage stage) {
         stages.put(name, stage);
@@ -17,6 +21,10 @@ public class StageController {
 
     public Stage getStage(String name) {
         return stages.get(name);
+    }
+
+    public StageController(Map<String, String> allStages) {
+        this.allStages = allStages;
     }
 
     public void loadStages(String name, String resources) {
@@ -29,17 +37,16 @@ public class StageController {
             stage.setScene(scene);
             stage.setTitle(name);
             stage.setResizable(false);
-            if(name.equals("环境上下文一致性错误检测平台")){
+            if(name.equals("环境上下文一致性错误检测平台") || name.equals("环境上下文一致性错误检测客户端")){
                 stage.setOnCloseRequest( event-> {
                     // 关闭所有窗口
-                    for(String n : MainApp.allStages.keySet()) {
-                        MainApp.stageController.closeStage(n);
+                    for(String n : allStages.keySet()) {
+                        closeStage(n);
                     }
                     // 退出所有线程
                     System.exit(0);
                 });
             }
-
 
             this.addStage(name, stage);
         }
@@ -50,7 +57,7 @@ public class StageController {
     }
 
     public void showStage(String name) {
-        loadStages(name, MainApp.allStages.get(name));
+        loadStages(name, allStages.get(name));
         this.getStage(name).show();
     }
 

@@ -22,8 +22,29 @@ public class Client implements Runnable{
     private List<String> contextStrList;
     private List<Long> sleepTime;
 
+    private static boolean isPaused;
+
+    private static boolean isFinished;
+
+    public static synchronized void go() {
+        isPaused = false;
+    }
+
+    public static synchronized void pause() {
+        isPaused = true;
+    }
+
+    public static synchronized void finish() {
+        isFinished = true;
+    }
+
+    public static synchronized void reset() {
+        isPaused = false;
+        isFinished = false;
+    }
 
     public Client(String contextFilePath)  {
+        reset();
         this.contextStrList = new ArrayList<>();
         this.sleepTime = new ArrayList<>();
 
@@ -66,27 +87,34 @@ public class Client implements Runnable{
         long endTime = 0;
 
         for (int i = 0; i < 10000; i++) {
-            sendMsg("timeFlag," + getTimestamp(contextStrList.get(0)) + "," + contextStrList.get(contextStrList.size() - 1));
+            sendMsg("timeFlag," + getTimestamp(contextStrList.get(0)) + "," + getTimestamp(contextStrList.get(contextStrList.size() - 1)));
         }
 
-        for (int i = 0; i < contextStrList.size(); i++){
+        for (int i = 0; i < contextStrList.size(); ){
+            if (isFinished) {
+                break;
+            }
 
-            System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + " ms");
-            sleepMillis = sleepTime.get(i);
-            sendMsg(i+ "," + contextStrList.get(i) + "," + sleepMillis);
-            endTime = System.nanoTime();
+            if (!isPaused) {
+                System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + " ms");
+                sleepMillis = sleepTime.get(i);
+                sendMsg(i + "," + contextStrList.get(i) + "," + sleepMillis);
+                endTime = System.nanoTime();
 
-            long diff = (endTime - startTime) - totalTime * 1000000;
-            totalTime += sleepMillis;
+                long diff = (endTime - startTime) - totalTime * 1000000;
+                totalTime += sleepMillis;
 
 //            assert diff >= 0 : "Time error !";
 
-            sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 0;
+                sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 0;
 
-            try {
-                Thread.sleep(sleepMillis);
-            }catch (InterruptedException e) {
-                e.printStackTrace();
+                try {
+                    Thread.sleep(sleepMillis);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                i++;
             }
 
         }
