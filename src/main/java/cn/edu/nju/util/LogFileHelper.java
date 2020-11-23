@@ -1,7 +1,9 @@
 package cn.edu.nju.util;
 
+
 import java.io.File;
-import java.util.Scanner;
+import java.io.FileWriter;
+import java.io.IOException;
 
 /**
  * Created by njucjc on 2017/10/13.
@@ -13,7 +15,15 @@ public class LogFileHelper {
     public static void  initLogger(String log) {
         logFilePath = log;
         if (FileHelper.isFileExists(logFilePath)) {
-            new File(logFilePath).delete();
+            try {
+                FileWriter fileWriter =new FileWriter(new File(logFilePath));
+                fileWriter.write("");
+                fileWriter.flush();
+                fileWriter.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         }
         /*File file = new File(logFilePath);
         if (file.exists()) {

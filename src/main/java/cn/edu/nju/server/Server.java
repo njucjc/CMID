@@ -110,6 +110,7 @@ public class Server extends AbstractCheckerBuilder{
 
         accuracy(true);
         shutdown();
+        serverSocket.close();
     }
 
     private long diff(String chg1, String timestamp) {

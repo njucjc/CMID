@@ -17,12 +17,10 @@ import java.util.Properties;
 public class Client implements Runnable{
     private DatagramSocket socket;
     private InetAddress address;
-    private int port = 8000;
+    private int port;
 
     private List<String> contextStrList;
     private List<Long> sleepTime;
-
-    private static boolean isPaused;
 
     private static boolean isFinished;
 
@@ -33,7 +31,6 @@ public class Client implements Runnable{
     }
 
     public static synchronized void reset() {
-        isPaused = false;
         isFinished = false;
         progress = 0.0;
     }
