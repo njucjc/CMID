@@ -10,10 +10,7 @@ import cn.edu.nju.scheduler.BatchScheduler;
 import cn.edu.nju.scheduler.GEASOptScheduler;
 import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
-import cn.edu.nju.util.Accuracy;
-import cn.edu.nju.util.FileHelper;
-import cn.edu.nju.util.LogFileHelper;
-import cn.edu.nju.util.PTXFileHelper;
+import cn.edu.nju.util.*;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdevice;
 import jcuda.driver.JCudaDriver;
@@ -384,7 +381,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
                             break;
                         default:
                             System.out.println("[INFO] '" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName());
-                            return "'" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName();
+                            return "'" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName() + EditDist.minEditDist(childNodes.item(j).getNodeName(), "pattern");
                     }
                 }
 
@@ -539,7 +536,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
                         break;
                     default:
                         System.out.println("[INFO] '" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName);
-                        return "'" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName;
+                        return "'" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName + EditDist.minEditDist(nodeName, "rule");
                 }
 
                 String msg = buildSyntaxTree(e.getChildNodes(), stNode, stMap, ruleFilePath);
