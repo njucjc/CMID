@@ -18,9 +18,9 @@ import java.util.*;
 
 
 public class Server extends AbstractCheckerBuilder{
-    private static DatagramSocket serverSocket;
-    private static int port = 8000;
-    private static byte [] buf = new byte[256];
+    private DatagramSocket serverSocket;
+    public static int port = 8000;
+    private byte [] buf = new byte[256];
 
     private static String startTime = "2007-10-26 11:00:00:000";
     private static String endTime = "2007-10-26 23:01:00:111";
@@ -29,18 +29,17 @@ public class Server extends AbstractCheckerBuilder{
     public Server() {
         reset();
         try {
-            if (serverSocket == null) {
-                serverSocket = new DatagramSocket(port);
-            }
+            serverSocket = new DatagramSocket(port);
         }catch(IOException e) {
             e.printStackTrace();
         }
+        port++;
     }
 
     @Override
     public void run() {
 
-        System.out.println("[INFO] Sever启动完毕，等待Client连接并启动一致性检测......");
+        System.out.println("[INFO] Sever启动完毕，端口为：" + (port - 1) + "，等待Client连接并启动一致性检测......");
         try {
             while (!isFinished) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);

@@ -95,6 +95,9 @@ public class MainFrameController {
     private Button start;
 
     @FXML
+    private Label port;
+
+    @FXML
     private SplitPane splitPane;
 
     private String logFilePath = FileHelper.createTempFile("tempLog", ".log");
@@ -111,6 +114,7 @@ public class MainFrameController {
     private void initialize() {
         isPaused = true;
         isFinished = true;
+        port.setText("");
         LogFileHelper.initLogger(logFilePath);
         techSelect.getItems().addAll("ECC", "Con-C", "GAIN", "PCC", "CPCC");
         schedSelect.getItems().addAll("Immed", "GEAS-ori", "GEAS-opt");
@@ -139,6 +143,8 @@ public class MainFrameController {
 
                 dataFileSelect.setDisable(false);
                 dataFileLink.setDisable(false);
+
+                port.setText("");
             }
             else {
                 oracleFileSelect.setDisable(false);
@@ -346,6 +352,7 @@ public class MainFrameController {
             }
             else {
                 checker = new Server();
+                port.setText("端口：" + (Server.port - 1));
             }
 
             String msg = checker.parseConfigFile(genConfig());

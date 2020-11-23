@@ -167,6 +167,11 @@
                         <Font size="25.0" />
                      </font>
                   </Button>
+                  <Label fx:id="port" layoutX="1072.0" layoutY="51.0" prefHeight="33.0" prefWidth="179.0">
+                     <font>
+                        <Font size="25.0" />
+                     </font>
+                  </Label>
                </children></AnchorPane>
         </items>
       </SplitPane>

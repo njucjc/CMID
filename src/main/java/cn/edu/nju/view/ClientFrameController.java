@@ -2,10 +2,12 @@ package cn.edu.nju.view;
 
 import cn.edu.nju.client.Client;
 import cn.edu.nju.client.ClientApp;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Hyperlink;
+import javafx.scene.control.*;
+
+import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
 
 
 public class ClientFrameController {
@@ -18,6 +20,15 @@ public class ClientFrameController {
     @FXML
     private Button start;
 
+    @FXML
+    private ComboBox<Integer> port;
+
+    @FXML
+    private ProgressBar progressBar;
+
+    @FXML
+    private Label progressLabel;
+
     private boolean isPaused;
     private boolean isFinished;
 
@@ -29,6 +40,29 @@ public class ClientFrameController {
         isFinished = true;
 
         dataFileLink.setText("");
+        for(int i = 8000; i < 9000; ++i) {
+            port.getItems().add(i);
+        }
+
+        port.setValue(8000);
+        port.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            port.setValue(newValue);
+        });
+
+        new Thread(() -> {
+            while (true) {
+                Platform.runLater(()-> {
+                    progressBar.setProgress(Client.progress);
+                    progressLabel.setText(new DecimalFormat("##0.0%").format(Client.progress));
+                });
+
+                try {
+                    TimeUnit.MILLISECONDS.sleep(150);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
     }
 
     @FXML
@@ -47,7 +81,7 @@ public class ClientFrameController {
         if (isFinished) {
             if (!dataFileLink.getText().equals("")) {
                 isFinished = false;
-                client = new Client(dataFileLink.getText());
+                client = new Client(port.getValue(), dataFileLink.getText());
                 new Thread(client).start();
             }
             else {

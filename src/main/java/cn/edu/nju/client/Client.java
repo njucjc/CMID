@@ -26,6 +26,8 @@ public class Client implements Runnable{
 
     private static boolean isFinished;
 
+    public static double progress;
+
     public static synchronized void go() {
         isPaused = false;
     }
@@ -41,9 +43,10 @@ public class Client implements Runnable{
     public static synchronized void reset() {
         isPaused = false;
         isFinished = false;
+        progress = 0.0;
     }
 
-    public Client(String contextFilePath)  {
+    public Client(int port, String contextFilePath)  {
         reset();
         this.contextStrList = new ArrayList<>();
         this.sleepTime = new ArrayList<>();
@@ -112,6 +115,7 @@ public class Client implements Runnable{
                     e.printStackTrace();
                 }
 
+                progress = ((double) i) / contextStrList.size();
                 i++;
             }
 
@@ -120,6 +124,7 @@ public class Client implements Runnable{
         System.out.println("Total send time： " + (endTime - startTime) / 1000000 + " ms");
 
         if (!isFinished) {
+            progress = 1.0;
             sendMsg("exit");
         }
         socket.close();
@@ -165,10 +170,10 @@ public class Client implements Runnable{
 
             Thread client;
             if("time".equals(changeHandlerType.split("-")[1])) {
-                client = new Thread(new Client(dataFilePath));
+                client = new Thread(new Client(8000, dataFilePath));
             }
             else {
-                client = new Thread(new Client(changeFilePath));
+                client = new Thread(new Client(8000, changeFilePath));
             }
 
             client.setPriority(Thread.MAX_PRIORITY);
