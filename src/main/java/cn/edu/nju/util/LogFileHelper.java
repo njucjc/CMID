@@ -12,6 +12,9 @@ public class LogFileHelper {
     public static String logFilePath;
     public static void  initLogger(String log) {
         logFilePath = log;
+        if (FileHelper.isFileExists(logFilePath)) {
+            new File(logFilePath).delete();
+        }
         /*File file = new File(logFilePath);
         if (file.exists()) {
             System.out.println("[INFO] 日志文件" + "'" + logFilePath + "'" + "已存在，是否覆盖（Y/N）：");
