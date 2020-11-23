@@ -18,14 +18,20 @@ import java.util.*;
 
 
 public class Server extends AbstractCheckerBuilder{
-    private DatagramSocket serverSocket;
-    private int port = 8000;
-    private byte [] buf = new byte[256];
+    private static DatagramSocket serverSocket;
+    private static int port = 8000;
+    private static byte [] buf = new byte[256];
+
+    private static String startTime = "2007-10-26 11:00:00:000";
+    private static String endTime = "2007-10-26 23:01:00:111";
 
 
     public Server() {
+        reset();
         try {
-            serverSocket = new DatagramSocket(port);
+            if (serverSocket == null) {
+                serverSocket = new DatagramSocket(port);
+            }
         }catch(IOException e) {
             e.printStackTrace();
         }
@@ -33,9 +39,6 @@ public class Server extends AbstractCheckerBuilder{
 
     @Override
     public void run() {
-
-        String startTime = "2007-10-26 11:00:00:000";
-        String endTime = "2007-10-26 23:01:00:111";
 
         System.out.println("[INFO] Sever启动完毕，等待Client连接并启动一致性检测......");
         try {
@@ -47,7 +50,6 @@ public class Server extends AbstractCheckerBuilder{
                 if ("exit".equals(msg)) {
                     System.out.println();
                     System.out.println("[INFO] 一致性检测结束，Server关闭......");
-                    isFinished = true;
                     break;
                 }
 

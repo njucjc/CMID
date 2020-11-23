@@ -26,8 +26,7 @@ public class TimestampHelper {
             java.util.Date end = dfs.parse(timestamp2);
             diff = end.getTime() - begin.getTime();
         }catch (Exception e) {
-            System.out.println("[INFO] 时间戳格式错误");
-            System.exit(1);
+            e.printStackTrace();
         }
         return diff;
     }
@@ -55,8 +54,7 @@ public class TimestampHelper {
             java.util.Date begin = dfs.parse(timestamp);
             timestamp2 = dfs.format(new java.util.Date(begin.getTime() + millis));
         }catch (Exception e) {
-            System.out.println("[INFO] 时间戳格式错误");
-            System.exit(1);
+           e.printStackTrace();
         }
         return timestamp2;
     }
@@ -70,8 +68,7 @@ public class TimestampHelper {
         try {
             date = dfs.parse(time);
         } catch (Exception e) {
-            System.out.println("[INFO] 时间戳格式错误");
-            System.exit(1);
+            e.printStackTrace();
         }
         return date;
     }

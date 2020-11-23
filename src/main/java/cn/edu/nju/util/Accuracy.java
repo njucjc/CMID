@@ -37,7 +37,11 @@ public class Accuracy {
         }
 
         int right = 0, fault = 0;
-        Set<String> lookup = new HashSet<>(groundTruth);
+        Set<String> lookup = new HashSet<>();
+        for (int i = 0; i < groundTruthSize; ++i) {
+            lookup.add(groundTruth.get(i));
+        }
+
         for(String logStr : myLog) {
             if(!lookup.contains(logStr)) {
                 fault++;

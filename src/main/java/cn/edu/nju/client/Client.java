@@ -17,7 +17,7 @@ import java.util.Properties;
 public class Client implements Runnable{
     private DatagramSocket socket;
     private InetAddress address;
-    int port = 8000;
+    private int port = 8000;
 
     private List<String> contextStrList;
     private List<Long> sleepTime;
@@ -86,9 +86,7 @@ public class Client implements Runnable{
         long startTime = System.nanoTime();
         long endTime = 0;
 
-        for (int i = 0; i < 10000; i++) {
-            sendMsg("timeFlag," + getTimestamp(contextStrList.get(0)) + "," + getTimestamp(contextStrList.get(contextStrList.size() - 1)));
-        }
+        sendMsg("timeFlag," + getTimestamp(contextStrList.get(0)) + "," + getTimestamp(contextStrList.get(contextStrList.size() - 1)));
 
         for (int i = 0; i < contextStrList.size(); ){
             if (isFinished) {
@@ -121,10 +119,10 @@ public class Client implements Runnable{
         endTime = System.nanoTime();
         System.out.println("Total send time： " + (endTime - startTime) / 1000000 + " ms");
 
-        for (int i = 0; i < 10000; i++) {
+        if (!isFinished) {
             sendMsg("exit");
         }
-
+        socket.close();
     }
 
     private void sendMsg(String msg) {
