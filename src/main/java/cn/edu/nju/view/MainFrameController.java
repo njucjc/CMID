@@ -214,15 +214,19 @@ public class MainFrameController {
         techSelect.setDisable(disable);
         schedSelect.setDisable(disable);
         runTypeSelect.setDisable(disable);
-        dataFileSelect.setDisable(disable);
         if (!disable) {
             oracleFileSelect.setDisable(!runTypeSelect.getValue().contains("dynamic"));
             oracleFileLink.setDisable(!runTypeSelect.getValue().contains("dynamic"));
+
+            dataFileSelect.setDisable(runTypeSelect.getValue().contains("dynamic"));
+            dataFileLink.setDisable(runTypeSelect.getValue().contains("dynamic"));
 
             concurrentSelect.setDisable(!techSelect.getValue().equals("Con-C") && !techSelect.getValue().equals("CPCC"));
         }
         else {
             oracleFileSelect.setDisable(true);
+            dataFileSelect.setDisable(true);
+            concurrentSelect.setDisable(true);
         }
     }
 
@@ -371,6 +375,7 @@ public class MainFrameController {
                 start.setText("启动");
                 start.setDisable(false);
                 setDisableSelect(false);
+                port.setText("");
             }
         }
 
@@ -389,6 +394,7 @@ public class MainFrameController {
         start.setText("启动");
         start.setDisable(false);
         setDisableSelect(false);
+        port.setText("");
 
     }
 
