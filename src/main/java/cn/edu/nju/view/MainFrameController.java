@@ -122,6 +122,7 @@ public class MainFrameController {
         concurrentSelect.getItems().addAll(2, 4, 8, 16);
 
         oracleFileSelect.setDisable(true);
+        oracleFileLink.setDisable(true);
         runTypeSelect.setValue("static-change-based");
         runTypeSelect.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             runTypeSelect.setValue(newValue);
@@ -222,7 +223,6 @@ public class MainFrameController {
         }
         else {
             oracleFileSelect.setDisable(true);
-            oracleFileLink.setDisable(false);
         }
     }
 
