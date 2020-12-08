@@ -34,7 +34,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <BarChart fx:id="dataChart" animated="false" categoryGap="200.0" layoutX="21.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="450.0" title="数据量">
+                  <BarChart fx:id="dataChart" animated="false" categoryGap="175.0" layoutX="21.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="450.0" title="数据量">
                     <xAxis>
                       <CategoryAxis side="BOTTOM" />
                     </xAxis>

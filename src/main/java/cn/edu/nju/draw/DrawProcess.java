@@ -56,19 +56,19 @@ public class DrawProcess implements Runnable{
             checkProgressBar.setProgress(AbstractCheckerBuilder.progress);
 
 
-            inDataSeries.setName("已检测：" + padding(AbstractCheckerBuilder.dataCount, 10));
+            inDataSeries.setName("已检测：" + padding(AbstractCheckerBuilder.dataCount, 0));
             inDataSeries.getData().set(0, new XYChart.Data<>("", AbstractCheckerBuilder.dataCount));
 
 
             int [] inc = AbstractCheckerBuilder.accuracy(false);
-            showIncSeries.setName("汇报INC：" + padding(inc[0], 6));
+            showIncSeries.setName("汇报INC：" + padding(inc[0], 0));
             showIncSeries.getData().set(0, new XYChart.Data<>(" ", inc[0]));
 
 
-            faultIncSeries.setName("误报：" +  padding(inc[1], 6));
+            faultIncSeries.setName("误报：" +  padding(inc[1], 0));
             faultIncSeries.getData().set(0, new XYChart.Data<>("",inc[1]));
 
-            missIncSeries.setName("漏报：" + padding(inc[2], 6) );
+            missIncSeries.setName("漏报：" + padding(inc[2], 0) );
             missIncSeries.getData().set(0, new XYChart.Data<>("  ",inc[2]));
 
 
