@@ -275,6 +275,19 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
             }
         }
 
+        if (changeHandlerType.contains("static-time")) {
+            if (!checkData(this.dataFilePath, "time-based")) {
+                System.out.println("[INFO] dataFilePath配置中的文件不是time-based格式：" + this.dataFilePath);
+                return "数据文件路径配置中的文件不是time-based格式：" + this.dataFilePath;
+            }
+        }
+        else if (changeHandlerType.contains("static-change")){
+            if (!checkData(this.changeFilePath, "change-based")) {
+                System.out.println("[INFO] dataFilePath配置中的文件不是change-based格式：" + this.changeFilePath);
+                return "数据文件路径配置中的文件不是change-based格式：" + this.changeFilePath;
+            }
+        }
+
 
         //log
         String logFilePath = properties.getProperty("logFilePath");
@@ -629,6 +642,31 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
         if(isUpdate) {
             this.changeHandler.update(this.checkerMap,this.scheduler, this.checkerList);
+        }
+    }
+
+    private boolean checkData(String path, String type) {
+
+        String line = null;
+        try {
+            FileReader fr = new FileReader(path);
+            BufferedReader bufferedReader = new BufferedReader(fr);
+            line = bufferedReader.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (line != null)  {
+            String [] elem = line.split(",");
+            if ("+".equals(elem[0])) {
+                return "change-based".equals(type);
+            }
+            else {
+                return "time-based".equals(type);
+            }
+        }
+        else {
+            return true;
         }
     }
 
