@@ -129,6 +129,14 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
             e.printStackTrace();
         }
 
+        //log
+        String logFilePath = properties.getProperty("logFilePath");
+        if (logFilePath == null) {
+            System.out.println("[INFO] logFilePath项无配置");
+            return "日志文件路径无配置";
+        }
+        LogFileHelper.initLogger(logFilePath);
+
         //check type
         String technique = properties.getProperty("technique");
         if (technique == null) {
@@ -289,13 +297,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         }
 
 
-        //log
-        String logFilePath = properties.getProperty("logFilePath");
-        if (logFilePath == null) {
-            System.out.println("[INFO] logFilePath项无配置");
-            return "日志文件路径无配置";
-        }
-        LogFileHelper.initLogger(logFilePath);
 
         //oracle
         oracleFilePath = properties.getProperty("oracleFilePath");
