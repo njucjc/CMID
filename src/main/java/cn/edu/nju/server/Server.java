@@ -114,14 +114,7 @@ public class Server extends AbstractCheckerBuilder{
     }
 
     private long diff(String chg1, String timestamp) {
-        String [] elem1 = chg1.split(",");
-
-        if (changeHandlerType.contains("time")) {
-            return TimestampHelper.timestampDiff(elem1[0], timestamp);
-        }
-        else {
-            return TimestampHelper.timestampDiff(elem1[3], timestamp);
-        }
+        return TimestampHelper.timestampDiff(getTimestamp(chg1), timestamp);
     }
 
 

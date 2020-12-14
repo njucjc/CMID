@@ -79,6 +79,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
     public static long interval;
 
+    public static long avgInterval1;
+
+    public static long avgInterval2;
+
     public static double progress;
 
     public static boolean isPaused;
@@ -93,6 +97,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         dataCount = 0;
         totalTime = 0L;
         interval = 0;
+        avgInterval1 = 0;
+        avgInterval2 = 0;
         progress = 0;
         isPaused = false;
         isFinished = false;
@@ -673,6 +679,16 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
     public static int [] accuracy(boolean toEnd) {
         return Accuracy.accuracy(LogFileHelper.logFilePath, oracleFilePath, toEnd);
+    }
+
+    protected String getTimestamp(String change) {
+        String [] elem = change.split(",");
+        if (changeHandlerType.contains("time")) {
+            return elem[0];
+        }
+        else {
+            return elem[3];
+        }
     }
 
     protected int computeWorkload() {

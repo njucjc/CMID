@@ -16,6 +16,7 @@ import java.util.List;
 public class CheckerBuilder  extends AbstractCheckerBuilder{
 
     public CheckerBuilder() {
+        reset();
     }
 
     @Override
@@ -76,15 +77,9 @@ public class CheckerBuilder  extends AbstractCheckerBuilder{
     }
 
     private long diff(String chg1, String chg2) {
-        String [] elem1 = chg1.split(",");
-        String [] elem2 = chg2.split(",");
-
-        if (changeHandlerType.contains("time")) {
-            return TimestampHelper.timestampDiff(elem1[0], elem2[0]);
-        }
-        else {
-            return TimestampHelper.timestampDiff(elem1[3], elem2[3]);
-        }
+          String timestamp1 = getTimestamp(chg1);
+          String timestamp2 = getTimestamp(chg2);
+          return TimestampHelper.timestampDiff(timestamp1, timestamp2);
      }
 
     public static void main(String[] args) {

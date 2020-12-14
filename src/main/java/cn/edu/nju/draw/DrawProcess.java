@@ -2,6 +2,7 @@ package cn.edu.nju.draw;
 
 import cn.edu.nju.builder.AbstractCheckerBuilder;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
@@ -18,6 +19,10 @@ public class DrawProcess implements Runnable{
 
     private Label interval;
 
+    private Label avgInterval1;
+
+    private Label avgInterval2;
+
     private Label checkTime;
 
     private Label checkProgress;
@@ -31,11 +36,13 @@ public class DrawProcess implements Runnable{
     private XYChart.Series<String, Number> missIncSeries;
 
 
-    public DrawProcess( Label ruleNum, Label patternNum, Label interval, Label checkTime, Label checkProgress, ProgressBar checkProgressBar,
+    public DrawProcess( Label ruleNum, Label patternNum, Label interval, Label avgInterval1, Label avgInterval2, Label checkTime, Label checkProgress, ProgressBar checkProgressBar,
                       XYChart.Series<String, Number> inDataSeries, XYChart.Series<String, Number> showIncSeries, XYChart.Series<String, Number> faultIncSeries, XYChart.Series<String, Number> missIncSeries) {
         this.ruleNum = ruleNum;
         this.patternNum = patternNum;
         this.interval = interval;
+        this.avgInterval1 = avgInterval1;
+        this.avgInterval2 = avgInterval2;
         this.checkTime = checkTime;
         this.checkProgress = checkProgress;
         this.checkProgressBar = checkProgressBar;
@@ -51,6 +58,8 @@ public class DrawProcess implements Runnable{
             ruleNum.setText(padding(AbstractCheckerBuilder.ruleNum, 3));
             patternNum.setText(padding(AbstractCheckerBuilder.patternNum, 3));
             interval.setText(padding(AbstractCheckerBuilder.interval, 0) + " ms");
+            avgInterval1.setText(padding(AbstractCheckerBuilder.avgInterval1, 0) + " ms");
+            avgInterval2.setText(padding(AbstractCheckerBuilder.avgInterval2, 0) + " ms");
             checkTime.setText(padding(AbstractCheckerBuilder.totalTime / 1000000, 0) + " ms");
             checkProgress.setText(new DecimalFormat("##0.0%").format(AbstractCheckerBuilder.progress));
             checkProgressBar.setProgress(AbstractCheckerBuilder.progress);

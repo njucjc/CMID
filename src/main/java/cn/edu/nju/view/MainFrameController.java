@@ -44,6 +44,12 @@ public class MainFrameController {
     private Label interval;
 
     @FXML
+    private Label avgInterval1;
+
+    @FXML
+    private Label avgInterval2;
+
+    @FXML
     private Label checkTime;
 
     @FXML
@@ -200,7 +206,7 @@ public class MainFrameController {
         dataChart.getData().addAll(inDataSeries);
         incChart.getData().addAll(showIncSeries, faultIncSeries, missIncSeries);
 
-        new Thread(new DrawProcess(ruleNum, patternNum, interval, checkTime, checkProgress, checkProgressBar,
+        new Thread(new DrawProcess(ruleNum, patternNum, interval, avgInterval1, avgInterval2, checkTime, checkProgress, checkProgressBar,
                  inDataSeries, showIncSeries, faultIncSeries, missIncSeries)).start();
 
         //  missIncSeries.setName("漏报:10");
