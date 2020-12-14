@@ -39,6 +39,15 @@ public class Server extends AbstractCheckerBuilder{
     @Override
     public void run() {
 
+        String timestamp1 = null;
+        String timestamp2 = null;
+
+        long sum1 = 0;
+        long sum2 = 0;
+
+        long count1 = 0;
+        long count2 = 0;
+
         System.out.println("[INFO] Sever启动完毕，端口为：" + (port - 1) + "，等待Client连接并启动一致性检测......");
         try {
             while (!isFinished) {
@@ -55,6 +64,10 @@ public class Server extends AbstractCheckerBuilder{
                 if (msg.contains("timeFlag")) {
                     startTime = msg.split(",")[1];
                     endTime = msg.split(",")[2];
+
+                    timestamp1 = startTime;
+                    timestamp2 = startTime;
+
                     continue;
                 }
 
@@ -64,6 +77,8 @@ public class Server extends AbstractCheckerBuilder{
 
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
                 interval = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
+                sum1 += interval;
+                sum2 += interval;
                 assert dataCount != -1:"counter overflow.";
 
                 msg = msg.substring(msg.indexOf(",") + 1, msg.lastIndexOf(","));
@@ -73,6 +88,24 @@ public class Server extends AbstractCheckerBuilder{
 
                 changeHandler.doContextChange(num, msg);
                 dataCount++;
+                count1++;
+                count2++;
+
+                // 最近500 ms的平均间隔
+                if (TimestampHelper.timestampDiff(timestamp1, getTimestamp(msg)) >= 500) {
+                    avgInterval1 = sum1 / count1;
+                    sum1 = 0;
+                    count1 = 0;
+                    timestamp1 = getTimestamp(msg);
+                }
+
+                // 最近1000 ms的平均间隔
+                if (TimestampHelper.timestampDiff(timestamp2, getTimestamp(msg)) >= 1000) {
+                    avgInterval2 = sum2 / count2;
+                    sum2 = 0;
+                    count2 = 0;
+                    timestamp2 = getTimestamp(msg);
+                }
 
                 long end = System.nanoTime();
                 long checkTime = (end - start);
