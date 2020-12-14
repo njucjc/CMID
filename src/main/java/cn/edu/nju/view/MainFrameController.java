@@ -188,13 +188,13 @@ public class MainFrameController {
         inDataSeries.setName("已检测：0                  ");
         inDataSeries.getData().add(new XYChart.Data<>("", 0));
 
-        showIncSeries.setName("汇报INC：0          ");
+        showIncSeries.setName("汇报数：0          ");
         showIncSeries.getData().add(new XYChart.Data<>(" ",0));
 
-        faultIncSeries.setName("误报：0          ");
+        faultIncSeries.setName("误报数：0          ");
         faultIncSeries.getData().add( new XYChart.Data<>("",0));
 
-        missIncSeries.setName("漏报：0          ");
+        missIncSeries.setName("漏报数：0          ");
         missIncSeries.getData().add(new XYChart.Data<>("  ",0));
 
         dataChart.getData().addAll(inDataSeries);

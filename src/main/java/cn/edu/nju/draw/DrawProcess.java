@@ -61,14 +61,14 @@ public class DrawProcess implements Runnable{
 
 
             int [] inc = AbstractCheckerBuilder.accuracy(false);
-            showIncSeries.setName("汇报INC：" + padding(inc[0], 0));
+            showIncSeries.setName("汇报数：" + padding(inc[0], 0));
             showIncSeries.getData().set(0, new XYChart.Data<>(" ", inc[0]));
 
 
-            faultIncSeries.setName("误报：" +  padding(inc[1], 0));
+            faultIncSeries.setName("误报数：" +  padding(inc[1], 0));
             faultIncSeries.getData().set(0, new XYChart.Data<>("",inc[1]));
 
-            missIncSeries.setName("漏报：" + padding(inc[2], 0) );
+            missIncSeries.setName("漏报数：" + padding(inc[2], 0) );
             missIncSeries.getData().set(0, new XYChart.Data<>("  ",inc[2]));
 
 

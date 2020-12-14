@@ -394,14 +394,14 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
                             break;
                         default:
                             System.out.println("[INFO] '" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName());
-                            return "'" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName() + EditDist.minEditDist(childNodes.item(j).getNodeName(), "pattern");
+                            return "'" + patternFilePath + "'文件中存在不可识别模式标识符：" + childNodes.item(j).getNodeName() + EditDist.minEditDist(childNodes.item(j).getNodeName(), "pattern") + "，详情请参阅帮助文档的模式文件书写规范";
                     }
                 }
 
                 for(String key : member.keySet()) {
                     if (!member.get(key)) {
                         System.out.println("[INFO] '" + patternFilePath + "'文件中缺少pattern标识符：" + key);
-                        return "'" + patternFilePath + "'文件中缺少pattern标识符：" + key;
+                        return "'" + patternFilePath + "'文件中缺少模式标识符：" + key + "，详情请参阅帮助文档的模式文件书写规范";
                     }
                 }
 
@@ -421,7 +421,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
         if (patternMap.isEmpty()) {
             System.out.println("[INFO] pattern文件中没有pattern");
-            return "Pattern文件中没有pattern";
+            return "模式文件中没有合法模式，详情请参阅帮助文档的模式文件书写规范";
         }
 
         return null;
@@ -495,7 +495,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
 
         if (checkerList.isEmpty()) {
             System.out.println("[INFO] rule文件中没有rule");
-            return "Rule文件中没有rule";
+            return "规则文件中没有一致性规则，详情请参阅帮助文档的规则文件书写规范";
         }
 
         return null;
@@ -549,7 +549,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
                         break;
                     default:
                         System.out.println("[INFO] '" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName);
-                        return "'" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName + EditDist.minEditDist(nodeName, "rule");
+                        return "'" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName + EditDist.minEditDist(nodeName, "rule") + "，详情请参阅帮助文档的规则文件书写规范";
                 }
 
                 String msg = buildSyntaxTree(e.getChildNodes(), stNode, stMap, ruleFilePath);

@@ -42,7 +42,7 @@
                       <NumberAxis side="LEFT" />
                     </yAxis>
                   </BarChart>
-                  <BarChart fx:id="incChart" animated="false" categoryGap="5.0" layoutX="804.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="423.0" title="INC数">
+                  <BarChart fx:id="incChart" animated="false" categoryGap="5.0" layoutX="804.0" layoutY="19.0" legendSide="LEFT" prefHeight="268.0" prefWidth="423.0" title="一致性错误数">
                      <xAxis>
                         <CategoryAxis side="BOTTOM" />
                      </xAxis>
@@ -51,11 +51,11 @@
                      </yAxis>
                   </BarChart>
                   <Rectangle arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="116.0" layoutX="470.0" layoutY="71.0" stroke="BLACK" strokeType="INSIDE" width="258.0" />
-                  <Label layoutX="547.0" layoutY="86.0" text="Rule数：">
+                  <Label layoutX="545.0" layoutY="86.0" text="规则数：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <Label layoutX="511.0" layoutY="137.0" text="Pattern数：">
+                  <Label layoutX="545.0" layoutY="137.0" text="模式数：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
@@ -67,7 +67,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <Label layoutX="110.0" layoutY="308.0" text="数据间隔：">
+                  <Label layoutX="110.0" layoutY="308.0" text="瞬时间隔：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
@@ -80,11 +80,11 @@
                <children>
                   <ComboBox fx:id="schedSelect" layoutX="240.0" layoutY="265.0" prefHeight="48.0" prefWidth="190.0" promptText="Immed" style="-fx-font-size: 20;" />
                   <ComboBox fx:id="techSelect" layoutX="240.0" layoutY="198.0" prefHeight="48.0" prefWidth="190.0" promptText="PCC" style="-fx-font-size: 20;" />
-                  <Label layoutX="114.0" layoutY="125.0" text="Rule文件：">
+                  <Label layoutX="115.0" layoutY="125.0" text="规则文件：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
-                  <Label layoutX="78.0" layoutY="52.0" text="Pattern文件：">
+                  <Label layoutX="115.0" layoutY="52.0" text="模式文件：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
@@ -129,7 +129,7 @@
                      <font>
                         <Font size="25.0" />
                      </font></Button>
-                  <Label layoutX="688.0" layoutY="200.0" text="Oracle文件：">
+                  <Label layoutX="717.0" layoutY="200.0" text="对比文件：">
                      <font>
                         <Font size="25.0" />
                      </font></Label>
