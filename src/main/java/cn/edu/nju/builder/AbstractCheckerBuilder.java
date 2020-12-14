@@ -202,7 +202,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         String patternFilePath = properties.getProperty("patternFilePath");
         if (patternFilePath == null) {
             System.out.println("[INFO] patternFilePath项无配置");
-            return "Pattern文件路径无配置";
+            return "模式文件路径无配置";
         }
         String msg1 = parsePatternFile(patternFilePath);
         if (msg1 != null) {
@@ -213,7 +213,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType, Runnable {
         String ruleFilePath = properties.getProperty("ruleFilePath");
         if (ruleFilePath == null) {
             System.out.println("[INFO] ruleFilePath项无配置");
-            return "Rule文件路径无配置";
+            return "规则文件路径无配置";
         }
         String msg2 = parseRuleFile(ruleFilePath);
         if (msg2 != null) {
