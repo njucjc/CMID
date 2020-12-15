@@ -132,18 +132,18 @@ public class MainFrameController {
         runTypeSelect.setValue("static-change-based");
         runTypeSelect.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             runTypeSelect.setValue(newValue);
-            if (newValue.contains("time")) {
+            if (oldValue.contains("change") && newValue.contains("time")) {
                 schedSelect.getItems().remove(0, schedSelect.getItems().size());
                 schedSelect.getItems().addAll("Immed");
                 schedSelect.setValue("Immed");
             }
-            else {
+            else if (oldValue.contains("time") && newValue.contains("change")){
                 schedSelect.getItems().remove(0, schedSelect.getItems().size());
                 schedSelect.getItems().addAll("Immed", "GEAS-ori", "GEAS-opt");
                 schedSelect.setValue("Immed");
             }
 
-            if (newValue.contains("static")) {
+            if (oldValue.contains("dynamic") && newValue.contains("static")) {
                 oracleFileSelect.setDisable(true);
                 oracleFileLink.setDisable(true);
                 oracleFileLink.setText("");
@@ -153,7 +153,7 @@ public class MainFrameController {
 
                 port.setText("");
             }
-            else {
+            else if (oldValue.contains("static") && newValue.contains("dynamic")){
                 oracleFileSelect.setDisable(false);
                 oracleFileLink.setDisable(false);
 
