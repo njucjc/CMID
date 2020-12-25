@@ -19,17 +19,25 @@ public class GEAScheduler implements Scheduler{
 
     protected ContextParser parser = new ContextParser();
 
+    private List<Context> contextList;
+
+    private Map<String, int []> winSizeMap;
+
 
     public GEAScheduler(List<Checker> checkerList) {
         this.checkerList = checkerList;
         this.scheduleMap = new HashMap<>();
         this.currentBatchMap = new HashMap<>();
+        this.contextList = new ArrayList<>();
+        this.winSizeMap = new HashMap<>();
 
 
         for(Checker checker : checkerList) {
             String name = checker.getName();
             scheduleMap.put(name, false);
             currentBatchMap.put(name, new ArrayList<>());
+            int [] tmp = new int[]{0, 0};
+            winSizeMap.put(name, tmp);
         }
     }
 
@@ -63,16 +71,23 @@ public class GEAScheduler implements Scheduler{
 
         boolean result = sCondition(checker, currentBatch, elements);
 
-        List<Boolean> subTree = calcSubTree(checker, elements[1], parser.parseChangeContext(elements));
+        Context context = parser.parseChangeContext(elements);
+        contextList.add(context);
+
+        List<Boolean> subTree = calcSubTree(checker, elements[1], context);
+
 
         if (result) { //make batch empty
+            updateWinSize(checker.getName(), currentBatch.size());
             currentBatch.clear();
+            sCheck(checker);
         } else {
             String c = cCondition(checker, currentBatch, elements, subTree);
             if (c == null) {
                 currentBatch.add(change);
             }
-            else {
+            else { //GEAS-opt only
+                updateGEASOptWinSize(checker.getName());
                 currentBatch.remove(c);
             }
         }
@@ -120,4 +135,33 @@ public class GEAScheduler implements Scheduler{
         }
     }
 
+    void updateWinSize(String name, int size) {
+        int [] tmp = winSizeMap.get(name);
+        tmp[0] += size;
+        tmp[1]++;
+    }
+
+    void updateGEASOptWinSize(String name) {
+        int [] tmp = winSizeMap.get(name);
+        tmp[0] += 2;
+    }
+
+    protected void sCheck(Checker checker) {
+        checker.sCheck(this.contextList);
+        this.contextList.clear();
+    }
+
+    @Override
+    public int getWinSize() {
+        int winSum = 0;
+        int count = 0;
+        for (Checker checker : checkerList) {
+            int [] tmp = winSizeMap.get(checker.getName());
+            winSum += tmp[0];
+            count += tmp[1];
+        }
+
+        return count == 0 ? 0 : winSum/count;
+
+    }
 }

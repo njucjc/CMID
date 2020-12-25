@@ -26,9 +26,11 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         else {
             contextList = fileReader(this.changeFilePath);
         }
+        System.out.println("[INFO] 开始一致性检测......");
         int count = 0;
         long startTime = System.nanoTime();
         for(String change : contextList) {
+            System.out.print("[INFO] 当前进度: " + (count + 1) + "/" + contextList.size() + '\r');
             changeHandler.doContextChange(count, change);
             count++;
         }
@@ -36,16 +38,14 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         changeHandler.doCheck();
         long endTime = System.nanoTime(); //获取结束时间
         int incCount = 0;
-        int checkTimes = 0;
         for(Checker checker : checkerList) {
             incCount += checker.getInc();
-            checkTimes += checker.getCheckTimes();
-            LogFileHelper.getLogger().info(checker.getName() + ": INC = " + checker.getInc() + " times, Max Link Size = "  + checker.getMaxLinkSize());
         }
-        LogFileHelper.getLogger().info("Total INC: " + incCount + " times");
-        LogFileHelper.getLogger().info("Total check: " + checkTimes + " times");
-        LogFileHelper.getLogger().info("check time: " + changeHandler.timeCount / 1000000 + " ms");
-        LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
+        System.out.println();
+        System.out.println("[INFO] 一致性检测完毕......");
+        LogFileHelper.getLogger().info("Total INC: " + incCount, true);
+        LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms", true);
+        accuracy(LogFileHelper.logFilePath);
         shutdown();
     }
 

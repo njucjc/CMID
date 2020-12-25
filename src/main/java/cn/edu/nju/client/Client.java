@@ -107,6 +107,11 @@ public class Client implements Runnable{
         if (args.length == 1) {
             Properties properties = new Properties();
             try {
+                if (!new File(args[0]).exists()) {
+                    System.out.println("[INFO] 配置文件不存在: " + args[0]);
+                    System.exit(1);
+                }
+
                 FileInputStream fis = new FileInputStream(args[0]);
                 properties.load(fis);
                 fis.close();

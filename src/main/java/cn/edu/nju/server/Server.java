@@ -34,13 +34,12 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     public void run() {
         running = true;
 
-        String startTimestamp = TimestampHelper.getCurrentTimestamp();
-        List<Long> switchPoint = new ArrayList<>();
-
 
         long count = 0;
-        long switchTimeCount = 0;
-        long startTime = System.nanoTime();
+
+        long timeSum = 0;
+
+        System.out.println("[INFO] Sever启动完毕，等待Client连接并启动一致性检测......");
         try {
             while (running) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
@@ -48,7 +47,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
                 String msg = new String(packet.getData(),0, packet.getLength());
                 if ("exit".equals(msg)) {
-                    System.out.println("Good bye! Server closed at " + new Date());
+                    System.out.println();
+                    System.out.println("[INFO] 一致性检测结束，Server关闭......");
                     running = false;
                     break;
                 }
@@ -57,18 +57,35 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
                 long interval = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
                 assert count != -1:"counter overflow.";
-                if(onDemand && switcher.isSwitch(num, interval)) {
+//                if(onDemand && switcher.isSwitch(num, interval)) {
+//
+//                    switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
+//                    long startUpdate = System.nanoTime();
+//                    update(switcher.getCheckerType(), switcher.getSchedulerType());
+//                    long endUpdate = System.nanoTime();
+//                    switchTimeCount += endUpdate - startUpdate;
+//                }
 
-                    switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
-                    long startUpdate = System.nanoTime();
-                    update(switcher.getCheckerType(), switcher.getSchedulerType());
-                    long endUpdate = System.nanoTime();
-                    switchTimeCount += endUpdate - startUpdate;
-                }
+                msg = msg.substring(msg.indexOf(",") + 1, msg.lastIndexOf(","));
 
-                msg = msg.substring(msg.indexOf(",") + 1);
+                long start = System.nanoTime();
+
                 changeHandler.doContextChange(num, msg);
                 count++;
+
+                long end = System.nanoTime();
+                long checkTime = (end - start);
+                timeSum += checkTime;
+
+                int inc = 0;
+                for (Checker checker : checkerList) {
+                    inc += checker.getInc();
+                }
+
+                System.out.print( "[INFO] Send/Receive: " + (num + 1) + "/" + count +
+                        "\tTotal inc: "+ inc +
+                        "\tTotal Checking time: " + (timeSum/1000000)  +" ms\r");
+
 
             }
             scheduler.reset();
@@ -79,24 +96,15 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }
 
         changeHandler.shutdown();
-
-        long endTime = System.nanoTime();
-
         int inc = 0;
         long time = 0L;
         for (Checker checker : checkerList) {
             inc += checker.getInc();
             time = time + checker.getTimeCount();
-            LogFileHelper.getLogger().info(checker.getName() + ": " + checker.getInc() + " times" );
         }
-        LogFileHelper.getLogger().info("Total Inc: " + inc);
-        LogFileHelper.getLogger().info("Receive: " + count );
-        LogFileHelper.getLogger().info("check time: " +  changeHandler.timeCount / 1000000 + " ms");
-        LogFileHelper.getLogger().info("run time: " + (endTime - startTime) / 1000000 + " ms");
-        LogFileHelper.getLogger().info("Switch Time: " + switchTimeCount + " ns = " + switchTimeCount / 1000000 +" ms");
-        for(long timePoint : switchPoint) {
-            LogFileHelper.getLogger().info("Switch at: " + timePoint + " ms");
-        }
+        LogFileHelper.getLogger().info("Total Inc: " + inc, true);
+        LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms", true);
+        accuracy(LogFileHelper.logFilePath);
         shutdown();
     }
 

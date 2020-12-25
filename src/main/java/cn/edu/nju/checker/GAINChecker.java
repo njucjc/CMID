@@ -4,6 +4,7 @@ import static jcuda.driver.JCudaDriver.*;
 
 import cn.edu.nju.context.Context;
 import cn.edu.nju.memory.*;
+import cn.edu.nju.node.CCTNode;
 import cn.edu.nju.node.NodeType;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
@@ -265,7 +266,7 @@ public class GAINChecker extends Checker {
             addCriticalSet(link);
 
             if(addIncLink(link)) {
-                LogFileHelper.getLogger().info(getName() + " " + link);
+                LogFileHelper.getLogger().info(getName() + " " + link, false);
             }
             //link = link.substring(0, link.length() - 1);
         }
@@ -392,5 +393,14 @@ public class GAINChecker extends Checker {
         cuMemFree(this.deviceBranchSize);
         this.gpuPatternMemory.free();
         super.reset();
+    }
+
+    @Override
+    public void sCheck(List<Context> contextList) {
+        CCTNode newRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType());
+        build(stRoot, newRoot, 2);
+
+        List<Context> param = new ArrayList<>();
+        evaluation(newRoot, param);
     }
 }

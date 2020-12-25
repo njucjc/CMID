@@ -7,4 +7,6 @@ public interface Scheduler {
     void reset();
     void  update(String change);
     boolean schedule(String ruleName);
+    //----------------------
+    int getWinSize();
 }
