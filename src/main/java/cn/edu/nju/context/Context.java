@@ -126,11 +126,12 @@ public class Context {
 
         Context context = (Context) o;
 
-        return Objects.equals(ip, context.ip);
+        return Objects.equals(ip, context.ip) && Objects.equals(location, context.location);
     }
 
     @Override
     public int hashCode() {
-        return ip != null ? ip.hashCode() : 0;
+        String code = ip + "_" + location;
+        return code.hashCode();
     }
 }
