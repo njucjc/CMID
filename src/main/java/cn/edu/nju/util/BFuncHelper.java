@@ -1,6 +1,5 @@
 package cn.edu.nju.util;
 
-import cn.edu.nju.Main;
 import cn.edu.nju.context.Context;
 import cn.edu.nju.node.Param;
 
@@ -203,6 +202,72 @@ public class BFuncHelper {
     public static boolean bfunc(String name, List<Param> list1, List<Context> list2) {
         boolean value = false;
         switch (name) {
+            case "isOnline":
+                value = isOnline(list2.get(0));
+                break;
+            case "areThreeStateNormal":
+                value = areThreeStateNormal(list2.get(0));
+                break;
+            case "isOverload":
+                value = isOverload(list2.get(0));
+                break;
+            case "isLowState":
+                value = isLowState(list2.get(0));
+                break;
+            case "isSameIP":
+                value = isSameIP(list2);
+                break;
+            case "isOneHourInterval":
+                value = isOneHourInterval(list2.get(0), list2.get(1));
+                break;
+            case "duringOneHourInterval":
+                value = duringOneHourInterval(list2);
+                break;
+            case "isCPUTemperatureChangeAbsoluteOver":
+                value = isCPUTemperatureChangeAbsoluteOver(list2.get(0), list2.get(1), Double.parseDouble(list1.get(list1.size() - 1).getDefaultValue()));
+                break;
+            case "isCPUUsageChangeRelativeOver":
+                value = isCPUUsageChangeRelativeOver(list2.get(0), list2.get(1), Double.parseDouble(list1.get(list1.size() - 1).getDefaultValue()));
+                break;
+            case "isCPUClosetTemperatureChangeDvalueOver":
+                value = isCPUClosetTemperatureChangeDvalueOver(list2.get(0), list2.get(1), Double.parseDouble(list1.get(list1.size() - 1).getDefaultValue()));
+                break;
+            case "isCPUTemperatureIncrease":
+                value = isCPUTemperatureIncrease(list2.get(0), list2.get(1));
+                break;
+            case "isClosetTemperatureIncrease":
+                value = isClosetTemperatureIncrease(list2.get(0), list2.get(1));
+                break;
+            case "isPredictedCPUTemperatureOverload":
+                value = isPredictedCPUTemperatureOverload(list2);
+                break;
+            case "isPredictedClosetTemperatureOverload":
+                value = isPredictedClosetTemperatureOverload(list2);
+                break;
+            case "isPredictedCPUTemperatureLowState":
+                value = isPredictedCPUTemperatureLowState(list2);
+                break;
+            case "isPredictedClosetTemperatureLowState":
+                value = isPredictedClosetTemperatureLowState(list2);
+                break;
+            case "isCPUTemperatureConsistentlyIncrease":
+                value = isCPUTemperatureConsistentlyIncrease(list2);
+                break;
+            case "isCPUTemperatureConsistentlyDecrease":
+                value = isCPUTemperatureConsistentlyDecrease(list2);
+                break;
+            case "isClosetTemperatureConsistentlyIncrease":
+                value = isClosetTemperatureConsistentlyIncrease(list2);
+                break;
+            case "isClosetTemperatureConsistentlyDecrease":
+                value = isClosetTemperatureConsistentlyDecrease(list2);
+                break;
+            case "allMemoryUsageRapidlyChanged":
+                value = allMemoryUsageRapidlyChanged(list2, Double.parseDouble(list1.get(list1.size() - 1).getDefaultValue()));
+                break;
+            case "allSameChangeDirection":
+                value = allSameChangeDirection(list2);
+                break;
             default:
                 assert  false:"[DEBUG] Illegal bfunc: " + name;
                 break;
