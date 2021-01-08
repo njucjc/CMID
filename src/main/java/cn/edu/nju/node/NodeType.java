@@ -13,14 +13,6 @@ public interface NodeType {
     public static final int EMPTY_NODE = 6;
     public static final int OR_NODE = 7;
 
-    public static final int BEFORE = 8;
-    public static final int GATE = 9;
-    public static final int EQUAL = 10;
-    public static final int CONN = 11;
-    public static final int OPPO = 12;
-    public static final int NEXT = 13;
-    public static final int CONN_WITHIN_K = 14;
-
     int getNodeType();
     void setNodeType(int nodeType);
 }

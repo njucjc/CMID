@@ -163,31 +163,7 @@ public class GAINChecker extends Checker {
                 }
             }
             else {
-                String name = constraintNodes[i].getNodeName();
-                if("before".equals(name)) {
-                    nodeType[i] = NodeType.BEFORE;
-                }
-                else if("gate".equals(name)) {
-                    nodeType[i] = NodeType.GATE;
-                }
-                else if("equal".equals(name)) {
-                    nodeType[i] = NodeType.EQUAL;
-                }
-                else if("conn".equals(name)) {
-                    nodeType[i] = NodeType.CONN;
-                }
-                else if("oppo".equals(name)) {
-                    nodeType[i] = NodeType.OPPO;
-                }
-                else if("next".equals(name)) {
-                    nodeType[i] = NodeType.NEXT;
-                }
-                else if("conn_within_k".equals(name)) {
-                    nodeType[i] = NodeType.CONN_WITHIN_K;
-                }
-                else {
-                    assert false:"BFunc type error.";
-                }
+               nodeType[i] = NodeType.BFUNC_NODE;
             }
 
             this.gpuRuleMemory = new GPURuleMemory(stSize, parent, leftChild, rightChild, nodeType, patternId);
