@@ -242,55 +242,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
         //oracle
         this.oracleFilePath = properties.getProperty("oracleFilePath");
-        if (this.oracleFilePath == null) {
-            System.out.println("[INFO] oracleFilePath项无配置");
-            System.exit(1);
-        }
-        else {
-            if(!isFileExists(this.oracleFilePath)) {
-                System.out.println("[INFO] oracleFilePath配置中的文件不存在：" + this.oracleFilePath);
-                System.exit(1);
-            }
-        }
-
-        //repairedFilePath
-        String repairedFilePath = properties.getProperty("repairedFilePath");
-        if (repairedFilePath == null) {
-            System.out.println("[INFO] repairedFilePath项无配置");
-            System.exit(1);
-        }
-
-        //step
-        String stepStr = properties.getProperty("step");
-        int step = 0;
-        if (stepStr == null) {
-            System.out.println("[INFO] step项无配置");
-            System.exit(1);
-        }
-        else {
-            try {
-                step = Integer.parseInt(stepStr);
-                if (step < 0 || step > 3) {
-                    System.out.println("[INFO] step项配置错误：" + stepStr);
-                    System.exit(1);
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("[INFO] step项配置错误：" + stepStr);
-                System.exit(1);
-            }
-        }
-
-        if (step == 3) {
-            String trueFilePath = properties.getProperty("trueFilePath");
-            if (trueFilePath == null) {
-                System.out.println("[INFO] trueFilePath项无配置");
-                System.exit(1);
-            }
-            else if (!isFileExists(trueFilePath)) {
-                System.out.println("[INFO] trueFilePath配置中的文件不存在：" + trueFilePath);
-                System.exit(1);
-            }
-        }
 
         //change handle
         configChangeHandler();
@@ -652,6 +603,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
     protected void accuracy(String logFilePath) {
-        Accuracy.main(new String []{logFilePath, this.oracleFilePath});
+        if (this.oracleFilePath != null) {
+            Accuracy.main(new String[]{logFilePath, this.oracleFilePath});
+        }
     }
 }

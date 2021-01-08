@@ -82,7 +82,7 @@ public class ChangeFileHelper {
                 for(Pattern pattern: patternList) {
                     if(pattern.isBelong(context)) {
                         res.add(("+," + pattern.getId() + "," + str));
-                        String key = TimestampHelper.plus(currentTimestamp, pattern.getFreshness());
+                        String key = TimestampHelper.plusMillis(currentTimestamp, pattern.getFreshness());
                         context.setTimestamp(key);
                         if(!contextChangeMap.containsKey(key)) {
                             contextChangeMap.put(key, new ArrayList<>());

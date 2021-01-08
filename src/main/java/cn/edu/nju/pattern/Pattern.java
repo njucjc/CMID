@@ -145,7 +145,7 @@ public class Pattern {
         Set<String> timeSet = new HashSet<>();
         for(Context context : contextList) {
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) >= freshness) {
-                timeSet.add(TimestampHelper.plus(context.getTimestamp(), freshness));
+                timeSet.add(TimestampHelper.plusMillis(context.getTimestamp(), freshness));
             }
             else {//找到第一个还未过期的context即可结束遍历
                 break;

@@ -21,22 +21,6 @@ public class GPUContextMemory {
     private static GPUContextMemory gpuContextMemory;
 
     private GPUContextMemory(List<String> contextStrList) {
-        int size = contextStrList.size();
-
-        ContextParser parser = new ContextParser();
-        int [] codeRaw = new int[size];
-        int [] typeRaw = new int[size];
-        for(int i = 0; i < size; i++) {
-            Context c = parser.parseContext(i,contextStrList.get(i));
-            codeRaw[i] = TrafficGraph.codeToInt(c.getCode());
-            typeRaw[i] = c.getType();//Integer.parseInt(c.getPlateNumber());
-        }
-
-        cuMemAlloc(this.code, size * Sizeof.INT);
-        cuMemcpyHtoD(this.code, Pointer.to(codeRaw), size * Sizeof.INT);
-
-        cuMemAlloc(this.type, size * Sizeof.INT);
-        cuMemcpyHtoD(this.type, Pointer.to(typeRaw), size * Sizeof.INT);
 
     }
 
