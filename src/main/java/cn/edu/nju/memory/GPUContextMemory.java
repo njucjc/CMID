@@ -4,7 +4,6 @@ import static jcuda.driver.JCudaDriver.*;
 
 import cn.edu.nju.context.Context;
 import cn.edu.nju.context.ContextParser;
-import cn.edu.nju.util.TrafficGraph;
 import jcuda.Pointer;
 import jcuda.Sizeof;
 import jcuda.driver.CUdeviceptr;

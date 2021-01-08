@@ -1,7 +1,6 @@
 package cn.edu.nju;
 
 import cn.edu.nju.builder.CheckerBuilder;
-import cn.edu.nju.repair.Repair;
 import cn.edu.nju.util.ChangeFileHelper;
 import cn.edu.nju.util.ConfigHelper;
 

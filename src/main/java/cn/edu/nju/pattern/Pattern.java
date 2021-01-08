@@ -1,6 +1,5 @@
 package cn.edu.nju.pattern;
 import cn.edu.nju.context.Context;
-import cn.edu.nju.util.HotAreaHelper;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.util.*;

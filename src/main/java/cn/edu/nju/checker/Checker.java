@@ -567,7 +567,7 @@ public abstract class Checker {
             if(t instanceof CCTNode) {
                 Context c = ((CCTNode) t).getContext();
                 if(c != null) {
-                    System.out.print("(" + c.getCode() + ") ");
+                    System.out.print("(" + c.getIp() + ") ");
                 }
                 else {
                     System.out.print(" ");
