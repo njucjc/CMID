@@ -1,0 +1,420 @@
+<?xml version="1.0"?>
+
+<patterns>
+
+	<pattern>
+		<id>pat_00</id>
+		<timestamp>1000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_01</id>
+		<timestamp>1000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_02</id>
+		<timestamp>1000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_03</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_04</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_05</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_06</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_07</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_08</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_09</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_10</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_11</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_12</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_13</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_14</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_15</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_16</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_17</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_18</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_19</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_20</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_21</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_22</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_23</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_24</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_25</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_26</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+	<pattern>
+		<id>pat_27</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_28</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_29</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_30</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+	<pattern>
+		<id>pat_31</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_32</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_33</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_34</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+	<pattern>
+		<id>pat_35</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_36</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_37</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_38</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+	<pattern>
+		<id>pat_39</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_40</id>
+		<timestamp>3600000</timestamp>
+		<category>ComputerRoom</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+</patterns>

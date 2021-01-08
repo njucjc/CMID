@@ -1,0 +1,560 @@
+<?xml version="1.0"?>
+
+<rules>
+	<rule>
+		<id>rule_00</id>
+		<formula>
+			<forall var = "v1" in = "pat_00">
+				<implies>
+					<bfunction name = "isOnline">
+						<param pos = "1" var = "v1" field = "generalState" op = "" default_value = ""/>
+					</bfunction>
+					<bfunction name = "areThreeStateNormal">
+						<param pos = "1" var = "v1" field = "ThreeState" op = "" default_value = ""/>
+					</bfunction>
+				</implies>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_01</id>
+		<formula>
+			<forall var = "v1" in = "pat_01">
+				<implies>
+					<and>
+						<bfunction name = "isOnline">
+							<param pos = "1" var = "v1" field = "generalState" op = "" default_value = ""/>
+						</bfunction>
+						<bfunction name = "areThreeStateNormal">
+							<param pos = "1" var = "v1" field = "ThreeState" op = "" default_value = ""/>
+						</bfunction>
+					</and>
+					<not>
+						<bfunction name = "isOverload">
+							<param pos = "1" var = "v1" field = "FourIndicator" op = "" default_value = ""/>
+						</bfunction>
+					</not>
+				</implies>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_02</id>
+		<formula>
+			<forall var = "v1" in = "pat_02">
+				<implies>
+					<and>
+						<bfunction name = "isOnline">
+							<param pos = "1" var = "v1" field = "generalState" op = "" default_value = ""/>
+						</bfunction>
+						<bfunction name = "areThreeStateNormal">
+							<param pos = "1" var = "v1" field = "ThreeState" op = "" default_value = ""/>
+						</bfunction>
+					</and>
+					<not>
+						<bfunction name = "isLowState">
+							<param pos = "1" var = "v1" field = "FourIndicator" op = "" default_value = ""/>
+						</bfunction>
+					</not>
+				</implies>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_03</id>
+		<formula>
+			<forall var = "v1" in = "pat_03">
+				<forall var = "v2" in = "pat_04">
+					<implies>
+						<and>
+							<bfunction name = "isSameIP">
+								<param pos = "1" var = "v1" field = "ip" op = "" default_value = ""/>
+								<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
+							</bfunction>
+							<bfunction name = "isOneHourInterval">
+								<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
+								<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
+							</bfunction>
+						</and>
+						<or>
+							<not>
+								<bfunction name = "isCPUTemperatureChangeAbsoluteOver">
+									<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+									<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+									<param pos = "3" var = "" field = "" op = "" default_value = "10"/>
+								</bfunction>
+							</not>
+							<and>
+								<bfunction name = "isCPUTemperatureChangeAbsoluteOver">
+									<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+									<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+									<param pos = "3" var = "" field = "" op = "" default_value = "10"/>
+								</bfunction>
+								<not>
+									<bfunction name = "isCPUUsageChangeRelativeOver">
+										<param pos = "1" var = "v1" field = "CPUUsage" op = "" default_value = ""/>
+										<param pos = "2" var = "v2" field = "CPUUsage" op = "" default_value = ""/>
+										<param pos = "3" var = "" field = "" op = "" default_value = "50"/>
+									</bfunction>
+								</not>
+							</and>
+						</or>
+					</implies>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_04</id>
+		<formula>
+			<forall var = "v1" in = "pat_05">
+				<forall var = "v2" in = "pat_06">
+					<implies>
+						<and>
+							<bfunction name = "isSameIP">
+								<param pos = "1" var = "v1" field = "ip" op = "" default_value = ""/>
+								<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
+							</bfunction>
+							<bfunction name = "isOneHourInterval">
+								<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
+								<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
+							</bfunction>
+						</and>
+						<or>
+							<not>
+								<bfunction name = "isCPUTemperatureChangeAbsoluteOver">
+									<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+									<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+									<param pos = "3" var = "" field = "" op = "" default_value = "10"/>
+								</bfunction>
+							</not>
+							<and>
+								<bfunction name = "isCPUTemperatureChangeAbsoluteOver">
+									<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+									<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+									<param pos = "3" var = "" field = "" op = "" default_value = "10"/>
+								</bfunction>
+								<bfunction name = "isCPUUsageChangeRelativeOver">
+									<param pos = "1" var = "v1" field = "CPUUsage" op = "" default_value = ""/>
+									<param pos = "2" var = "v2" field = "CPUUsage" op = "" default_value = ""/>
+									<param pos = "3" var = "" field = "" op = "" default_value = "50"/>
+								</bfunction>
+							</and>
+						</or>
+					</implies>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_05</id>
+		<formula>
+			<forall var = "v1" in = "pat_07">
+				<forall var = "v2" in = "pat_08">
+					<implies>
+						<and>
+							<bfunction name = "isSameIP">
+								<param pos = "1" var = "v1" field = "ip" op = "" default_value = ""/>
+								<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
+							</bfunction>
+							<bfunction name = "isOneHourInterval">
+								<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
+								<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
+							</bfunction>
+						</and>
+						<implies>
+							<or>
+								<and>
+									<bfunction name = "isCPUTemperatureIncrease">
+										<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+										<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+									</bfunction>
+									<bfunction name = "isClosetTemperatureIncrease">
+										<param pos = "1" var = "v1" field = "ClosetTemperature" op = "" default_value = ""/>
+										<param pos = "2" var = "v2" field = "ClosetTemperature" op = "" default_value = ""/>
+									</bfunction>
+								</and>
+								<not>
+									<or>
+										<bfunction name = "isCPUTemperatureIncrease">
+											<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+											<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+										</bfunction>
+										<bfunction name = "isClosetTemperatureIncrease">
+											<param pos = "1" var = "v1" field = "ClosetTemperature" op = "" default_value = ""/>
+											<param pos = "2" var = "v2" field = "ClosetTemperature" op = "" default_value = ""/>
+										</bfunction>
+									</or>
+								</not>
+							</or>
+							<not>
+								<bfunction name = "isCPUClosetTemperatureChangeDvalueOver">
+									<param pos = "1" var = "v1" field = "CPUClosetTemperature" op = "" default_value = ""/>
+									<param pos = "2" var = "v2" field = "CPUClosetTemperature" op = "" default_value = ""/>
+									<param pos = "3" var = "" field = "" op = "" default_value = "10"/>
+								</bfunction>
+							</not>
+						</implies>
+					</implies>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_06</id>
+		<formula>
+			<forall var = "v1" in = "pat_09">
+				<forall var = "v2" in = "pat_10">
+					<implies>
+						<and>
+							<bfunction name = "isSameIP">
+								<param pos = "1" var = "v1" field = "ip" op = "" default_value = ""/>
+								<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
+							</bfunction>
+							<bfunction name = "isOneHourInterval">
+								<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
+								<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
+							</bfunction>
+						</and>
+						<implies>
+							<or>
+								<and>
+									<bfunction name = "isCPUTemperatureIncrease">
+										<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+										<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+									</bfunction>
+									<not>
+										<bfunction name = "isClosetTemperatureIncrease">
+											<param pos = "1" var = "v1" field = "ClosetTemperature" op = "" default_value = ""/>
+											<param pos = "2" var = "v2" field = "ClosetTemperature" op = "" default_value = ""/>
+										</bfunction>
+									</not>
+								</and>
+								<and>
+									<not>
+										<bfunction name = "isCPUTemperatureIncrease">
+											<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+											<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+										</bfunction>
+									</not>
+									<bfunction name = "isClosetTemperatureIncrease">
+										<param pos = "1" var = "v1" field = "ClosetTemperature" op = "" default_value = ""/>
+										<param pos = "2" var = "v2" field = "ClosetTemperature" op = "" default_value = ""/>
+									</bfunction>
+								</and>
+							</or>
+							<not>
+								<bfunction name = "isCPUClosetTemperatureChangeDvalueOver">
+									<param pos = "1" var = "v1" field = "CPUClosetTemperature" op = "" default_value = ""/>
+									<param pos = "2" var = "v2" field = "CPUClosetTemperature" op = "" default_value = ""/>
+									<param pos = "3" var = "" field = "" op = "" default_value = "5"/>
+								</bfunction>
+							</not>
+						</implies>
+					</implies>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_07</id>
+		<formula>
+			<forall var = "v1" in = "pat_11">
+				<forall var = "v2" in = "pat_12">
+					<forall var = "v3" in = "pat_13">
+						<forall var = "v4" in = "pat_14">
+							<forall var = "v5" in = "pat_15">
+								<forall var = "v6" in = "pat_16">
+									<implies>
+										<and>
+											<bfunction name = "isSameIP">
+												<param pos = "1" var = "v1" field = "ip" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "ip" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "ip" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "ip" op = "" default_value = ""/>
+											</bfunction>
+											<bfunction name = "duringOneHourInterval">
+												<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "timestamp" op = "" default_value = ""/>
+											</bfunction>
+										</and>
+										<implies>
+											<bfunction name = "isCPUTemperatureConsistentlyIncrease">
+												<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "CPUTemperature" op = "" default_value = ""/>
+											</bfunction>
+											<not>
+												<bfunction name = "isPredictedCPUTemperatureOverload">
+													<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "3" var = "v3" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "4" var = "v4" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "5" var = "v5" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "6" var = "v6" field = "CPUTemperature" op = "" default_value = ""/>
+												</bfunction>
+											</not>
+										</implies>
+									</implies>
+								</forall>
+							</forall>
+						</forall>
+					</forall>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_08</id>
+		<formula>
+			<forall var = "v1" in = "pat_17">
+				<forall var = "v2" in = "pat_18">
+					<forall var = "v3" in = "pat_19">
+						<forall var = "v4" in = "pat_20">
+							<forall var = "v5" in = "pat_21">
+								<forall var = "v6" in = "pat_22">
+									<implies>
+										<and>
+											<bfunction name = "isSameIP">
+												<param pos = "1" var = "v1" field = "ip" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "ip" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "ip" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "ip" op = "" default_value = ""/>
+											</bfunction>
+											<bfunction name = "duringOneHourInterval">
+												<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "timestamp" op = "" default_value = ""/>
+											</bfunction>
+										</and>
+										<implies>
+											<bfunction name = "isClosetTemperatureConsistentlyIncrease">
+												<param pos = "1" var = "v1" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "ClosetTemperature" op = "" default_value = ""/>
+											</bfunction>
+											<not>
+												<bfunction name = "isPredictedClosetTemperatureOverload">
+													<param pos = "1" var = "v1" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "2" var = "v2" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "3" var = "v3" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "4" var = "v4" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "5" var = "v5" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "6" var = "v6" field = "ClosetTemperature" op = "" default_value = ""/>
+												</bfunction>
+											</not>
+										</implies>
+									</implies>
+								</forall>
+							</forall>
+						</forall>
+					</forall>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_09</id>
+		<formula>
+			<forall var = "v1" in = "pat_23">
+				<forall var = "v2" in = "pat_24">
+					<forall var = "v3" in = "pat_25">
+						<forall var = "v4" in = "pat_26">
+							<forall var = "v5" in = "pat_27">
+								<forall var = "v6" in = "pat_28">
+									<implies>
+										<and>
+											<bfunction name = "isSameIP">
+												<param pos = "1" var = "v1" field = "ip" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "ip" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "ip" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "ip" op = "" default_value = ""/>
+											</bfunction>
+											<bfunction name = "duringOneHourInterval">
+												<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "timestamp" op = "" default_value = ""/>
+											</bfunction>
+										</and>
+										<implies>
+											<bfunction name = "isCPUTemperatureConsistentlyDecrease">
+												<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "CPUTemperature" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "CPUTemperature" op = "" default_value = ""/>
+											</bfunction>
+											<not>
+												<bfunction name = "isPredictedCPUTemperatureLowState">
+													<param pos = "1" var = "v1" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "2" var = "v2" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "3" var = "v3" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "4" var = "v4" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "5" var = "v5" field = "CPUTemperature" op = "" default_value = ""/>
+													<param pos = "6" var = "v6" field = "CPUTemperature" op = "" default_value = ""/>
+												</bfunction>
+											</not>
+										</implies>
+									</implies>
+								</forall>
+							</forall>
+						</forall>
+					</forall>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+
+	<rule>
+		<id>rule_10</id>
+		<formula>
+			<forall var = "v1" in = "pat_29">
+				<forall var = "v2" in = "pat_30">
+					<forall var = "v3" in = "pat_31">
+						<forall var = "v4" in = "pat_32">
+							<forall var = "v5" in = "pat_33">
+								<forall var = "v6" in = "pat_34">
+									<implies>
+										<and>
+											<bfunction name = "isSameIP">
+												<param pos = "1" var = "v1" field = "ip" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "ip" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "ip" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "ip" op = "" default_value = ""/>
+											</bfunction>
+											<bfunction name = "duringOneHourInterval">
+												<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "timestamp" op = "" default_value = ""/>
+											</bfunction>
+										</and>
+										<implies>
+											<bfunction name = "isClosetTemperatureConsistentlyDecrease">
+												<param pos = "1" var = "v1" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "ClosetTemperature" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "ClosetTemperature" op = "" default_value = ""/>
+											</bfunction>
+											<not>
+												<bfunction name = "isPredictedClosetTemperatureLowState">
+													<param pos = "1" var = "v1" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "2" var = "v2" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "3" var = "v3" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "4" var = "v4" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "5" var = "v5" field = "ClosetTemperature" op = "" default_value = ""/>
+													<param pos = "6" var = "v6" field = "ClosetTemperature" op = "" default_value = ""/>
+												</bfunction>
+											</not>
+										</implies>
+									</implies>
+								</forall>
+							</forall>
+						</forall>
+					</forall>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_11</id>
+		<formula>
+			<forall var = "v1" in = "pat_35">
+				<forall var = "v2" in = "pat_36">
+					<forall var = "v3" in = "pat_37">
+						<forall var = "v4" in = "pat_38">
+							<forall var = "v5" in = "pat_39">
+								<forall var = "v6" in = "pat_40">
+									<implies>
+										<and>
+											<bfunction name = "isSameIP">
+												<param pos = "1" var = "v1" field = "ip" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "ip" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "ip" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "ip" op = "" default_value = ""/>
+											</bfunction>
+											<bfunction name = "duringOneHourInterval">
+												<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "4" var = "v4" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "5" var = "v5" field = "timestamp" op = "" default_value = ""/>
+												<param pos = "6" var = "v6" field = "timestamp" op = "" default_value = ""/>
+											</bfunction>
+										</and>
+										<not>
+											<and>
+												<bfunction name = "allMemoryUsageRapidlyChanged">
+													<param pos = "1" var = "v1" field = "memoryUsage" op = "" default_value = ""/>
+													<param pos = "2" var = "v2" field = "memoryUsage" op = "" default_value = ""/>
+													<param pos = "3" var = "v3" field = "memoryUsage" op = "" default_value = ""/>
+													<param pos = "4" var = "v4" field = "memoryUsage" op = "" default_value = ""/>
+													<param pos = "5" var = "v5" field = "memoryUsage" op = "" default_value = ""/>
+													<param pos = "6" var = "v6" field = "memoryUsage" op = "" default_value = ""/>
+													<param pos = "6" var = "" field = "" op = "" default_value = "10"/>
+												</bfunction>
+												<not>
+													<bfunction name = "allSameChangeDirection">
+														<param pos = "1" var = "v1" field = "memoryUsage" op = "" default_value = ""/>
+														<param pos = "2" var = "v2" field = "memoryUsage" op = "" default_value = ""/>
+														<param pos = "3" var = "v3" field = "memoryUsage" op = "" default_value = ""/>
+														<param pos = "4" var = "v4" field = "memoryUsage" op = "" default_value = ""/>
+														<param pos = "5" var = "v5" field = "memoryUsage" op = "" default_value = ""/>
+														<param pos = "6" var = "v6" field = "memoryUsage" op = "" default_value = ""/>
+													</bfunction>
+												</not>
+											</and>
+										</not>
+									</implies>
+								</forall>
+							</forall>
+						</forall>
+					</forall>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+	
+</rules>
