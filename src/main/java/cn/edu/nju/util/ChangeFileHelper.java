@@ -72,7 +72,7 @@ public class ChangeFileHelper {
                 while(it.hasNext()) {
                     Map.Entry<String, List<String>> entry = it.next();
                     String timestamp = entry.getKey();
-                    if(TimestampHelper.timestampCmp(timestamp, currentTimestamp) <= 0) {
+                    if(TimestampHelper.timestampCmp(timestamp, currentTimestamp) < 0) {
                         res.addAll(contextChangeMap.get(timestamp));
                         it.remove();
                     }
