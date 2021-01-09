@@ -7,7 +7,8 @@ import java.text.SimpleDateFormat;
  * Created by njucjc on 2017/10/23.
  */
 public class TimestampHelper {
-    private static SimpleDateFormat dfs = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+    // private static SimpleDateFormat dfs = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss:SSS");
+    private static SimpleDateFormat dfs = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     /**
      *返回两个时间戳对应时间差的毫秒数
      * @param timestamp1
