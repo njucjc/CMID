@@ -42,4 +42,8 @@ public class GEASOptScheduler extends GEAScheduler {
         return null;
     }
 
+    @Override
+    protected void sCheck(Checker checker) {
+        return;
+    }
 }

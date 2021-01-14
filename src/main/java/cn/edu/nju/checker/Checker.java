@@ -850,4 +850,7 @@ public abstract class Checker {
         return maxLinkSize;
     }
 
+    public void sCheck(List<Context> contextList) {
+        doCheck();
+    }
 }

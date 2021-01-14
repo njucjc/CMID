@@ -74,14 +74,15 @@ public class GEAScheduler implements Scheduler{
         Context context = parser.parseChangeContext(elements);
         contextList.add(context);
 
-       // List<Boolean> subTree = calcSubTree(checker, elements[1], context);
+        List<Boolean> subTree = calcSubTree(checker, elements[1], context);
 
 
         if (result) { //make batch empty
             updateWinSize(checker.getName(), currentBatch.size());
             currentBatch.clear();
+            sCheck(checker);
         } else {
-            String c = cCondition(checker, currentBatch, elements, null);
+            String c = cCondition(checker, currentBatch, elements, subTree);
             if (c == null) {
                 currentBatch.add(change);
             }
@@ -143,6 +144,11 @@ public class GEAScheduler implements Scheduler{
     void updateGEASOptWinSize(String name) {
         int [] tmp = winSizeMap.get(name);
         tmp[0] += 2;
+    }
+
+    protected void sCheck(Checker checker) {
+        checker.sCheck(this.contextList);
+        this.contextList.clear();
     }
 
     @Override
