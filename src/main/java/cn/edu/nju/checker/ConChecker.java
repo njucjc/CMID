@@ -18,12 +18,15 @@ public class ConChecker extends EccChecker {
 
     private Checker ecc;
 
+    private Checker checker;
+
     private ExecutorService checkExecutorService;
 
     public ConChecker(String name, STNode stRoot, Map<String, Pattern> patternMap, Map<String, STNode> stMap, int taskNum, ExecutorService checkExecutorService) {
         super(name, stRoot, patternMap, stMap);
         this.taskNum = taskNum;
         this.ecc = new EccChecker();
+        this.checker = new PccChecker(name, stRoot, patternMap, stMap);
         this.checkExecutorService = checkExecutorService;//Executors.newFixedThreadPool(taskNum);
     }
 
@@ -31,17 +34,16 @@ public class ConChecker extends EccChecker {
         super(checker);
         this.taskNum = taskNum;
         this.ecc = new EccChecker();
+        this.checker = new PccChecker(checker.name, checker.stRoot, checker.patternMap, checker.stMap);
         this.checkExecutorService = checkExecutorService;
     }
 
     @Override
     protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
-        if (cctRoot.getNodeType() == NodeType.UNIVERSAL_NODE || cctRoot.getNodeType() == NodeType.EXISTENTIAL_NODE) {
-            return conCheck(cctRoot, param);
-        }
-        else {
-            return super.evaluation(cctRoot, param);
-        }
+        CCTNode newRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType(), stRoot.getParamList());
+        build(stRoot, newRoot, 5);
+        conCheck(newRoot, param);
+        return this.checker.evaluation(cctRoot, param);
     }
 
     private boolean conCheck(CCTNode cctRoot, List<Context> param) {
