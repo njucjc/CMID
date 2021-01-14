@@ -108,8 +108,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             this.checkType = CON_TYPE;
         } else if("gain".equals(technique.toLowerCase())) {
             this.checkType = GAIN_TYPE;
-        } else if ("cpcc".equals(technique.toLowerCase())) {
-            this.checkType = CONPCC_TYPE;
         }else {
             System.out.println("[INFO] technique项配置错误：" + technique);
             System.exit(1);
@@ -413,8 +411,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                     checker = new GAINChecker(idNode.getTextContent(), root, this.patternMap, stMap,
                             kernelFilePath, //kernel function
                             contexts, cuContext, gpuResult); //GPU memory
-                } else if(checkType == CONPCC_TYPE) {
-                    checker = new ConPccChecker(idNode.getTextContent(), root, this.patternMap, stMap, taskNum, checkExecutorService);
                 }
 
                 checkerList.add(checker);
@@ -554,9 +550,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 }
                 else if(checkType == CON_TYPE) {
                     c = new ConChecker(checker, taskNum, this.checkExecutorService);
-                }
-                else if(checkType == CONPCC_TYPE) {
-                    c = new ConPccChecker(checker, taskNum, this.checkExecutorService);
                 }
                 else {
                     assert false:"Type Error.";
