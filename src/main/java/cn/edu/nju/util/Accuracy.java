@@ -7,11 +7,13 @@ import java.util.*;
 
 public class Accuracy {
     public static void main(String[] args) {
-        if(args.length == 2) {
-            System.out.println("[INFO] 开始oracle验证......");
+        if(args.length == 3) {
+            System.out.println("[INFO] 开始结果分析......");
+            System.out.println("[INFO] 读取oracle文件并分析");
             Set<String> groundTruth = readLogFile(args[1]);
             Set<String> myLog = readLogFile(args[0]);
 
+            Interaction.say("输出分析结果");
             int right = 0, fault = 0;
             for(String logStr : myLog) {
                 if(!groundTruth.contains(logStr)) {
@@ -31,14 +33,18 @@ public class Accuracy {
                 fault = 0;
             }
 
-            System.out.println("[INFO] oracle验证结束，结果为：");
+            Logger logger = new Logger(args[2], false);
+
+            System.out.println("[INFO] 结果分析完成，结果为：");
             if(fault == 0 && miss == 0) {
-                LogFileHelper.getLogger().info("oracle验证通过", true);
+                logger.info("Oracle验证通过", true);
+                logger.info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
+                logger.info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
             }
             else {
-                LogFileHelper.getLogger().info("oracle验证不通过", true);
-                LogFileHelper.getLogger().info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
-                LogFileHelper.getLogger().info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
+                logger.info("Oracle验证不通过", true);
+                logger.info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
+                logger.info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
             }
         }
         else {

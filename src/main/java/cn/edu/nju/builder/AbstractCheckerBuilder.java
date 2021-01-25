@@ -11,6 +11,7 @@ import cn.edu.nju.scheduler.GEASOptScheduler;
 import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
 import cn.edu.nju.util.Accuracy;
+import cn.edu.nju.util.Interaction;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.PTXFileHelper;
 import jcuda.driver.CUcontext;
@@ -73,6 +74,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     private GPUResult gpuResult;
 
     private List<String> contexts;
+
+    private String analysisFilePath;
 
     public AbstractCheckerBuilder(String configFilePath) {
         if (!isFileExists(configFilePath)) {
@@ -226,8 +229,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
 
 
-        System.out.println("[INFO] 检测技术：" + technique);
-        System.out.println("[INFO] 调度策略：" + schedule);
+        System.out.println("[INFO] 检测技术为" + technique);
+        System.out.println("[INFO] 调度策略为" + schedule);
 
         //change handle
         configChangeHandler();
@@ -246,13 +249,22 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
         else {
             if(!isFileExists(this.dataFilePath)) {
-                System.out.println("[INFO] 配置文件解析失败：原始时序文件" + this.dataFilePath + "不存在");
+                System.out.println("[INFO] 数据文件解析失败：数据文件" + this.dataFilePath + "不存在");
                 System.exit(1);
             }
             else if (!isFileExists(this.changeFilePath)) {
-                System.out.println("[INFO] 配置文件解析失败：预处理上下文文件" + this.changeFilePath + "不存在");
+                System.out.println("[INFO] 数据文件解析失败：数据文件" + this.changeFilePath + "不存在");
                 System.exit(1);
             }
+        }
+
+        if (this.changeHandlerType.contains("change-based")) {
+            dataValidityJudgment(this.changeFilePath);
+            System.out.println("[INFO] 数据文件为规范的预处理上下文文件，检测技术和调度策略适配，可进行一致性处理");
+        }
+        else {
+            dataValidityJudgment(this.dataFilePath);
+            System.out.println("[INFO] 数据文件为规范的原始时序文件，检测技术和调度策略适配，可进行一致性处理");
         }
 
         String cudaSourceFilePath = "src/main/kernel/kernel.cu";
@@ -274,7 +286,46 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             compileKernelFunction(cudaSourceFilePath);
         }
 
+        this.analysisFilePath = properties.getProperty("analysisFilePath");
+        if (analysisFilePath == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少analysisFilePath配置项");
+            System.exit(1);
+        }
+
         System.out.println("[INFO] 配置文件解析成功......");
+        Interaction.say("进入一致性检测处理：");
+    }
+
+    private void dataValidityJudgment(String filePath) {
+        if (this.changeHandlerType.contains("dynamic")) return;
+        try {
+            FileReader fr = new FileReader(filePath);
+            BufferedReader bufferedReader = new BufferedReader(fr);
+
+            String change;
+            while ((change = bufferedReader.readLine()) != null) {
+                String [] elems = change.split(",");
+                if (this.changeHandlerType.contains("time-based")) {
+                    if (elems.length != 7) {
+                        System.out.println("[INFO] 配置文件解析错误：数据文件" + filePath + "格式错误");
+                        System.exit(1);
+                    }
+                }
+                else {
+                    if (elems.length != 9) {
+                        System.out.println("[INFO] 配置文件解析错误：数据文件" + filePath + "格式错误");
+                        System.exit(1);
+                    }
+
+                    if (!"+".equals(elems[0]) && !"-".equals(elems[0])) {
+                        System.out.println("[INFO] 配置文件解析错误：数据文件" + filePath + "存在非法的数据操作类型" + elems[0]);
+                        System.exit(1);
+                    }
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private boolean isFileExists(String fileName) {
@@ -299,7 +350,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             Document document = db.parse(patternFilePath);
 
             NodeList patternList = document.getElementsByTagName("pattern");
-            System.out.println("[INFO] pattern文件：" + patternFilePath + "，总共" + patternList.getLength() + "个patterns");
+            System.out.println("[INFO] pattern文件为" + patternFilePath + "，总共" + patternList.getLength() + "个patterns");
             for (int i = 0; i < patternList.getLength(); i++) {
                 Node patNode = patternList.item(i);
                 NodeList childNodes = patNode.getChildNodes();
@@ -413,7 +464,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             Document document = db.parse(ruleFilePath);
 
             NodeList ruleList = document.getElementsByTagName("rule");
-            System.out.println("[INFO] rule文件：" + ruleFilePath + "，总共" + ruleList.getLength() + "条rules");
+            System.out.println("[INFO] rule文件为" + ruleFilePath + "，总共" + ruleList.getLength() + "条rules");
 
             for(int i = 0; i < ruleList.getLength(); i++){
                 STNode treeHead = new STNode();
@@ -609,7 +660,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
 
     protected void accuracy(String logFilePath) {
-        Accuracy.main(new String []{logFilePath, this.oracleFilePath});
+        Accuracy.main(new String []{logFilePath, this.oracleFilePath, this.analysisFilePath});
     }
 
 
