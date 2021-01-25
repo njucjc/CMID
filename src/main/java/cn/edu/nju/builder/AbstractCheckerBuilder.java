@@ -76,7 +76,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     public AbstractCheckerBuilder(String configFilePath) {
         if (!isFileExists(configFilePath)) {
-            System.out.println("[INFO] 配置文件不存在: " + configFilePath);
+            System.out.println("[INFO] 配置文件解析失败：配置文件" + configFilePath + "不存在");
             System.exit(1);
         }
         parseConfigFile(configFilePath);
@@ -97,7 +97,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         //check type
         String technique = properties.getProperty("technique");
         if (technique == null) {
-            System.out.println("[INFO] technique项无配置");
+            System.out.println("[INFO] 配置文件解析失败：缺少technique配置项");
             System.exit(1);
         }
         else if("pcc".equals(technique.toLowerCase())) {
@@ -111,55 +111,150 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         } else if ("cpcc".equals(technique.toLowerCase())) {
             this.checkType = CONPCC_TYPE;
         }else {
-            System.out.println("[INFO] technique项配置错误：" + technique);
+            System.out.println("[INFO] 配置文件解析失败：technique配置项配置值" + technique + "无效");
             System.exit(1);
         }
 
         //taskNum
         String taskNumStr = properties.getProperty("taskNum");
         if (taskNumStr == null) {
-            System.out.println("[INFO] taskNum项无配置");
+            System.out.println("[INFO] 配置文件解析失败：缺少taskNum配置项");
             System.exit(1);
         }
         else if(taskNumStr.matches("[0-9]+")) {
             this.taskNum = Integer.parseInt(taskNumStr);
             if (taskNum == 0) {
-                System.out.println("[INFO] taskNum项配置错误: " + taskNumStr);
+                System.out.println("[INFO] 配置文件解析失败：taskNum配置项配置值" + taskNumStr + "无效");
                 System.exit(1);
             }
         } else {
             if (!"-1".equals(taskNumStr)) {
-                System.out.println("[INFO] taskNum项配置错误: " + taskNumStr);
+                System.out.println("[INFO] 配置文件解析失败：taskNum配置项配置值" + taskNumStr + "无效");
                 System.exit(1);
             }
         }
 
         this.checkExecutorService = Executors.newFixedThreadPool(taskNum);
 
+        //pattern
+        String patternFilePath = properties.getProperty("patternFilePath");
+        if (patternFilePath == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少patternFilePath配置项");
+            System.exit(1);
+        }
+        else if (!isFileExists(patternFilePath)) {
+            System.out.println("[INFO] 配置文件解析失败：Pattern文件" + patternFilePath + "不存在");
+            System.exit(1);
+        }
+        parsePatternFile(patternFilePath);
+
+        //rule
+        String ruleFilePath = properties.getProperty("ruleFilePath");
+        if (ruleFilePath == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少ruleFilePath配置项");
+            System.exit(1);
+        }
+        else if (!isFileExists(ruleFilePath)) {
+            System.out.println("[INFO] 配置文件解析失败：Rule文件" + ruleFilePath + "不存在");
+            System.exit(1);
+        }
+        parseRuleFile(ruleFilePath);
+
+        //log
+        String logFilePath = properties.getProperty("logFilePath");
+        if (logFilePath == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少logFilePath配置项");
+            System.exit(1);
+        }
+        LogFileHelper.initLogger(logFilePath);
+
+        //oracle
+        this.oracleFilePath = properties.getProperty("oracleFilePath");
+        if (this.oracleFilePath == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少oracleFilePath配置项");
+            System.exit(1);
+        }
+        else {
+            if(!isFileExists(this.oracleFilePath)) {
+                System.out.println("[INFO] 配置文件解析失败：Oracle文件" + this.oracleFilePath + "不存在");
+                System.exit(1);
+            }
+        }
+
+        //schedule
+        String schedule = properties.getProperty("schedule");
+        //change handler
+        this.changeHandlerType = properties.getProperty("changeHandlerType");
+        if (this.changeHandlerType == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少changeHandlerType配置项");
+            System.exit(1);
+        }
+        else  if (changeHandlerType.contains("time-based") && schedule.toLowerCase().contains("geas")) {
+            System.out.println("[INFO] 配置文件解析失败：数据文件为规范的原始时序文件不可搭配GEAS-ori或GEAS-opt策略");
+            System.exit(1);
+        }
+        else if (!changeHandlerType.contains("time-based") && !changeHandlerType.contains("change-based")) {
+            System.out.println("[INFO] 配置文件解析失败：changeHandlerType配置项配置值" + this.changeHandlerType + "无效");
+            System.exit(1);
+        }
+
+        if (schedule == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少schedule配置项");
+            System.exit(1);
+        }
+        else if ("immed".equals(schedule.toLowerCase())) {
+            this.scheduler = new BatchScheduler(1);
+            this.scheduleType = 1;
+        }
+        else if(schedule.toLowerCase().matches("batch-[0-9]+")) {
+            this.scheduler = new BatchScheduler(Integer.parseInt(schedule.split("-")[1]));
+            this.scheduleType = Integer.parseInt(schedule.split("-")[1]);
+        }
+        else if ("geas-ori".equals(schedule.toLowerCase())) {
+            this.scheduler = new GEAScheduler(this.checkerList);
+            this.scheduleType = 0;
+        }
+        else if ("geas-opt".equals(schedule.toLowerCase())) {
+            this.scheduler = new GEASOptScheduler(this.checkerList);
+            this.scheduleType = -2;
+        }
+        else {
+            this.scheduleType = -1;
+            System.out.println("[INFO] 配置文件解析失败：schedule配置项配置值" + schedule + "无效");
+            System.exit(1);
+        }
+
+
+
+        System.out.println("[INFO] 检测技术：" + technique);
+        System.out.println("[INFO] 调度策略：" + schedule);
+
+        //change handle
+        configChangeHandler();
 
         //context file path
         this.dataFilePath = properties.getProperty("dataFilePath");
         this.changeFilePath = properties.getProperty("changeFilePath");
 
         if (this.dataFilePath == null) {
-            System.out.println("[INFO] dataFilePath项无配置");
+            System.out.println("[INFO] 配置文件解析失败：缺少dataFilePath配置项");
             System.exit(1);
         }
         else if (this.changeFilePath == null) {
-            System.out.println("[INFO] changeFilePat项无配置");
+            System.out.println("[INFO] 配置文件解析失败：缺少changeFilePath配置项");
             System.exit(1);
         }
         else {
             if(!isFileExists(this.dataFilePath)) {
-                System.out.println("[INFO] dataFilePath配置中的文件不存在：" + this.dataFilePath);
+                System.out.println("[INFO] 配置文件解析失败：原始时序文件" + this.dataFilePath + "不存在");
                 System.exit(1);
             }
             else if (!isFileExists(this.changeFilePath)) {
-                System.out.println("[INFO] changeFilePath配置中的文件不存在：" + this.changeFilePath);
+                System.out.println("[INFO] 配置文件解析失败：预处理上下文文件" + this.changeFilePath + "不存在");
                 System.exit(1);
             }
         }
-        
+
         String cudaSourceFilePath = "src/main/kernel/kernel.cu";
         //如果是GAIN需要初始化GPU内存
         if(this.checkType == GAIN_TYPE) {
@@ -179,85 +274,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             compileKernelFunction(cudaSourceFilePath);
         }
 
-        //pattern
-        String patternFilePath = properties.getProperty("patternFilePath");
-        if (patternFilePath == null) {
-            System.out.println("[INFO] patternFilePath项无配置");
-            System.exit(1);
-        }
-        parsePatternFile(patternFilePath);
-
-        //rule
-        String ruleFilePath = properties.getProperty("ruleFilePath");
-        if (ruleFilePath == null) {
-            System.out.println("[INFO] ruleFilePath项无配置");
-            System.exit(1);
-        }
-        parseRuleFile(ruleFilePath);
-
-        //schedule
-        String schedule = properties.getProperty("schedule");
-        //change handler
-        this.changeHandlerType = properties.getProperty("changeHandlerType");
-        if (this.changeHandlerType == null) {
-            System.out.println("[INFO] changeHandlerType项无配置");
-            System.exit(1);
-        }
-        if (schedule == null) {
-            System.out.println("[INFO] schedule项无配置");
-            System.exit(1);
-        }
-        else if ("immed".equals(schedule.toLowerCase())) {
-            this.scheduler = new BatchScheduler(1);
-            this.scheduleType = 1;
-        }
-        else if(schedule.toLowerCase().matches("batch-[0-9]+")) {
-            this.scheduler = new BatchScheduler(Integer.parseInt(schedule.split("-")[1]));
-            this.scheduleType = Integer.parseInt(schedule.split("-")[1]);
-        }
-        else if ("geas-ori".equals(schedule.toLowerCase()) && this.changeHandlerType.contains("change-based")) {
-            this.scheduler = new GEAScheduler(this.checkerList);
-            this.scheduleType = 0;
-        }
-        else if ("geas-opt".equals(schedule.toLowerCase()) && this.changeHandlerType.contains("change-based")) {
-            this.scheduler = new GEASOptScheduler(this.checkerList);
-            this.scheduleType = -2;
-        }
-        else {
-            this.scheduleType = -1;
-            System.out.println("[INFO] schedule项配置错误: " + schedule);
-            System.exit(1);
-        }
-
-        System.out.println("[INFO] 检测技术：" + technique);
-        System.out.println("[INFO] 调度策略：" + schedule);
-
-
-        //log
-        String logFilePath = properties.getProperty("logFilePath");
-        if (logFilePath == null) {
-            System.out.println("[INFO] logFilePath项无配置");
-            System.exit(1);
-        }
-        LogFileHelper.initLogger(logFilePath);
-
-        //oracle
-        this.oracleFilePath = properties.getProperty("oracleFilePath");
-        if (this.oracleFilePath == null) {
-            System.out.println("[INFO] oracleFilePath项无配置");
-            System.exit(1);
-        }
-        else {
-            if(!isFileExists(this.oracleFilePath)) {
-                System.out.println("[INFO] oracleFilePath配置中的文件不存在：" + this.oracleFilePath);
-                System.exit(1);
-            }
-        }
-
-        //change handle
-        configChangeHandler();
-
-        System.out.println("[INFO] 配置文件解析完毕......");
+        System.out.println("[INFO] 配置文件解析成功......");
     }
 
     private boolean isFileExists(String fileName) {
@@ -324,7 +341,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                                 member.put("freshness", true);
                                 freshness = Long.parseLong(childNodes.item(j).getTextContent());
                             } catch (NumberFormatException e) {
-                                System.out.println("[INFO] pattern的freshness配置错误");
+                                System.out.println("[INFO] 配置文件解析失败：Pattern文件中的freshness配置值" + childNodes.item(j).getTextContent() + "无效");
                                 System.exit(1);
                             }
                             break;
@@ -349,14 +366,14 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                             site = childNodes.item(j).getTextContent();
                             break;
                         default:
-                            System.out.println("[INFO] '" + patternFilePath + "'文件中存在不可识别pattern标识符：" + childNodes.item(j).getNodeName());
+                            System.out.println("[INFO] 配置文件解析失败：Pattern文件" + patternFilePath + "存在非法的pattern标识符" + childNodes.item(j).getNodeName());
                             System.exit(1);
                     }
                 }
 
                 for(String key : member.keySet()) {
                     if (!member.get(key)) {
-                        System.out.println("[INFO] '" + patternFilePath + "'文件中缺少pattern标识符：" + key);
+                        System.out.println("[INFO] 配置文件解析失败：Pattern文件" + patternFilePath + "缺少pattern标识符" + key);
                         System.exit(1);
                     }
                 }
@@ -376,12 +393,12 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("[INFO] patternFilePath配置中的文件不存在：" + patternFilePath);
+            System.out.println("[INFO] 配置文件解析失败：Pattern文件" + patternFilePath + "不存在");
             System.exit(1);
         }
 
         if (patternMap.isEmpty()) {
-            System.out.println("[INFO] pattern文件中没有pattern");
+            System.out.println("[INFO]  配置文件解析失败：Pattern文件" + patternFilePath + "没有pattern");
             System.exit(1);
         }
     }
@@ -443,12 +460,12 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("[INFO] ruleFilePath配置中的文件不存在：" +  ruleFilePath);
+            System.out.println("[INFO] 配置文件解析失败：Rule文件" + ruleFilePath + "不存在");
             System.exit(1);
         }
 
         if (checkerList.isEmpty()) {
-            System.out.println("[INFO] rule文件中没有rule");
+            System.out.println("[INFO] 配置文件解析失败：Rule文件" + ruleFilePath + "没有rule");
             System.exit(1);
         }
     }
@@ -500,7 +517,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                         stNode = new STNode(e.getAttribute("name"), STNode.BFUNC_NODE);
                         break;
                     default:
-                        System.out.println("[INFO] '" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName);
+                        System.out.println("[INFO] 配置文件解析失败：Rule文件" + ruleFilePath +  "存在非法的一致性规则标识符" + nodeName);
                         System.exit(1);
                         break;
                 }
