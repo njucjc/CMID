@@ -8,7 +8,7 @@ import java.util.*;
 public class Accuracy {
     public static void main(String[] args) {
         if(args.length == 3) {
-            System.out.println("[INFO] 开始结果分析......");
+            System.out.println("[INFO] 开始结果分析");
             System.out.println("[INFO] 读取oracle文件并分析");
             Set<String> groundTruth = readLogFile(args[1]);
             Set<String> myLog = readLogFile(args[0]);
