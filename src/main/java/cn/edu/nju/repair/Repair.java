@@ -1,10 +1,6 @@
 package cn.edu.nju.repair;
 
-import cn.edu.nju.Main;
-import cn.edu.nju.util.ConfigHelper;
-import cn.edu.nju.util.FileHelper;
-import cn.edu.nju.util.LogFileHelper;
-import cn.edu.nju.util.TrafficGraph;
+import cn.edu.nju.util.*;
 
 import java.util.*;
 
@@ -13,10 +9,8 @@ import java.util.*;
  */
 public class Repair {
 
-    public static void repairStep0(Properties properties) {
-        String dataPath = properties.getProperty("dataFilePath");
-        List<String> dataList = FileHelper.readFile(dataPath);
-        List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
+    public static List<String> repairStep0(List<String> dataList, List<String> incList) {
+
 
         Set<Integer> oppoSet = new HashSet<>();
         Map<Integer, String> missMap = new HashMap<>();
@@ -58,13 +52,10 @@ public class Repair {
             }
         }
 
-        FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
+        return res;
     }
 
-    public static void repairStep1(Properties properties) {
-        String dataPath = properties.getProperty("dataFilePath");
-        List<String> dataList = FileHelper.readFile(dataPath);
-        List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
+    public static List<String> repairStep1(List<String> dataList, List<String> incList) {
         Set<Integer> redundantSet = new HashSet<>();
         for (String inc : incList) {
             String [] elem = inc.split(" ");
@@ -84,13 +75,10 @@ public class Repair {
             }
         }
 
-        FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
+        return res;
     }
 
-    public static void repairStep2(Properties properties) {
-        String dataPath = properties.getProperty("dataFilePath");
-        List<String> dataList = FileHelper.readFile(dataPath);
-        List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
+    public static List<String> repairStep2(List<String> dataList, List<String> incList) {
 
         Map<Integer, List<String>> missMap = new HashMap<>();
         for (String inc : incList) {
@@ -138,14 +126,11 @@ public class Repair {
             }
         }
 
-        FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
+        return res;
     }
 
 
-    public static void repairStep3(Properties properties) {
-        String dataPath = properties.getProperty("dataFilePath");
-        List<String> dataList = FileHelper.readFile(dataPath);
-        List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
+    public static List<String> repairStep3(List<String> dataList, List<String> incList) {
 
         Set<Integer> deleteSet = new HashSet<>();
         for (String inc : incList) {
@@ -163,7 +148,7 @@ public class Repair {
                 res.add(dataList.get(i));
             }
         }
-        FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
+        return res;
     }
 
     private static List<String> deleteCycle(List<String> dataList, List<Integer> status) {
@@ -205,39 +190,55 @@ public class Repair {
 
     public static void main(String[] args) {
         if (args.length == 1) {
+            System.out.println("[INFO] 开始修复过程");
             Properties properties = ConfigHelper.getConfig(args[0]);
-            Main.check(args[0]);
-
             int step = Integer.parseInt(properties.getProperty("step"));
+
+            Interaction.say("开始读取修复关联文件");
+            String dataPath = properties.getProperty("dataFilePath");
+            List<String> dataList = FileHelper.readFile(dataPath);
+            List<String> incList = FileHelper.readFile(properties.getProperty("logFilePath"));
+            List<String> res = new ArrayList<>();
+
+            System.out.println("[INFO] 修复关联文件读取成功");
+            Interaction.say("开始一致性修复");
             if (step == 0) {
-                repairStep0(properties);
+               res = repairStep0(dataList, incList);
             }
             else if (step == 1) {
-                repairStep1(properties);
+                res = repairStep1(dataList, incList);
             }
             else if (step == 2) {
-                repairStep2(properties);
+                res = repairStep2(dataList, incList);
             }
             else if (step == 3) {
-                repairStep3(properties);
-
-                for (int i = 0; i < 3; ++i) {
-                    System.out.println();
-                }
-                String repairedPath = properties.getProperty("repairedFilePath");
-                String truePath = properties.getProperty("trueFilePath");
-                System.out.println("[INFO] 高速路径检测和修复完成，开始比对修复路径文件'" + repairedPath + "'和真实路径文件’" + truePath + "'，等待对比结果......");
-
-                if (comparePath(repairedPath, truePath)) {
-                    System.out.println("[INFO] 对比结束，结果为：");
-                    LogFileHelper.getLogger().info("修复路径与真实路径一致，修复成功", true);
-                }
-                else {
-                    System.out.println("[INFO] 对比结束，结果为：");
-                    LogFileHelper.getLogger().info("修复路径与真实路径不一致，修复失败", true);
-                }
+                res = repairStep3(dataList, incList);
             }
 
+            System.out.println("[INFO] 一致性修复结束");
+
+            Interaction.say("创建一致性修复结果文件");
+            FileHelper.createNewFile(properties.getProperty("repairedFilePath"));
+            System.out.println("[INFO] 成功创建一致性修复结果文件");
+
+            Interaction.say("输出一致性修复结果到文件");
+            FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
+            System.out.println("[INFO] 成功输出一致性修复结果到文件");
+
+            Interaction.say("开始分析一致性修复结果，读取理想修复结果文件");
+            String repairedPath = properties.getProperty("repairedFilePath");
+            String truePath = properties.getProperty("trueFilePath");
+            System.out.println("[INFO] 成功读取理想修复结果文件");
+
+            Interaction.say("比对修复结果与理想结果");
+            if (comparePath(repairedPath, truePath)) {
+                System.out.println("[INFO] 对比结束，结果为：");
+                System.out.println("[INFO] 修复结果与理想结果一致，修复成功");
+            }
+            else {
+                System.out.println("[INFO] 对比结束，结果为：");
+                System.out.println("[INFO] 修复结果与理想结果不一致，修复失败");
+            }
         }
         else {
             System.out.println("Usage: java Main [configFilePath].");

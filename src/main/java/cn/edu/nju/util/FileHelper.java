@@ -45,4 +45,18 @@ public class FileHelper {
             e.printStackTrace();
         }
     }
+
+    public static void createNewFile(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            //不存在
+            try {
+                file.createNewFile();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+
+            }
+        }
+    }
 }
