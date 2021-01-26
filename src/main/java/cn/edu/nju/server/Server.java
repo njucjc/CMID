@@ -46,8 +46,8 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long timeSum = 0;
 
         System.out.println("[INFO] 服务器启动完毕");
-        Interaction.say("开始等待客户端连接，并发送数据");
-        System.out.println("[INFO] 成功开始等待客户端发送数据");
+        Interaction.say("开始等待客户端连接，并接收数据");
+        System.out.println("[INFO] 成功开始等待接收数据");
         try {
             while (running) {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
