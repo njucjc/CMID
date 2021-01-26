@@ -98,7 +98,9 @@ public class Client implements Runnable{
         for (int i = 0; i < 10000; i++) {
             sendMsg("exit");
         }
-        System.out.println("[INFO] 成功广播结束报文，客户端关闭");
+        System.out.println("[INFO] 成功广播结束报文");
+        Interaction.say("关闭链接");
+        System.out.println("[INFO] 成功关闭链接");
 
     }
 
