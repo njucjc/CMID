@@ -86,7 +86,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
     private void parseConfigFile(String configFilePath) {
-        System.out.println("[INFO] 系统启动，开始解析配置文件......");
+        System.out.println("[INFO] 系统启动，开始解析配置文件");
         //不要随意更换处理顺序
         Properties properties = new Properties();
         try {
@@ -182,6 +182,12 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                 System.out.println("[INFO] 配置文件解析失败：Oracle文件" + this.oracleFilePath + "不存在");
                 System.exit(1);
             }
+        }
+
+        this.analysisFilePath = properties.getProperty("analysisFilePath");
+        if (analysisFilePath == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少analysisFilePath配置项");
+            System.exit(1);
         }
 
         //schedule
@@ -286,13 +292,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             compileKernelFunction(cudaSourceFilePath);
         }
 
-        this.analysisFilePath = properties.getProperty("analysisFilePath");
-        if (analysisFilePath == null) {
-            System.out.println("[INFO] 配置文件解析失败：缺少analysisFilePath配置项");
-            System.exit(1);
-        }
-
-        System.out.println("[INFO] 配置文件解析成功......");
+        System.out.println("[INFO] 配置文件解析成功");
         Interaction.say("进入一致性检测处理：");
     }
 
@@ -350,7 +350,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             Document document = db.parse(patternFilePath);
 
             NodeList patternList = document.getElementsByTagName("pattern");
-            System.out.println("[INFO] pattern文件为" + patternFilePath + "，总共" + patternList.getLength() + "个patterns");
+            System.out.println("[INFO] Pattern文件为" + patternFilePath + "，总共" + patternList.getLength() + "个patterns");
             for (int i = 0; i < patternList.getLength(); i++) {
                 Node patNode = patternList.item(i);
                 NodeList childNodes = patNode.getChildNodes();
@@ -464,7 +464,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             Document document = db.parse(ruleFilePath);
 
             NodeList ruleList = document.getElementsByTagName("rule");
-            System.out.println("[INFO] rule文件为" + ruleFilePath + "，总共" + ruleList.getLength() + "条rules");
+            System.out.println("[INFO] Rule文件为" + ruleFilePath + "，总共" + ruleList.getLength() + "条rules");
 
             for(int i = 0; i < ruleList.getLength(); i++){
                 STNode treeHead = new STNode();

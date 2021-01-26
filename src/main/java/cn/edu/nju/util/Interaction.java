@@ -4,7 +4,7 @@ import java.time.Year;
 import java.util.Scanner;
 
 public class Interaction {
-    public static void say(String content) {
+    public static boolean say(String content) {
         Scanner in = new Scanner(System.in);
         String str;
         while(true) {
@@ -19,5 +19,6 @@ public class Interaction {
             }
 
         }
+        return true;
     }
 }

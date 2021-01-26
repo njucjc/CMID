@@ -27,7 +27,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         else {
             contextList = fileReader(this.changeFilePath);
         }
-        System.out.println("[INFO] 开始一致性处理......");
+        System.out.println("[INFO] 开始一致性处理");
         int count = 0;
         long startTime = System.nanoTime();
         for(String change : contextList) {
@@ -45,6 +45,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
 
         System.out.println();
         System.out.println("[INFO] 一致性检测过程完成，共检测出" + incCount + "个不一致");
+        System.out.println("[INFO] 检测时间为" + (endTime - startTime) / 1000000 + " ms");
         LogFileHelper.getLogger().info("Total INC: " + incCount, false);
         LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms", false);
 
