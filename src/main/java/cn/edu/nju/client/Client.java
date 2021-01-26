@@ -1,5 +1,6 @@
 package cn.edu.nju.client;
 
+import cn.edu.nju.util.Interaction;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.io.*;
@@ -26,6 +27,12 @@ public class Client implements Runnable{
         this.contextStrList = new ArrayList<>();
         this.sleepTime = new ArrayList<>();
 
+        System.out.println("[INFO] 客户端开始启动");
+        Interaction.say("进行端口绑定");
+        System.out.println("[INFO] 成功绑定" + port + "端口");
+        Interaction.say("建立链接");
+        System.out.println("[INFO] 成功建立链接");
+        Interaction.say("进行读取时间戳");
 
         try {
             FileReader fr = new FileReader(contextFilePath);
@@ -45,6 +52,7 @@ public class Client implements Runnable{
             }
             sleepTime.add(1L);
 
+            System.out.println("[INFO] 成功读取时间戳");
             socket = new DatagramSocket();
             address = InetAddress.getByName("localhost");
 
@@ -57,8 +65,7 @@ public class Client implements Runnable{
     @Override
     public void run() {
 
-        System.out.println("Client begins to start.....");
-
+        Interaction.say("进行数据文件发送");
         long sleepMillis = 0;
         long totalTime = 0;
         long startTime = System.nanoTime();
@@ -85,11 +92,13 @@ public class Client implements Runnable{
 
         }
         endTime = System.nanoTime();
-        System.out.println("Total send time： " + (endTime - startTime) / 1000000 + " ms");
+        System.out.println("[INFO] 数据文件发送结束，耗时" + (endTime - startTime) / 1000000 + " ms");
 
+        Interaction.say("开始广播结束报文");
         for (int i = 0; i < 10000; i++) {
             sendMsg("exit");
         }
+        System.out.println("[INFO] 成功广播结束报文，客户端关闭");
 
     }
 

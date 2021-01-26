@@ -8,7 +8,7 @@ public class Interaction {
         Scanner in = new Scanner(System.in);
         String str;
         while(true) {
-            System.out.println("是否" + content + "（Y/N）：");
+            System.out.println("[INFO] 是否" + content + "（Y/N）：");
             str = in.nextLine();
 
             if ("y".equals(str.toLowerCase())) {
