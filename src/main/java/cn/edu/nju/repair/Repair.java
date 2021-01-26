@@ -225,8 +225,13 @@ public class Repair {
             FileHelper.writeFile(properties.getProperty("repairedFilePath"), res);
             System.out.println("[INFO] 成功输出一致性修复结果到文件");
 
-            Interaction.say("开始分析一致性修复结果，读取理想修复结果文件");
+            Interaction.say("开始修复结果分析");
+
+            Interaction.say("读取修复结果文件");
             String repairedPath = properties.getProperty("repairedFilePath");
+            System.out.println("[INFO] 成功读取修复结果文件");
+
+            Interaction.say("读取理想修复结果文件");
             String truePath = properties.getProperty("trueFilePath");
             System.out.println("[INFO] 成功读取理想修复结果文件");
 
