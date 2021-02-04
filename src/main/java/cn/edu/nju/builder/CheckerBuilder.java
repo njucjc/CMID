@@ -20,6 +20,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
 
     @Override
     public void run() {
+        Interaction.say("进入一致性检测处理");
         List<String> contextList;
         contextList = fileReader(this.dataFilePath);
         System.out.println("[INFO] 开始一致性处理");

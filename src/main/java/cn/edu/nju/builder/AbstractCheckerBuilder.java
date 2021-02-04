@@ -81,7 +81,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
     private void parseConfigFile(String configFilePath) {
-        System.out.println("[INFO] 系统启动，开始解析配置文件");
+        Interaction.init();
+        System.out.println("[INFO] 开始解析配置文件");
         //不要随意更换处理顺序
         Properties properties = new Properties();
         try {
@@ -278,7 +279,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
 
         System.out.println("[INFO] 配置文件解析成功");
-        Interaction.say("进入一致性检测处理：");
     }
 
     private void dataValidityJudgment(String filePath) {

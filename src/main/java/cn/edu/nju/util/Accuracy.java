@@ -32,7 +32,8 @@ public class Accuracy {
                 fault = 0;
             }
 
-            Logger logger = new Logger(args[2], false);
+            String analysisFilePath = Interaction.fileSay("分析文件", args[2]);
+            Logger logger = new Logger(analysisFilePath, false);
 
             System.out.println("[INFO] 结果分析完成，结果为：");
             if(fault == 0 && miss == 0) {
