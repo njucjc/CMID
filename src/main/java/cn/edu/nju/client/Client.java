@@ -33,7 +33,7 @@ public class Client implements Runnable{
         System.out.println("[INFO] 客户端开始启动");
         Interaction.say("进行端口绑定", isParted);
         System.out.println("[INFO] 成功绑定" + port + "端口，链接建立");
-        Interaction.say("进行读取时间戳，并发送数据", isParted);
+        Interaction.say("进行读取时间戳", isParted);
 
         try {
             FileReader fr = new FileReader(contextFilePath);
@@ -53,6 +53,7 @@ public class Client implements Runnable{
             }
             sleepTime.add(1L);
 
+            System.out.println("[INFO] 时间戳读取成功");
             socket = new DatagramSocket();
             address = InetAddress.getByName("localhost");
 
@@ -65,7 +66,7 @@ public class Client implements Runnable{
     @Override
     public void run() {
 
-        System.out.println("时间戳读取成功，开始发送数据");
+        Interaction.say("开始发送数据", isParted);
         long sleepMillis = 0;
         long totalTime = 0;
         long startTime = System.nanoTime();
