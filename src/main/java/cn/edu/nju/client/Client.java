@@ -92,6 +92,7 @@ public class Client implements Runnable{
 
         }
         endTime = System.nanoTime();
+        System.out.println();
         System.out.println("[INFO] 数据文件发送结束，耗时" + (endTime - startTime) / 1000000 + " ms");
 
         Interaction.say("开始广播结束报文关闭链接，关闭客户端", isParted);

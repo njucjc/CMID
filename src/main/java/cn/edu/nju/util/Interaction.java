@@ -1,6 +1,7 @@
 package cn.edu.nju.util;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Year;
 import java.util.Scanner;
 
@@ -70,6 +71,15 @@ public class Interaction {
                 }
             }
         }
+
+        file.getParentFile().mkdir();
+        try {
+            //创建文件
+            file.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return retPath;
     }
 }
