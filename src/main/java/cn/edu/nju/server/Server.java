@@ -25,7 +25,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     public Server(String configFilePath)  {
         super(configFilePath);
         System.out.println("[INFO] 服务器开始启动");
-        Interaction.say("进行端口绑定，并建立链接");
+        Interaction.say("进行端口绑定，并建立链接", isParted);
         try {
             serverSocket = new DatagramSocket(port);
         }catch(IOException e) {
@@ -44,7 +44,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long timeSum = 0;
 
         System.out.println("[INFO] 服务器启动完毕");
-        Interaction.say("开始等待客户端连接，并接收数据");
+        Interaction.say("开始等待客户端连接，并接收数据", isParted);
         System.out.println("[INFO] 成功开始等待接收数据，数据接收后进行一致性检测");
         try {
             while (running) {
@@ -113,11 +113,11 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("Total Inc: " + inc, false);
         LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms", false);
 
-        Interaction.say("关闭链接，并关闭服务器");
+        Interaction.say("关闭链接，并关闭服务器", isParted);
         serverSocket.close();
         System.out.println("[INFO] 成功关闭链接，服务器关闭");
 
-        Interaction.say("进入结果分析");
+        Interaction.say("进入结果分析", isParted);
         accuracy(LogFileHelper.logFilePath);
         shutdown();
     }

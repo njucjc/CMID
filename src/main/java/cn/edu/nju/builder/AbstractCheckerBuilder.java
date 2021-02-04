@@ -42,6 +42,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     public static String dataFilePath; //context data
 
+    public static boolean isParted = false;
+
     /*所有pattern*/
     protected Map<String, Pattern> patternMap;
 
@@ -81,7 +83,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
     private void parseConfigFile(String configFilePath) {
-        Interaction.init();
+        isParted = Interaction.init();
         System.out.println("[INFO] 开始解析配置文件");
         //不要随意更换处理顺序
         Properties properties = new Properties();
@@ -275,7 +277,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.out.println("[INFO] 数据文件为规范的原始时序文件，开始将其转换为规范的预处理上下文文件");
             ChangeFileHelper changeFileHelper = new ChangeFileHelper(patternFilePath);
             this.dataFilePath = changeFileHelper.parseChangeFile(this.dataFilePath);
-            System.out.println("[INFO] 转换完成，检测技术和调度策略适配，可进行一致性处理");
+            System.out.println("[INFO] 数据转换成功，检测技术和调度策略适配，可进行一致性处理");
         }
 
         System.out.println("[INFO] 配置文件解析成功");

@@ -19,6 +19,7 @@ public class Client implements Runnable{
     private DatagramSocket socket;
     private InetAddress address;
     int port = 8000;
+    private static boolean isParted = false;
 
     private List<String> contextStrList;
     private List<Long> sleepTime;
@@ -28,11 +29,11 @@ public class Client implements Runnable{
         this.contextStrList = new ArrayList<>();
         this.sleepTime = new ArrayList<>();
 
-        Interaction.init();
+        isParted = Interaction.init();
         System.out.println("[INFO] 客户端开始启动");
-        Interaction.say("进行端口绑定");
+        Interaction.say("进行端口绑定", isParted);
         System.out.println("[INFO] 成功绑定" + port + "端口，链接建立");
-        Interaction.say("进行读取时间戳，并发送数据");
+        Interaction.say("进行读取时间戳，并发送数据", isParted);
 
         try {
             FileReader fr = new FileReader(contextFilePath);
@@ -93,7 +94,7 @@ public class Client implements Runnable{
         endTime = System.nanoTime();
         System.out.println("[INFO] 数据文件发送结束，耗时" + (endTime - startTime) / 1000000 + " ms");
 
-        Interaction.say("开始广播结束报文关闭链接，关闭客户端");
+        Interaction.say("开始广播结束报文关闭链接，关闭客户端", isParted);
         for (int i = 0; i < 10000; i++) {
             sendMsg("exit");
         }

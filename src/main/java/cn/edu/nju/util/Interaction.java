@@ -5,8 +5,7 @@ import java.time.Year;
 import java.util.Scanner;
 
 public class Interaction {
-    private static boolean isParted = false;
-    public static void say(String content) {
+    public static void say(String content, boolean isParted) {
         if (!isParted) {
             return ;
         }
@@ -27,8 +26,9 @@ public class Interaction {
         return ;
     }
 
-    public static void init() {
+    public static boolean init() {
         Scanner in = new Scanner(System.in);
+        boolean isParted;
         String str;
         while(true) {
             System.out.println("[INFO] 是否分段启动（Y/N）：");
@@ -44,6 +44,8 @@ public class Interaction {
             }
 
         }
+
+        return isParted;
     }
 
     public static String fileSay(String fileName, String filePath) {

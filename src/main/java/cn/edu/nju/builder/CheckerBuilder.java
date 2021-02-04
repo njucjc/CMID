@@ -20,7 +20,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
 
     @Override
     public void run() {
-        Interaction.say("进入一致性检测处理");
+        Interaction.say("进入一致性检测处理", isParted);
         List<String> contextList;
         contextList = fileReader(this.dataFilePath);
         System.out.println("[INFO] 开始一致性处理");
@@ -45,7 +45,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("Total INC: " + incCount, false);
         LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms", false);
 
-        Interaction.say("进入结果分析");
+        Interaction.say("进入结果分析", isParted);
         accuracy(LogFileHelper.logFilePath);
         shutdown();
 
