@@ -161,14 +161,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
         parseRuleFile(ruleFilePath);
 
-        //log
-        String logFilePath = properties.getProperty("logFilePath");
-        if (logFilePath == null) {
-            System.out.println("[INFO] 配置文件解析失败：缺少logFilePath配置项");
-            System.exit(1);
-        }
-        LogFileHelper.initLogger(logFilePath);
-
         //oracle
         this.oracleFilePath = properties.getProperty("oracleFilePath");
         if (this.oracleFilePath == null) {
@@ -279,6 +271,14 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             this.dataFilePath = changeFileHelper.parseChangeFile(this.dataFilePath);
             System.out.println("[INFO] 数据转换成功，检测技术和调度策略适配，可进行一致性处理");
         }
+
+        //log
+        String logFilePath = properties.getProperty("logFilePath");
+        if (logFilePath == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少logFilePath配置项");
+            System.exit(1);
+        }
+        LogFileHelper.initLogger(logFilePath);
 
         System.out.println("[INFO] 配置文件解析成功");
     }
