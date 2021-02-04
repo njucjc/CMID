@@ -38,24 +38,15 @@ public class ContextParser {
 
     public Context parseChangeContext(String [] elements) {
 
-        if (elements.length != 9) {
-            System.out.println("[INFO] "+ AbstractCheckerBuilder.changeFilePath + "文件格式错误");
-            System.exit(1);
-        }
 
         Context context = null;
-        try {
-            context = new Context(Integer.parseInt(elements[2]),
+        context = new Context(Integer.parseInt(elements[2]),
                     elements[3],
                     elements[4],
                     Double.parseDouble(elements[5]),
                     Double.parseDouble(elements[6]),
                     Double.parseDouble(elements[7]),
                     Integer.parseInt(elements[8]));
-        } catch (NumberFormatException e) {
-            System.out.println("[INFO] "+ AbstractCheckerBuilder.changeFilePath + "文件格式错误");
-            System.exit(1);
-        }
         return context;
     }
 }

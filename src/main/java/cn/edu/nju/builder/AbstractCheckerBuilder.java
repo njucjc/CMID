@@ -10,10 +10,7 @@ import cn.edu.nju.scheduler.BatchScheduler;
 import cn.edu.nju.scheduler.GEASOptScheduler;
 import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
-import cn.edu.nju.util.Accuracy;
-import cn.edu.nju.util.Interaction;
-import cn.edu.nju.util.LogFileHelper;
-import cn.edu.nju.util.PTXFileHelper;
+import cn.edu.nju.util.*;
 import jcuda.driver.CUcontext;
 import jcuda.driver.CUdevice;
 import jcuda.driver.JCudaDriver;
@@ -44,8 +41,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     protected Scheduler scheduler;
 
     public static String dataFilePath; //context data
-
-    public static String changeFilePath; //context change
 
     /*所有pattern*/
     protected Map<String, Pattern> patternMap;
@@ -233,45 +228,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.exit(1);
         }
 
-
-
         System.out.println("[INFO] 检测技术为" + technique);
         System.out.println("[INFO] 调度策略为" + schedule);
-
-        //change handle
-        configChangeHandler();
-
-        //context file path
-        this.dataFilePath = properties.getProperty("dataFilePath");
-        this.changeFilePath = properties.getProperty("changeFilePath");
-
-        if (this.dataFilePath == null) {
-            System.out.println("[INFO] 配置文件解析失败：缺少dataFilePath配置项");
-            System.exit(1);
-        }
-        else if (this.changeFilePath == null) {
-            System.out.println("[INFO] 配置文件解析失败：缺少changeFilePath配置项");
-            System.exit(1);
-        }
-        else {
-            if(!isFileExists(this.dataFilePath)) {
-                System.out.println("[INFO] 数据文件解析失败：数据文件" + this.dataFilePath + "不存在");
-                System.exit(1);
-            }
-            else if (!isFileExists(this.changeFilePath)) {
-                System.out.println("[INFO] 数据文件解析失败：数据文件" + this.changeFilePath + "不存在");
-                System.exit(1);
-            }
-        }
-
-        if (this.changeHandlerType.contains("change-based")) {
-            dataValidityJudgment(this.changeFilePath);
-            System.out.println("[INFO] 数据文件为规范的预处理上下文文件，检测技术和调度策略适配，可进行一致性处理");
-        }
-        else {
-            dataValidityJudgment(this.dataFilePath);
-            System.out.println("[INFO] 数据文件为规范的原始时序文件，检测技术和调度策略适配，可进行一致性处理");
-        }
 
         String cudaSourceFilePath = "src/main/kernel/kernel.cu";
         //如果是GAIN需要初始化GPU内存
@@ -290,6 +248,33 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             contexts = fileReader(this.dataFilePath);
             gpuResult = new GPUResult();
             compileKernelFunction(cudaSourceFilePath);
+        }
+
+        //context file path
+        this.dataFilePath = properties.getProperty("dataFilePath");
+
+        if (this.dataFilePath == null) {
+            System.out.println("[INFO] 配置文件解析失败：缺少dataFilePath配置项");
+            System.exit(1);
+        }
+        else if(!isFileExists(this.dataFilePath)) {
+            System.out.println("[INFO] 数据文件解析失败：数据文件" + this.dataFilePath + "不存在");
+            System.exit(1);
+        }
+
+        // config context handler
+        this.changeHandler = new ChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+
+        if (this.changeHandlerType.contains("change-based")) {
+            dataValidityJudgment(this.dataFilePath);
+            System.out.println("[INFO] 数据文件为规范的预处理上下文文件，检测技术和调度策略适配，可进行一致性处理");
+        }
+        else {
+            dataValidityJudgment(this.dataFilePath);
+            System.out.println("[INFO] 数据文件为规范的原始时序文件，开始将其转换为规范的预处理上下文文件");
+            ChangeFileHelper changeFileHelper = new ChangeFileHelper(patternFilePath);
+            this.dataFilePath = changeFileHelper.parseChangeFile(this.dataFilePath);
+            System.out.println("[INFO] 转换完成，检测技术和调度策略适配，可进行一致性处理");
         }
 
         System.out.println("[INFO] 配置文件解析成功");
@@ -333,14 +318,14 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         return file.exists();
     }
 
-    private void configChangeHandler() {
-        if(this.changeHandlerType.contains("time-based")) {
-            this.changeHandler = new TimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
-        }
-        else if(this.changeHandlerType.contains("change-based")) {
-            this.changeHandler = new ChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
-        }
-    }
+//    private void configChangeHandler() {
+////        if(this.changeHandlerType.contains("time-based")) {
+////            this.changeHandler = new TimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+////        }
+////        else if(this.changeHandlerType.contains("change-based")) {
+////            this.changeHandler = new ChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
+////        }
+//    }
 
     private void parsePatternFile(String patternFilePath) {
         this.patternMap = new ConcurrentHashMap<>();

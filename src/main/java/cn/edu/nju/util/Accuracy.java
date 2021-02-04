@@ -13,7 +13,6 @@ public class Accuracy {
             Set<String> groundTruth = readLogFile(args[1]);
             Set<String> myLog = readLogFile(args[0]);
 
-            Interaction.say("输出分析结果");
             int right = 0, fault = 0;
             for(String logStr : myLog) {
                 if(!groundTruth.contains(logStr)) {

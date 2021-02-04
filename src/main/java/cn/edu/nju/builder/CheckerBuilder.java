@@ -21,12 +21,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
     @Override
     public void run() {
         List<String> contextList;
-        if("time".equals(this.changeHandlerType.split("-")[1])) {
-            contextList = fileReader(this.dataFilePath);
-        }
-        else {
-            contextList = fileReader(this.changeFilePath);
-        }
+        contextList = fileReader(this.dataFilePath);
         System.out.println("[INFO] 开始一致性处理");
         int count = 0;
         long startTime = System.nanoTime();
