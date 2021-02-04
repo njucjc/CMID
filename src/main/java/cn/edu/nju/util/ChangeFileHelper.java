@@ -54,7 +54,7 @@ public class ChangeFileHelper {
     public String parseChangeFile(String changeFilePath) {
         Map<String, List<String>> contextChangeMap = new TreeMap<>();
         ContextStaticRepo contextStaticRepo = new ContextStaticRepo(changeFilePath);
-        String path = changeFilePath.split("\\.")[0] + "_change.txt";
+        String path = changeFilePath.split("\\.")[0] + "_transformed.txt";
         File file = new File(path);
 
         Context context;

@@ -262,14 +262,14 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
         if (this.changeHandlerType.contains("change-based")) {
             dataValidityJudgment(this.dataFilePath);
-            System.out.println("[INFO] 数据文件为规范的预处理上下文文件，检测技术和调度策略适配，可进行一致性处理");
+            System.out.println("[INFO] 当前数据为环境上下文数据，无需进行数据转换");
         }
         else {
             dataValidityJudgment(this.dataFilePath);
-            System.out.println("[INFO] 数据文件为规范的原始时序文件，开始将其转换为规范的预处理上下文文件");
+            System.out.println("[INFO] 当前数据为时序数据，进行数据转换");
             ChangeFileHelper changeFileHelper = new ChangeFileHelper(patternFilePath);
             this.dataFilePath = changeFileHelper.parseChangeFile(this.dataFilePath);
-            System.out.println("[INFO] 数据转换成功，检测技术和调度策略适配，可进行一致性处理");
+            System.out.println("[INFO] 数据转换成功");
         }
 
         //log
