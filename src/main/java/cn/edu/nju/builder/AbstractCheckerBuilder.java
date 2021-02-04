@@ -253,7 +253,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.exit(1);
         }
         else if(!isFileExists(this.dataFilePath)) {
-            System.out.println("[INFO] 数据文件解析失败：数据文件" + this.dataFilePath + "不存在");
+            System.out.println("[INFO] 配置文件解析失败：数据文件" + this.dataFilePath + "不存在");
             System.exit(1);
         }
 
