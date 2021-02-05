@@ -163,10 +163,6 @@ public class Repair {
                 break;
             }
 
-            if (elem.length != 5 || !elem[0].equals("rule_05")) {
-                System.out.println("[INFO] 配置文件解析失败：INC文件" + incPath + "内容格式不正确，无法正常解析");
-                System.exit(1);
-            }
             int index = Integer.parseInt(elem[elem.length - 1].split("_")[1]);
             deleteSet.add(index);
         }
@@ -355,7 +351,7 @@ public class Repair {
             Document document = db.parse(ruleFilePath);
 
             NodeList ruleList = document.getElementsByTagName("rule");
-            System.out.println("[INFO] rule文件：" + ruleFilePath + "，总共" + ruleList.getLength() + "条rules");
+            System.out.println("[INFO] Rule文件为" + ruleFilePath + "，总共" + ruleList.getLength() + "条rules");
 
             for(int i = 0; i < ruleList.getLength(); i++){
                 STNode treeHead = new STNode();
@@ -389,12 +385,12 @@ public class Repair {
         } catch (SAXException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            System.out.println("[INFO] ruleFilePath配置中的文件不存在：" +  ruleFilePath);
+            System.out.println("[INFO] 配置文件解析失败：Rule文件" + ruleFilePath + "不存在");
             System.exit(1);
         }
 
         if (checkerList.isEmpty()) {
-            System.out.println("[INFO] rule文件中没有rule");
+            System.out.println("[INFO] 配置文件解析失败：Rule文件" + ruleFilePath + "没有rule");
             System.exit(1);
         }
     }
@@ -431,7 +427,7 @@ public class Repair {
                         stNode = new STNode(e.getAttribute("name"), STNode.BFUNC_NODE, buildParam(e));
                         break;
                     default:
-                        System.out.println("[INFO] '" + ruleFilePath +  "'文件中存在非法的一致性规则标识符：" + nodeName);
+                        System.out.println("[INFO] 配置文件解析失败：Rule文件" + ruleFilePath +  "存在非法的一致性规则标识符" + nodeName);
                         System.exit(1);
                         break;
                 }
@@ -518,7 +514,20 @@ public class Repair {
                 System.exit(1);
             }
 
+            // check inc list
             List<String> incList = FileHelper.readFile(incPath);
+            for (String inc : incList) {
+                String[] elem = inc.split(" ");
+                if (!elem[0].startsWith("rule") || elem[0].endsWith(":")) {
+                    break;
+                }
+
+                if (elem.length != 5 || !elem[0].equals("rule_05")) {
+                    System.out.println("[INFO] 配置文件解析失败：INC文件" + incPath + "内容格式不正确，无法正常解析");
+                    System.exit(1);
+                }
+            }
+
            //fix pattern
             String fixPatternFilePath = properties.getProperty("fixPatternFilePath");
             if (fixPatternFilePath == null) {
