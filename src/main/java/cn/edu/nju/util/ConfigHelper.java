@@ -7,13 +7,13 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
-
+import static cn.edu.nju.util.FileHelper.*;
 /**
  * Created by njucjc at 2020/2/7
  */
 public class ConfigHelper {
     public static Properties getConfig(String configFile) {
-        if (!AbstractCheckerBuilder.isFileExists(configFile)) {
+        if (!isFileExists(configFile)) {
             System.out.println("[INFO] 配置文件不存在: " + configFile);
             System.exit(1);
         }

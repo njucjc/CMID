@@ -46,6 +46,11 @@ public class FileHelper {
         }
     }
 
+    public static boolean isFileExists(String fileName) {
+        File file = new File(fileName);
+        return file.exists();
+    }
+
     public static void createNewFile(String path) {
         File file = new File(path);
         if (!file.exists()) {

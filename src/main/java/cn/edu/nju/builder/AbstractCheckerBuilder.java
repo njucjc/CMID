@@ -31,6 +31,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import static jcuda.driver.JCudaDriver.*;
+import static cn.edu.nju.util.FileHelper.*;
 
 public abstract class AbstractCheckerBuilder implements CheckerType{
 
@@ -297,11 +298,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
         System.out.println("[INFO] 配置文件解析完毕......");
 
-    }
-
-    public static boolean isFileExists(String fileName) {
-        File file = new File(fileName);
-        return file.exists();
     }
 
     private void configChangeHandler() {
