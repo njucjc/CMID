@@ -115,6 +115,26 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.out.println("[INFO] 配置文件解析失败：technique配置项配置值" + technique + "无效");
             System.exit(1);
         }
+        
+         String cudaSourceFilePath = "src/main/kernel/kernel.cu";
+        //如果是GAIN需要初始化GPU内存
+        if(this.checkType == GAIN_TYPE) {
+            //开启异常捕获
+            JCudaDriver.setExceptionsEnabled(true);
+
+            //初始化设备
+            cuInit(0);
+            CUdevice device = new CUdevice();
+            cuDeviceGet(device, 0);
+            cuContext = new CUcontext();
+            cuCtxCreate(cuContext, 0, device);
+
+            // initGPUMemory();
+            String initGPUContextFilePath = properties.getProperty("initGPUContextFilePath");
+            contexts = fileReader(initGPUContextFilePath);
+            gpuResult = new GPUResult();
+            compileKernelFunction(cudaSourceFilePath);
+        }
 
         //taskNum
         String taskNumStr = properties.getProperty("taskNum");
@@ -226,25 +246,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         System.out.println("[INFO] 检测技术为" + technique);
         System.out.println("[INFO] 调度策略为" + schedule);
 
-        String cudaSourceFilePath = "src/main/kernel/kernel.cu";
-        //如果是GAIN需要初始化GPU内存
-        if(this.checkType == GAIN_TYPE) {
-            //开启异常捕获
-            JCudaDriver.setExceptionsEnabled(true);
-
-            //初始化设备
-            cuInit(0);
-            CUdevice device = new CUdevice();
-            cuDeviceGet(device, 0);
-            cuContext = new CUcontext();
-            cuCtxCreate(cuContext, 0, device);
-
-            // initGPUMemory();
-            contexts = fileReader(this.dataFilePath);
-            gpuResult = new GPUResult();
-            compileKernelFunction(cudaSourceFilePath);
-        }
-
+      
         //context file path
         this.dataFilePath = properties.getProperty("dataFilePath");
 
