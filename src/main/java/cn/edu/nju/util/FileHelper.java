@@ -27,6 +27,23 @@ public class FileHelper {
         return list;
     }
 
+    public static List<String> readStreamFile(InputStream path) {
+        List<String> list = new ArrayList<>();
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(path));
+
+            while (true) {
+                String str = br.readLine();
+                if (str == null) break;
+                list.add(str);
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
+
     public static void writeFile(String path, List<String> content) {
         try {
             File file = new File(path);

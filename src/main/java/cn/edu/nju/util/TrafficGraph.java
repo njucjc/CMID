@@ -17,8 +17,17 @@ public class TrafficGraph {
 
     private static final Map<String, Integer> toInt = new HashMap<>();
 
+    private static final Class getCurrentClass() {
+
+        return new Object() {
+            public Class getClassForStatic() {
+                return this.getClass();
+            }
+        }.getClassForStatic();
+    }
+
     static {
-        List<String> neiList = FileHelper.readFile("res/nei.txt");
+        List<String> neiList = FileHelper.readStreamFile(getCurrentClass().getResourceAsStream("nei.txt"));
         for (String line : neiList) {
             String [] pat = line.split(",");
             if (trafficGraph.containsKey(pat[0])) {
@@ -40,13 +49,13 @@ public class TrafficGraph {
             i++;
         }
 
-        List<String> oppoList = FileHelper.readFile("res/oppo.txt");
+        List<String> oppoList = FileHelper.readStreamFile(getCurrentClass().getResourceAsStream("oppo.txt"));
         for (String line : oppoList) {
             String [] pat = line.split(",");
             opposite.put(pat[0], pat[2]);
         }
 
-        List<String> pathlist = FileHelper.readFile("res/path.txt");
+        List<String> pathlist = FileHelper.readStreamFile(getCurrentClass().getResourceAsStream("path.txt"));
         for (String line : pathlist) {
             String [] pat = line.split(":");
             path.put(pat[0], Arrays.asList(pat[1].split(",")));
