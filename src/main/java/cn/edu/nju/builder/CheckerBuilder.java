@@ -40,7 +40,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         }
 
         System.out.println();
-        System.out.println("[INFO] 一致性检测过程完成，共检测出" + incCount + "个不一致");
+        System.out.println("[INFO] 一致性检测过程完成，共检测出" + incCount + "个一致性错误");
         System.out.println("[INFO] 检测时间为" + (endTime - startTime) / 1000000 + " ms");
         LogFileHelper.getLogger().info("Total INC: " + incCount, false);
         LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms", false);
