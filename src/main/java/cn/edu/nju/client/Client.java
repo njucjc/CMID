@@ -73,7 +73,7 @@ public class Client implements Runnable{
         long endTime = 0;
         for (int i = 0; i < contextStrList.size(); i++){
 
-            System.out.print("Send " + i + "/" + contextStrList.size() + "\r");
+            System.out.print("Send " + (i + 1) + "/" + contextStrList.size() + "\r");
             sleepMillis = sleepTime.get(i);
             sendMsg(i+ "," + contextStrList.get(i) + "," + sleepMillis);
             endTime = System.nanoTime();
