@@ -48,6 +48,10 @@ public class BFuncHelper {
         return c1.getId() < c2.getId() && TimestampHelper.timestampDiff(c1.getTimestamp(), c2.getTimestamp()) == 3600000;
     }
 
+    private static boolean isHalfHourInterval(Context c1, Context c2) {
+        return c1.getId() < c2.getId() && TimestampHelper.timestampDiff(c1.getTimestamp(), c2.getTimestamp()) == 1800000;
+    }
+
     private static boolean duringOneHourInterval(List<Context> list) {
         if (list.size() < 2) {
             return false;
@@ -59,6 +63,19 @@ public class BFuncHelper {
             if (c1.getId() >= c2.getId()) return false;
         }
         return TimestampHelper.timestampDiff(list.get(0).getTimestamp(), list.get(list.size() - 1).getTimestamp()) <= 3600000;
+    }
+
+    private static boolean duringHalfHourInterval(List<Context> list) {
+        if (list.size() < 2) {
+            return false;
+        }
+
+        for(int i = 0; i < list.size() - 1; ++i) {
+            Context c1 = list.get(i);
+            Context c2 = list.get(i + 1);
+            if (c1.getId() >= c2.getId()) return false;
+        }
+        return TimestampHelper.timestampDiff(list.get(0).getTimestamp(), list.get(list.size() - 1).getTimestamp()) <= 1800000;
     }
 
     private static boolean isCPUTemperatureChangeAbsoluteOver(Context c1, Context c2, double a) {
@@ -220,8 +237,14 @@ public class BFuncHelper {
             case "isOneHourInterval":
                 value = isOneHourInterval(list2.get(0), list2.get(1));
                 break;
+            case "isHalfHourInterval":
+                value = isHalfHourInterval(list2.get(0), list2.get(1));
+                break;
             case "duringOneHourInterval":
                 value = duringOneHourInterval(list2);
+                break;
+            case "duringHalfHourInterval":
+                value = duringHalfHourInterval(list2);
                 break;
             case "isCPUTemperatureChangeAbsoluteOver":
                 value = isCPUTemperatureChangeAbsoluteOver(list2.get(0), list2.get(1), Double.parseDouble(list1.get(list1.size() - 1).getDefaultValue()));
