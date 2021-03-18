@@ -99,7 +99,12 @@ public class Pattern {
      * @return
      */
     public boolean isBelong(Context context) {
-        return true;
+        if (site.equals("any")) {
+            return true;
+        }
+        else {
+            return site.equals(context.getLocation());
+        }
     }
 
     /**
