@@ -32,9 +32,9 @@ public class Client implements Runnable{
             BufferedReader br = new BufferedReader(fr);
             String line = null;
             String lastLine = br.readLine();
-            int timestampIndex = 0;
+            int timestampIndex = 11;
             if(lastLine.contains("+")) { //第一行总是增加
-                timestampIndex = 3;
+                timestampIndex = 14;
             }
             contextStrList.add(lastLine);
             while ((line = br.readLine()) != null) {
