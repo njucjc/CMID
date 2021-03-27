@@ -41,7 +41,7 @@ public class ConChecker extends EccChecker {
     @Override
     protected boolean evaluation(CCTNode cctRoot, List<Context> param) {
         CCTNode newRoot = new CCTNode(stRoot.getNodeName(), stRoot.getNodeType(), stRoot.getParamList());
-        build(stRoot, newRoot, 5);
+        build(stRoot, newRoot, 4);
         conCheck(newRoot, param);
         return this.checker.evaluation(cctRoot, param);
     }
