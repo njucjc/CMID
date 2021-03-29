@@ -50,9 +50,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     protected Map<String, Checker> checkerMap;
 
-    private int checkType = ECC_TYPE;
+    protected int checkType = ECC_TYPE;
 
-    private int scheduleType;
+    protected int scheduleType;
 
 
     private int taskNum = 8;
