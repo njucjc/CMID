@@ -87,7 +87,7 @@ public class Client implements Runnable{
         endTime = System.nanoTime();
         System.out.println("Total send time： " + (endTime - startTime) / 1000000 + " ms");
 
-        while (true) {
+        for(int i = 0; i < 1000; ++i) {
             sendMsg("exit");
         }
 
