@@ -143,7 +143,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 }
 
                 System.out.print( "[INFO] Send/Receive: " + (num + 1) + "/" + count +
-                        "\tTotal inc: "+ inc +
+                        "\tTotal inc: "+ (inc + fpCount) +
                         "\tTotal Checking time: " + (timeSum/1000000)  +" ms\r");
 
 
