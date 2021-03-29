@@ -54,10 +54,10 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }
         else if (scheduleType == -2) {
             if (checkType == ECC_TYPE) {
-                fp = rand.nextInt(40 - 30 + 1) + 140;
+                fp = rand.nextInt(40 - 30 + 1) + 30;
             }
             else if(checkType == CON_TYPE) {
-                fp = rand.nextInt(20 - 10 + 1) + 90;
+                fp = rand.nextInt(20 - 10 + 1) + 10;
             }
         }
 
