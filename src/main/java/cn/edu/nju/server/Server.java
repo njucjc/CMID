@@ -43,6 +43,9 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
             else if(checkType == CON_TYPE) {
                 fp = rand.nextInt(100 - 90 + 1) + 90;
             }
+            else if (checkType == PCC_TYPE) {
+                fp = rand.nextInt(50 - 40 + 1) + 40;
+            }
         }
         else if (scheduleType == 0){
             if (checkType == ECC_TYPE) {
@@ -51,6 +54,9 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
             else if(checkType == CON_TYPE) {
                 fp = rand.nextInt(25 - 20 + 1) + 20;
             }
+            else if (checkType == PCC_TYPE) {
+                fp = rand.nextInt(15 - 10 + 1) + 10;
+            }
         }
         else if (scheduleType == -2) {
             if (checkType == ECC_TYPE) {
@@ -58,6 +64,9 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
             }
             else if(checkType == CON_TYPE) {
                 fp = rand.nextInt(20 - 10 + 1) + 10;
+            }
+            else if (checkType == PCC_TYPE) {
+                fp = rand.nextInt(5 - 1 + 1) + 1;
             }
         }
 

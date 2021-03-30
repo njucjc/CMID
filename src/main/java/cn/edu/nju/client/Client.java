@@ -40,6 +40,9 @@ public class Client implements Runnable{
             while ((line = br.readLine()) != null) {
                 contextStrList.add(line);
                 long diff = TimestampHelper.timestampDiff(line.split(",")[timestampIndex], lastLine.split(",")[timestampIndex]);
+                if (diff == 0) {
+                    diff = 5;
+                }
                 sleepTime.add(diff);
                 lastLine = line;
             }
@@ -65,7 +68,7 @@ public class Client implements Runnable{
         long endTime = 0;
         for (int i = 0; i < contextStrList.size(); i++){
 
-            System.out.println("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + " ms");
+            System.out.print("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + "\r");
             sleepMillis = sleepTime.get(i);
             sendMsg(i+ "," + contextStrList.get(i) + "," + sleepMillis);
             endTime = System.nanoTime();
@@ -75,7 +78,7 @@ public class Client implements Runnable{
 
 //            assert diff >= 0 : "Time error !";
 
-            sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 0;
+            sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 1;
 
             try {
                 Thread.sleep(sleepMillis);
@@ -85,6 +88,7 @@ public class Client implements Runnable{
 
         }
         endTime = System.nanoTime();
+        System.out.println();
         System.out.println("Total send time： " + (endTime - startTime) / 1000000 + " ms");
 
         for(int i = 0; i < 1000; ++i) {
