@@ -23,10 +23,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     private boolean running;
     private int port = 8000;
     private byte [] buf = new byte[256];
-    private int fp = 0;
-    private Random rand = new Random();
-    private List<String> fpList = new ArrayList<>();
-    private int fpCtxNum = 0;
 
     public Server(String configFilePath)  {
         super(configFilePath);
@@ -35,57 +31,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }catch(IOException e) {
             e.printStackTrace();
         }
-
-        if (scheduleType == 1) {
-            if (checkType == ECC_TYPE) {
-                fp = rand.nextInt(150 - 140 + 1) + 140;
-            }
-            else if(checkType == CON_TYPE) {
-                fp = rand.nextInt(100 - 90 + 1) + 90;
-            }
-            else if (checkType == PCC_TYPE) {
-                fp = rand.nextInt(50 - 40 + 1) + 40;
-            }
-        }
-        else if (scheduleType == 0){
-            if (checkType == ECC_TYPE) {
-                fp = rand.nextInt(50 - 40 + 1) + 40;
-            }
-            else if(checkType == CON_TYPE) {
-                fp = rand.nextInt(25 - 20 + 1) + 20;
-            }
-            else if (checkType == PCC_TYPE) {
-                fp = rand.nextInt(15 - 10 + 1) + 10;
-            }
-        }
-        else if (scheduleType == -2) {
-            if (checkType == ECC_TYPE) {
-                fp = rand.nextInt(40 - 30 + 1) + 30;
-            }
-            else if(checkType == CON_TYPE) {
-                fp = rand.nextInt(20 - 10 + 1) + 10;
-            }
-            else if (checkType == PCC_TYPE) {
-                fp = rand.nextInt(5 - 1 + 1) + 1;
-            }
-        }
-
-        InputStream path = this.getClass().getResourceAsStream("/resource.txt");
-        try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(path));
-            while (true) {
-                String str = reader.readLine();
-                if (str == null) break;
-                fpList.add(str);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        if (fpList.size() > 0) {
-            fpCtxNum = Integer.parseInt(fpList.get(0).split(",")[0]);
-        }
-
     }
 
     @Override
@@ -96,8 +41,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         long count = 0;
 
         long timeSum = 0;
-
-        int fpCount = 0;
 
         System.out.println("[INFO] Sever启动完毕，等待Client连接并启动一致性检测......");
         try {
@@ -127,15 +70,6 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 //                }
 
                 msg = msg.substring(msg.indexOf(",") + 1, msg.lastIndexOf(","));
-                if (fpCount < fp) {
-                    String[] elem = msg.split(",");
-                    int ctxNum = Integer.parseInt(elem[2]);
-                    if (ctxNum >= fpCtxNum) {
-                        LogFileHelper.getLogger().info(fpList.get(fpCount).split(",")[1],false);
-                        fpCount++;
-                        fpCtxNum = Integer.parseInt(fpList.get(fpCount).split(",")[0]);
-                    }
-                }
 
                 long start = System.nanoTime();
 
@@ -152,7 +86,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                 }
 
                 System.out.print( "[INFO] Send/Receive: " + (num + 1) + "/" + count +
-                        "\tTotal inc: "+ (inc + fpCount) +
+                        "\tTotal inc: "+ inc +
                         "\tTotal Checking time: " + (timeSum/1000000)  +" ms\r");
 
 

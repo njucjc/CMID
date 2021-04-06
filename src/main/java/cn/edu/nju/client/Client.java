@@ -40,9 +40,6 @@ public class Client implements Runnable{
             while ((line = br.readLine()) != null) {
                 contextStrList.add(line);
                 long diff = TimestampHelper.timestampDiff(line.split(",")[timestampIndex], lastLine.split(",")[timestampIndex]);
-                if (diff == 0) {
-                    diff = 5;
-                }
                 sleepTime.add(diff);
                 lastLine = line;
             }
@@ -78,7 +75,7 @@ public class Client implements Runnable{
 
 //            assert diff >= 0 : "Time error !";
 
-            sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 1;
+            sleepMillis = (sleepMillis - diff / 1000000) > 0 ? (sleepMillis - diff / 1000000) : 0;
 
             try {
                 Thread.sleep(sleepMillis);
