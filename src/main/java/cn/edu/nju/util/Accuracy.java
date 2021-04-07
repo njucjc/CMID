@@ -26,7 +26,7 @@ public class Accuracy {
             fault = (int)Math.floor((double) miss * 0.01);
             miss = miss + fault;
 
-            if (miss >= groundTruth.size()) {
+            if (miss >= groundTruth.size() || fault >= myLog.size()) {
                 miss = groundTruth.size() - right;
                 fault = 0;
             }
