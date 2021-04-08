@@ -32,9 +32,11 @@ public class Context {
 
     private String timestamp;
 
+    private int order;
+
     public Context(int id, String type, String ip, String location, String generalState,
                    String powerState, String fanState, String portState, double CPUUsage,
-                   double CPUTemp, double memUsage, double closetTemp, String timestamp) {
+                   double CPUTemp, double memUsage, double closetTemp, String timestamp, int order) {
         this.id = id;
         this.type = type;
         this.ip = ip;
@@ -48,8 +50,12 @@ public class Context {
         this.memUsage = memUsage;
         this.closetTemp = closetTemp;
         this.timestamp = timestamp;
+        this.order = order;
     }
 
+    public int getOrder() {
+        return order;
+    }
 
     public int getId() {
         return id;
@@ -111,7 +117,7 @@ public class Context {
         return id + "," + type + "," + ip + "," +
                 location + "," + generalState + "," + powerState + "," +
                 fanState + "," + portState + "," + CPUUsage + "," +
-                CPUTemp + "," + memUsage + "," + closetTemp + "," + timestamp;
+                CPUTemp + "," + memUsage + "," + closetTemp + "," + timestamp + "," + order;
     }
 
     @Override

@@ -8,7 +8,7 @@ import cn.edu.nju.builder.AbstractCheckerBuilder;
 public class ContextParser {
     public Context parseContext(int id, String pattern) {
         String [] fields = pattern.split(",");
-        if (fields.length < 12) {
+        if (fields.length < 13) {
             System.out.println("[INFO] '"+ AbstractCheckerBuilder.dataFilePath + "'文件格式错误");
             System.exit(1);
         }
@@ -25,13 +25,14 @@ public class ContextParser {
         double memUsage = Double.parseDouble(fields[9]);
         double closetTemp = Double.parseDouble(fields[10]);
         String timestamp = fields[11];
+        int order = Integer.parseInt(fields[12]);
 
-        return new Context(id, type, ip, location, generalState, powerState, fanState, portState, CPUUsage, CPUTemp, memUsage, closetTemp, timestamp);
+        return new Context(id, type, ip, location, generalState, powerState, fanState, portState, CPUUsage, CPUTemp, memUsage, closetTemp, timestamp, order);
     }
 
     public Context parseChangeContext(String [] elements) {
 
-        if (elements.length < 6) {
+        if (elements.length < 16) {
             System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件格式错误");
             System.exit(1);
         }
@@ -49,7 +50,8 @@ public class ContextParser {
                     Double.parseDouble(elements[11]),
                     Double.parseDouble(elements[12]),
                     Double.parseDouble(elements[13]),
-                    elements[14]);
+                    elements[14],
+                    Integer.parseInt(elements[15]));
         } catch (NumberFormatException e) {
             System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件格式错误");
             System.exit(1);

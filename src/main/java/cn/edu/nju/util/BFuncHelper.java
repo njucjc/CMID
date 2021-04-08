@@ -216,6 +216,20 @@ public class BFuncHelper {
         return !isMemUsageConsistentlyDecrease(list) || !isMemUsageConsistentlyIncrease(list);
     }
 
+    private static boolean isContinous(List<Context> list) {
+        if (list.size() < 2) {
+            return false;
+        }
+
+        for(int i = 0; i < list.size() - 1; ++i) {
+            Context c1 = list.get(i);
+            Context c2 = list.get(i + 1);
+            if (c1.getOrder() + 1 != c2.getOrder()) return false;
+        }
+
+        return true;
+    }
+
     public static boolean bfunc(String name, List<Param> list1, List<Context> list2) {
         boolean value = false;
         switch (name) {
@@ -290,6 +304,9 @@ public class BFuncHelper {
                 break;
             case "allSameChangeDirection":
                 value = allSameChangeDirection(list2);
+                break;
+            case "isContinous":
+                value = isContinous(list2);
                 break;
             default:
                 assert  false:"[DEBUG] Illegal bfunc: " + name;

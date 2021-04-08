@@ -1,6 +1,7 @@
 package cn.edu.nju.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 
 /**
@@ -18,6 +19,20 @@ public class TimestampHelper {
     public static long timestampDiff(String timestamp1, String timestamp2) {
         long diff = getDiff(timestamp1, timestamp2);
         return diff > 0 ? diff : -diff;
+    }
+
+    public static String getDateToString(long time) {
+        return dfs.format(new Date(time));
+    }
+
+    public static long getStringToDate(String time) {
+        Date date = new Date();
+        try{
+            date = dfs.parse(time);
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return date.getTime();
     }
 
     private static long getDiff(String timestamp1, String timestamp2) {
