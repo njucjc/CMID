@@ -183,37 +183,37 @@ public class BFuncHelper {
         for (int i = 0; i < list.size() - 1; ++i) {
             Context c1 = list.get(i);
             Context c2 = list.get(i + 1);
-            if (Math.abs(c1.getMemUsage() - c2.getMemUsage()) > a) return false;
+            if (Math.abs(c1.getMemUsage() - c2.getMemUsage()) <= a) return false;
         }
         return true;
     }
 
-    private static boolean isCPUUsageConsistentlyIncrease(List<Context> list) {
+    private static boolean isMemUsageConsistentlyIncrease(List<Context> list) {
         if (list.size() < 2) {
             return false;
         }
         for(int i = 0; i < list.size() - 1; ++i) {
             Context c1 = list.get(i);
             Context c2 = list.get(i + 1);
-            if (c1.getCPUUsage() > c2.getCPUUsage()) return false;
+            if (c1.getMemUsage() > c2.getMemUsage()) return false;
         }
         return true;
     }
 
-    private static boolean isCPUUsageConsistentlyDecrease(List<Context> list) {
+    private static boolean isMemUsageConsistentlyDecrease(List<Context> list) {
         if (list.size() < 2) {
             return false;
         }
         for(int i = 0; i < list.size() - 1; ++i) {
             Context c1 = list.get(i);
             Context c2 = list.get(i + 1);
-            if (c1.getCPUUsage() < c2.getCPUUsage()) return false;
+            if (c1.getMemUsage() < c2.getMemUsage()) return false;
         }
         return true;
     }
 
     private static boolean allSameChangeDirection(List<Context> list) {
-        return !isCPUUsageConsistentlyDecrease(list) || !isCPUUsageConsistentlyIncrease(list);
+        return !isMemUsageConsistentlyDecrease(list) || !isMemUsageConsistentlyIncrease(list);
     }
 
     public static boolean bfunc(String name, List<Param> list1, List<Context> list2) {
