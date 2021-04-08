@@ -276,7 +276,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -316,7 +316,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -356,7 +356,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -396,7 +396,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -436,7 +436,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -476,7 +476,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -518,7 +518,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -558,7 +558,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -598,7 +598,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -639,7 +639,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -679,7 +679,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -719,7 +719,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -760,7 +760,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -803,7 +803,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
@@ -846,7 +846,7 @@
 									<param pos = "2" var = "v2" field = "ip" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "ip" op = "" default_value = ""/>
 								</bfunction>
-								<bfunction name = "duringHalfHourInterval">
+								<bfunction name = "isContinous">
 									<param pos = "1" var = "v1" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "2" var = "v2" field = "timestamp" op = "" default_value = ""/>
 									<param pos = "3" var = "v3" field = "timestamp" op = "" default_value = ""/>
