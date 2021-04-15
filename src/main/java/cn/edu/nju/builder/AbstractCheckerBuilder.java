@@ -207,8 +207,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
 
 
-        System.out.println("[INFO] 检测技术为" + technique);
-        System.out.println("[INFO] 调度策略为" + schedule);
+        System.out.println("[INFO] 检测技术：" + technique);
+        System.out.println("[INFO] 调度策略：" + schedule);
 
         //change handle
         configChangeHandler();
