@@ -6,7 +6,7 @@ import cn.edu.nju.builder.AbstractCheckerBuilder;
  * Created by njucjc on 2017/10/23.
  */
 public class ContextParser {
-    public Context parseContext(int no, String pattern) {
+    public static Context parseContext(int no, String pattern) {
         String [] fields = pattern.split(",");
         if (fields.length != 10) {
             System.out.println("[INFO] 数据格式错误");
@@ -44,7 +44,7 @@ public class ContextParser {
         return new Context(no, type, id, typeName, group, longitude, latitude, altitude, speed, course, timestamp);
     }
 
-    public Context parseChangeContext(String [] elements) {
+    public static Context parseChangeContext(String [] elements) {
 
         if (elements.length != 13) {
             System.out.println("[INFO] Change格式错误");

@@ -22,8 +22,6 @@ public abstract class ChangeHandler {
 
     protected List<Checker> checkerList;
 
-    protected ContextParser contextParser;
-
     public long timeCount = 0L;
 
     public ChangeHandler(Map<String, Pattern> patternMap, Map<String, Checker> checkerMap, Scheduler scheduler, List<Checker> checkerList) {
@@ -31,7 +29,6 @@ public abstract class ChangeHandler {
         this.checkerMap = checkerMap;
         this.scheduler = scheduler;
         this.checkerList = checkerList;
-        this.contextParser = new ContextParser();
 
     }
 
@@ -42,10 +39,10 @@ public abstract class ChangeHandler {
     protected Context parseContext(int num, String change) {
         String [] strs = change.split(",");
         if(strs[0].equals("+") || strs[0].equals("-")) {
-            return contextParser.parseChangeContext(strs);
+            return ContextParser.parseChangeContext(strs);
         }
         else {
-            return contextParser.parseContext(num, change);
+            return ContextParser.parseContext(num, change);
         }
     }
     public void doCheck() {
