@@ -1,6 +1,5 @@
 package cn.edu.nju.pattern;
 import cn.edu.nju.context.Context;
-import cn.edu.nju.util.HotAreaHelper;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.util.*;
@@ -100,44 +99,8 @@ public class Pattern {
      * @return
      */
     public boolean isBelong(Context context) {
-        int status = context.getStatus();
-        String plateNumber = context.getPlateNumber();
 
-        boolean belong = false;
-        if (status == 0) {
-            if("run_with_service".equals(predicate)) {
-                belong = false;
-            }
-            else {
-                belong = true;
-            }
-        }
-        else {
-            if("run_without_service".equals(predicate)) {
-                belong = false;
-            }
-            else {
-                belong = true;
-            }
-        }
-
-       if(!"any".equals(site)) {
-            if(plateNumber.matches("[0-9]+")) { //旧数据的判断条件（车牌为纯数字）
-                String [] elem = site.split("_");
-                if (elem[1].matches("[0-9]")) {
-                    belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() - 1));
-                }
-                else {
-                    belong = belong && HotAreaHelper.inArea(elem[1], context.getLatitude(), context.getLongitude());
-                }
-
-            }
-            else { //新数据的判断条件
-                belong = belong && (site.charAt(site.length() - 1) == plateNumber.charAt(plateNumber.length() - 2));
-            }
-        }
-
-        return  belong;
+        return true;
     }
 
     /**
@@ -157,7 +120,7 @@ public class Pattern {
      * 若第一个context的过期时间为timestamp则删除
      * @param timestamp 时间戳
      */
-    public synchronized boolean deleteFirstByTime(String timestamp) {
+    public synchronized boolean deleteFirstByTime(long timestamp) {
         boolean isDel = false;
         for (Context context : contextList) {
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) >= freshness) {
@@ -176,8 +139,8 @@ public class Pattern {
      * @param timestamp
      * @return
      */
-    public Set<String> getOutOfDateTimes(String timestamp) {
-        Set<String> timeSet = new HashSet<>();
+    public Set<Long> getOutOfDateTimes(long timestamp) {
+        Set<Long> timeSet = new HashSet<>();
         for(Context context : contextList) {
             if(TimestampHelper.timestampDiff(context.getTimestamp(), timestamp) > freshness) {
                 timeSet.add(TimestampHelper.plusMillis(context.getTimestamp(), freshness));

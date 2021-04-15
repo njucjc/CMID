@@ -2,8 +2,6 @@ package cn.edu.nju.builder;
 
 import cn.edu.nju.change.*;
 import cn.edu.nju.checker.*;
-import cn.edu.nju.memory.GPUContextMemory;
-import cn.edu.nju.memory.GPUResult;
 import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.BatchScheduler;
@@ -11,7 +9,6 @@ import cn.edu.nju.scheduler.GEASOptScheduler;
 import cn.edu.nju.scheduler.GEAScheduler;
 import cn.edu.nju.scheduler.Scheduler;
 import cn.edu.nju.util.Accuracy;
-import cn.edu.nju.util.Interaction;
 import cn.edu.nju.util.LogFileHelper;
 import cn.edu.nju.util.PTXFileHelper;
 import jcuda.driver.CUcontext;
@@ -45,8 +42,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     public static String dataFilePath; //context data
 
-    public static String changeFilePath; //context change
-
     /*所有pattern*/
     protected Map<String, Pattern> patternMap;
 
@@ -70,8 +65,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     private String oracleFilePath;
 
     private CUcontext cuContext;
-
-    private GPUResult gpuResult;
 
     private List<String> contexts;
 
@@ -109,8 +102,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             this.checkType = ECC_TYPE;
         } else if("con-c".equals(technique.toLowerCase())) {
             this.checkType = CON_TYPE;
-        } else if("gain".equals(technique.toLowerCase())) {
-            this.checkType = GAIN_TYPE;
         } else if ("cpcc".equals(technique.toLowerCase())) {
             this.checkType = CONPCC_TYPE;
         }else {
@@ -173,22 +164,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
         //oracle
         this.oracleFilePath = properties.getProperty("oracleFilePath");
-        if (this.oracleFilePath == null) {
-            System.out.println("[INFO] 配置文件解析失败：缺少oracleFilePath配置项");
-            System.exit(1);
-        }
-        else {
-            if(!isFileExists(this.oracleFilePath)) {
-                System.out.println("[INFO] 配置文件解析失败：Oracle文件" + this.oracleFilePath + "不存在");
-                System.exit(1);
-            }
-        }
 
-        this.analysisFilePath = properties.getProperty("analysisFilePath");
-        if (analysisFilePath == null) {
-            System.out.println("[INFO] 配置文件解析失败：缺少analysisFilePath配置项");
-            System.exit(1);
-        }
 
         //schedule
         String schedule = properties.getProperty("schedule");
@@ -196,10 +172,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         this.changeHandlerType = properties.getProperty("changeHandlerType");
         if (this.changeHandlerType == null) {
             System.out.println("[INFO] 配置文件解析失败：缺少changeHandlerType配置项");
-            System.exit(1);
-        }
-        else  if (changeHandlerType.contains("time-based") && schedule.toLowerCase().contains("geas")) {
-            System.out.println("[INFO] 配置文件解析失败：数据文件为规范的原始时序文件不可搭配GEAS-ori或GEAS-opt策略");
             System.exit(1);
         }
         else if (!changeHandlerType.contains("time-based") && !changeHandlerType.contains("change-based")) {
@@ -243,89 +215,18 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
         //context file path
         this.dataFilePath = properties.getProperty("dataFilePath");
-        this.changeFilePath = properties.getProperty("changeFilePath");
 
         if (this.dataFilePath == null) {
             System.out.println("[INFO] 配置文件解析失败：缺少dataFilePath配置项");
             System.exit(1);
         }
-        else if (this.changeFilePath == null) {
-            System.out.println("[INFO] 配置文件解析失败：缺少changeFilePath配置项");
+        else if(!isFileExists(this.dataFilePath)) {
+            System.out.println("[INFO] 数据文件解析失败：数据文件" + this.dataFilePath + "不存在");
             System.exit(1);
-        }
-        else {
-            if(!isFileExists(this.dataFilePath)) {
-                System.out.println("[INFO] 数据文件解析失败：数据文件" + this.dataFilePath + "不存在");
-                System.exit(1);
-            }
-            else if (!isFileExists(this.changeFilePath)) {
-                System.out.println("[INFO] 数据文件解析失败：数据文件" + this.changeFilePath + "不存在");
-                System.exit(1);
-            }
-        }
 
-        if (this.changeHandlerType.contains("change-based")) {
-            dataValidityJudgment(this.changeFilePath);
-            System.out.println("[INFO] 数据文件为规范的预处理上下文文件，检测技术和调度策略适配，可进行一致性处理");
-        }
-        else {
-            dataValidityJudgment(this.dataFilePath);
-            System.out.println("[INFO] 数据文件为规范的原始时序文件，检测技术和调度策略适配，可进行一致性处理");
-        }
-
-        String cudaSourceFilePath = "src/main/kernel/kernel.cu";
-        //如果是GAIN需要初始化GPU内存
-        if(this.checkType == GAIN_TYPE) {
-            //开启异常捕获
-            JCudaDriver.setExceptionsEnabled(true);
-
-            //初始化设备
-            cuInit(0);
-            CUdevice device = new CUdevice();
-            cuDeviceGet(device, 0);
-            cuContext = new CUcontext();
-            cuCtxCreate(cuContext, 0, device);
-
-            // initGPUMemory();
-            contexts = fileReader(this.dataFilePath);
-            gpuResult = new GPUResult();
-            compileKernelFunction(cudaSourceFilePath);
         }
 
         System.out.println("[INFO] 配置文件解析成功");
-        Interaction.say("进入一致性检测处理：");
-    }
-
-    private void dataValidityJudgment(String filePath) {
-        if (this.changeHandlerType.contains("dynamic")) return;
-        try {
-            FileReader fr = new FileReader(filePath);
-            BufferedReader bufferedReader = new BufferedReader(fr);
-
-            String change;
-            while ((change = bufferedReader.readLine()) != null) {
-                String [] elems = change.split(",");
-                if (this.changeHandlerType.contains("time-based")) {
-                    if (elems.length != 7) {
-                        System.out.println("[INFO] 配置文件解析错误：数据文件" + filePath + "格式错误");
-                        System.exit(1);
-                    }
-                }
-                else {
-                    if (elems.length != 9) {
-                        System.out.println("[INFO] 配置文件解析错误：数据文件" + filePath + "格式错误");
-                        System.exit(1);
-                    }
-
-                    if (!"+".equals(elems[0]) && !"-".equals(elems[0])) {
-                        System.out.println("[INFO] 配置文件解析错误：数据文件" + filePath + "存在非法的数据操作类型" + elems[0]);
-                        System.exit(1);
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     private boolean isFileExists(String fileName) {
@@ -490,10 +391,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                     checker = new EccChecker(idNode.getTextContent(), root, this.patternMap, stMap);
                 } else if(checkType == CON_TYPE){ //CON-C
                     checker = new ConChecker(idNode.getTextContent(), root, this.patternMap, stMap, taskNum, checkExecutorService);
-                } else if(checkType == GAIN_TYPE) {
-                    checker = new GAINChecker(idNode.getTextContent(), root, this.patternMap, stMap,
-                            kernelFilePath, //kernel function
-                            contexts, cuContext, gpuResult); //GPU memory
                 } else if(checkType == CONPCC_TYPE) {
                     checker = new ConPccChecker(idNode.getTextContent(), root, this.patternMap, stMap, taskNum, checkExecutorService);
                 }
@@ -660,7 +557,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
 
     protected void accuracy(String logFilePath) {
-        Accuracy.main(new String []{logFilePath, this.oracleFilePath, this.analysisFilePath});
+        if (this.oracleFilePath != null) {
+            Accuracy.main(new String[]{logFilePath, this.oracleFilePath, this.analysisFilePath});
+        }
     }
 
 

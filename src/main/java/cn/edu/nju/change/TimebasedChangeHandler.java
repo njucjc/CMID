@@ -21,7 +21,7 @@ public class TimebasedChangeHandler extends ChangeHandler{
     @Override
     public void doContextChange(int num, String change) {
         Context context = parseContext(num, change);
-        Set<String> timeSet = new TreeSet<>();
+        Set<Long> timeSet = new TreeSet<>();
         //按升序收集过期时间
         for(String key : patternMap.keySet()) {
             Pattern pattern = patternMap.get(key);
@@ -29,7 +29,7 @@ public class TimebasedChangeHandler extends ChangeHandler{
         }
 
         //按时间顺序删除context
-        for(String timestamp : timeSet) {
+        for(long timestamp : timeSet) {
             for (String patternId : patternMap.keySet()) {
                 deleteChange(timestamp, patternId);
             }

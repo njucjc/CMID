@@ -143,7 +143,7 @@ public abstract class Checker {
         return true;
     }
 
-    protected boolean deleteContextFromPattern(String patternId, String timestamp) {
+    protected boolean deleteContextFromPattern(String patternId, long timestamp) {
         if (!affected(patternId)) {
             return false;
         }
@@ -184,7 +184,7 @@ public abstract class Checker {
     }
 
 
-    public boolean delete(String patternId, String timestamp) {
+    public boolean delete(String patternId, long timestamp) {
         if(!deleteContextFromPattern(patternId, timestamp)) {
             return false;
         }
@@ -543,7 +543,7 @@ public abstract class Checker {
             if(t instanceof CCTNode) {
                 Context c = ((CCTNode) t).getContext();
                 if(c != null) {
-                    System.out.print("(" + c.getPlateNumber() + ") ");
+                    System.out.print("(" + c.getId() + ") ");
                 }
                 else {
                     System.out.print(" ");

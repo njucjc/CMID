@@ -1,49 +1,101 @@
 package cn.edu.nju.context;
 
+import java.util.Objects;
+
 /**
  * Created by njucjc on 2017/10/3.
  */
 public class Context {
-    private int id;
-    private String timestamp;
-    private String plateNumber;
+    private int no;
+    private String type;
+    private String id;
+    private String typeName;
+    private int group;
     private double longitude;
     private double latitude;
+    private double altitude;
     private double speed;
-    private int status;
+    private double course;
+    private long timestamp;
 
-    public Context(int id, String timestamp, String plateNumber, double longitude, double latitude, double speed, int status) {
+    public Context(int no, String type, String id, String typeName,
+                   int group, double longitude, double latitude, double altitude,
+                   double speed, double course, long timestamp) {
+        this.no = no;
+        this.type = type;
         this.id = id;
-        this.timestamp = timestamp;
-        this.plateNumber = plateNumber;
+        this.typeName = typeName;
+        this.group = group;
         this.longitude = longitude;
         this.latitude = latitude;
+        this.altitude = altitude;
         this.speed = speed;
-        this.status = status;
+        this.course = course;
+        this.timestamp = timestamp;
     }
 
-    public int getId() {
+    public int getNo() {
+        return no;
+    }
+
+    public void setNo(int no) {
+        this.no = no;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public String getTimestamp() {
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
+    }
+
+    public int getGroup() {
+        return group;
+    }
+
+    public void setGroup(int group) {
+        this.group = group;
+    }
+
+    public double getAltitude() {
+        return altitude;
+    }
+
+    public void setAltitude(double altitude) {
+        this.altitude = altitude;
+    }
+
+    public double getCourse() {
+        return course;
+    }
+
+    public void setCourse(double course) {
+        this.course = course;
+    }
+
+    public long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(String timestamp) {
+    public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public String getPlateNumber() {
-        return plateNumber;
-    }
-
-    public void setPlateNumber(String plateNumber) {
-        this.plateNumber = plateNumber;
     }
 
     public double getLongitude() {
@@ -70,22 +122,17 @@ public class Context {
         this.speed = speed;
     }
 
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
 
     public String allForString() {
-        return id + "," + timestamp + "," + plateNumber + ","
-                + longitude + "," + latitude + "," + speed + "," + status;
+        return no + "," + type + "," + id + ","
+                + typeName + "," + group + "," +
+                longitude + "," + latitude + "," +
+                altitude + "," + speed + "," + course + "," + timestamp;
     }
 
     @Override
     public String toString() {
-        return "ctx_" + id;
+        return "ctx_" + no;
     }
 
     @Override
@@ -95,11 +142,11 @@ public class Context {
 
         Context context = (Context) o;
 
-        return plateNumber != null ? plateNumber.equals(context.plateNumber) : context.plateNumber == null;
+        return Objects.equals(id, context.id);
     }
 
     @Override
     public int hashCode() {
-        return plateNumber != null ? plateNumber.hashCode() : 0;
+        return id != null ? id.hashCode() : 0;
     }
 }

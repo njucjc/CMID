@@ -1,7 +1,6 @@
 package cn.edu.nju.builder;
 
 import cn.edu.nju.checker.Checker;
-import cn.edu.nju.util.Interaction;
 import cn.edu.nju.util.LogFileHelper;
 
 import java.io.BufferedReader;
@@ -20,13 +19,7 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
 
     @Override
     public void run() {
-        List<String> contextList;
-        if("time".equals(this.changeHandlerType.split("-")[1])) {
-            contextList = fileReader(this.dataFilePath);
-        }
-        else {
-            contextList = fileReader(this.changeFilePath);
-        }
+        List<String> contextList = fileReader(this.dataFilePath);
         System.out.println("[INFO] 开始一致性处理");
         int count = 0;
         long startTime = System.nanoTime();
@@ -49,7 +42,6 @@ public class CheckerBuilder  extends AbstractCheckerBuilder implements Runnable{
         LogFileHelper.getLogger().info("Total INC: " + incCount, false);
         LogFileHelper.getLogger().info("Total checking time: " + (endTime - startTime) / 1000000 + " ms", false);
 
-        Interaction.say("进入结果分析");
         accuracy(LogFileHelper.logFilePath);
         shutdown();
 

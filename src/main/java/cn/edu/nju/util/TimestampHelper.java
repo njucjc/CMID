@@ -14,25 +14,17 @@ public class TimestampHelper {
      * @param timestamp2
      * @return 两个时间戳的时间差
      */
-    public static long timestampDiff(String timestamp1, String timestamp2) {
+    public static long timestampDiff(long timestamp1, long timestamp2) {
         long diff = getDiff(timestamp1, timestamp2);
         return diff > 0 ? diff : -diff;
     }
 
-    private static long getDiff(String timestamp1, String timestamp2) {
-        long diff = 0;
-        try {
-            java.util.Date begin = dfs.parse(timestamp1);
-            java.util.Date end = dfs.parse(timestamp2);
-            diff = end.getTime() - begin.getTime();
-        }catch (Exception e) {
-            System.out.println("[INFO] 时间戳格式错误");
-            System.exit(1);
-        }
-        return diff;
+    private static long getDiff(long timestamp1, long timestamp2) {
+
+        return timestamp2 - timestamp1;
     }
 
-    public static int timestampCmp(String timestamp1, String timestamp2) {
+    public static int timestampCmp(long timestamp1, long timestamp2) {
         long diff = getDiff(timestamp1, timestamp2);
         if(diff < 0) {
             return 1;
@@ -49,20 +41,12 @@ public class TimestampHelper {
      * @param millis
      * @return
      */
-    public static String plusMillis(String timestamp, long millis) {
-        String timestamp2 = null;
-        try {
-            java.util.Date begin = dfs.parse(timestamp);
-            timestamp2 = dfs.format(new java.util.Date(begin.getTime() + millis));
-        }catch (Exception e) {
-            System.out.println("[INFO] 时间戳格式错误");
-            System.exit(1);
-        }
-        return timestamp2;
+    public static long plusMillis(long timestamp, long millis) {
+        return timestamp + millis;
     }
 
-    public static String getCurrentTimestamp() {
-        return dfs.format(new java.util.Date());
+    public static long getCurrentTimestamp() {
+        return new java.util.Date().getTime();
     }
 
     public static java.util.Date parserDate(String time) {
@@ -78,9 +62,5 @@ public class TimestampHelper {
 
 
     public static void main(String[] args) {
-        System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:057"));
-        System.out.println(timestampDiff("2007-10-26 11:00:00:000","2007-10-26 11:00:00:228"));
-        System.out.println(timestampDiff("2007-10-26 11:00:00:057","2007-10-26 11:00:00:228"));
-        System.out.println(plusMillis("2007-10-26 11:00:00:057", 100));
     }
 }

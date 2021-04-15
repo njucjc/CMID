@@ -59,10 +59,9 @@ public abstract class ChangeHandler {
         timeCount += (end -start);
     }
 
-    protected final void deleteChange(String timestamp, String  patternId) {
+    protected final void deleteChange(long timestamp, String  patternId) {
         Pattern pattern = patternMap.get(patternId);
         if (pattern == null) {
-            System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件中存在不可识别操作内容：" + patternId);
             System.exit(1);
         }
         Checker checker = checkerMap.get(patternId);
@@ -73,7 +72,6 @@ public abstract class ChangeHandler {
     protected final void additionChange(String patternId, Context context) {
         Pattern pattern = patternMap.get(patternId);
         if (pattern == null) {
-            System.out.println("[INFO] '"+ AbstractCheckerBuilder.changeFilePath + "'文件中存在不可识别操作内容：" + patternId);
             System.exit(1);
         }
         if(pattern.isBelong(context)) {

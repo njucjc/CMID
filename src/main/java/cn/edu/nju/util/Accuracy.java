@@ -13,7 +13,6 @@ public class Accuracy {
             Set<String> groundTruth = readLogFile(args[1]);
             Set<String> myLog = readLogFile(args[0]);
 
-            Interaction.say("输出分析结果");
             int right = 0, fault = 0;
             for(String logStr : myLog) {
                 if(!groundTruth.contains(logStr)) {
@@ -25,26 +24,17 @@ public class Accuracy {
             }
 
             int miss = groundTruth.size() - right;
-            fault = (int)Math.floor((double) miss * 0.01);
-            miss = miss + fault;
-
-            if (miss >= groundTruth.size()) {
-                miss = groundTruth.size() - right;
-                fault = 0;
-            }
-
-            Logger logger = new Logger(args[2], false);
 
             System.out.println("[INFO] 结果分析完成，结果为：");
             if(fault == 0 && miss == 0) {
-                logger.info("Oracle验证通过", true);
-                logger.info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
-                logger.info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
+                LogFileHelper.getLogger().info("Oracle验证通过", true);
+                LogFileHelper.getLogger().info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
+                LogFileHelper.getLogger().info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
             }
             else {
-                logger.info("Oracle验证不通过", true);
-                logger.info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
-                logger.info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
+                LogFileHelper.getLogger().info("Oracle验证不通过", true);
+                LogFileHelper.getLogger().info("漏报率: " + String.format("%.2f", miss * 100.0 / groundTruth.size()) + "% (" + miss + "/" + groundTruth.size() + ")", true);
+                LogFileHelper.getLogger().info("误报率: " + String.format("%.2f", fault * 100.0 / groundTruth.size()) + "% (" + fault + "/" + groundTruth.size() + ")", true);
             }
         }
         else {

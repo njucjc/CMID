@@ -52,7 +52,7 @@ public class ChangeFileHelper {
     }
 
     public void parseChangeFile(String changeFilePath) {
-        Map<String, List<String>> contextChangeMap = new TreeMap<>();
+        Map<Long, List<String>> contextChangeMap = new TreeMap<>();
         ContextStaticRepo contextStaticRepo = new ContextStaticRepo(changeFilePath);
         File file = new File(changeFilePath.split("\\.")[0] + "_change.txt");
 
@@ -60,12 +60,12 @@ public class ChangeFileHelper {
         List<String> res = new ArrayList<>();
         try {
             while ((context = contextStaticRepo.getContext()) != null) {
-                String currentTimestamp = context.getTimestamp();
+                long currentTimestamp = context.getTimestamp();
 
-                Iterator<Map.Entry<String, List<String>>> it = contextChangeMap.entrySet().iterator();
+                Iterator<Map.Entry<Long, List<String>>> it = contextChangeMap.entrySet().iterator();
                 while(it.hasNext()) {
-                    Map.Entry<String, List<String>> entry = it.next();
-                    String timestamp = entry.getKey();
+                    Map.Entry<Long, List<String>> entry = it.next();
+                    long timestamp = entry.getKey();
                     if(TimestampHelper.timestampCmp(timestamp, currentTimestamp) < 0) {
                         res.addAll(contextChangeMap.get(timestamp));
                         it.remove();
@@ -76,7 +76,7 @@ public class ChangeFileHelper {
                 for(Pattern pattern: patternList) {
                     if(pattern.isBelong(context)) {
                         res.add(("+," + pattern.getId() + "," + str));
-                        String key = TimestampHelper.plusMillis(currentTimestamp, pattern.getFreshness());
+                        long key = TimestampHelper.plusMillis(currentTimestamp, pattern.getFreshness());
                         context.setTimestamp(key);
                         if(!contextChangeMap.containsKey(key)) {
                             contextChangeMap.put(key, new ArrayList<>());
@@ -87,10 +87,10 @@ public class ChangeFileHelper {
                 }
             }
 
-            Iterator<Map.Entry<String, List<String>>> it = contextChangeMap.entrySet().iterator();
+            Iterator<Map.Entry<Long, List<String>>> it = contextChangeMap.entrySet().iterator();
             while (it.hasNext()) {
-                Map.Entry<String, List<String>> entry = it.next();
-                String key = entry.getKey();
+                Map.Entry<Long, List<String>> entry = it.next();
+                long key = entry.getKey();
                 res.addAll(contextChangeMap.get(key));
             }
 
