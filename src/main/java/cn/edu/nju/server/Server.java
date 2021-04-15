@@ -2,8 +2,10 @@ package cn.edu.nju.server;
 
 import cn.edu.nju.builder.AbstractCheckerBuilder;
 import cn.edu.nju.checker.Checker;
+import cn.edu.nju.context.Context;
+import cn.edu.nju.context.ContextParser;
+import cn.edu.nju.util.ChangeHelper;
 import cn.edu.nju.util.LogFileHelper;
-import cn.edu.nju.util.TimestampHelper;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -18,7 +20,7 @@ import java.util.*;
 public class Server extends AbstractCheckerBuilder implements Runnable{
     private DatagramSocket serverSocket;
     private boolean running;
-    private int port = 8000;
+    private int port = 2424;
     private byte [] buf = new byte[256];
 
     public Server(String configFilePath)  {
@@ -37,10 +39,11 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     public void run() {
         running = true;
 
-
-        long count = 0;
+        int count = 0;
 
         long timeSum = 0;
+
+        Map<Long, List<String>> deleteChanges = new TreeMap<>();
 
         System.out.println("[INFO] 服务器启动完毕，开始等待接收数据");
         try {
@@ -54,43 +57,43 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
                     break;
                 }
 
-
-                int num = Integer.parseInt(msg.substring(0, msg.indexOf(",")));
-                long interval = Long.parseLong(msg.substring(msg.lastIndexOf(",")+1));
                 assert count != -1:"counter overflow.";
-//                if(onDemand && switcher.isSwitch(num, interval)) {
-//
-//                    switchPoint.add(TimestampHelper.timestampDiff(TimestampHelper.getCurrentTimestamp(), startTimestamp));
-//                    long startUpdate = System.nanoTime();
-//                    update(switcher.getCheckerType(), switcher.getSchedulerType());
-//                    long endUpdate = System.nanoTime();
-//                    switchTimeCount += endUpdate - startUpdate;
-//                }
 
-                msg = msg.substring(msg.indexOf(",") + 1, msg.lastIndexOf(","));
+                Context context = ContextParser.jsonToContext(count, msg);
+                List<String> changes = ChangeHelper.toChanges(context, deleteChanges, patternList);
 
                 long start = System.nanoTime();
 
-                changeHandler.doContextChange(num, msg);
-                count++;
+                for(String chg : changes) {
+                    changeHandler.doContextChange(chg);
+                }
 
                 long end = System.nanoTime();
-                long checkTime = (end - start);
-                timeSum += checkTime;
+                timeSum += (end - start);
+
+                count++;
 
                 int inc = 0;
                 for (Checker checker : checkerList) {
                     inc += checker.getInc();
                 }
 
-                System.out.print( "[INFO] Send/Receive: " + (num + 1) + "/" + count +
-                        "\tTotal inc: "+ inc +
-                        "\tTotal Checking time: " + (timeSum/1000000)  +" ms\r");
-
+                System.out.print( "[INFO] INC: "+ inc + "\tTotal Checking time: " + (timeSum / 1000000)  +" ms\r");
 
             }
-            scheduler.reset();
-            changeHandler.doCheck();
+
+            long start = System.nanoTime();
+            Iterator<Map.Entry<Long, List<String>>> it = deleteChanges.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry<Long, List<String>> entry = it.next();
+                long key = entry.getKey();
+                for (String chg : deleteChanges.get(key)) {
+                    changeHandler.doContextChange(chg);
+                }
+            }
+            long end = System.nanoTime();
+            timeSum += (end - start);
+
         }
         catch (IOException e) {
             e.printStackTrace();
@@ -98,17 +101,13 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
 
         changeHandler.shutdown();
         int inc = 0;
-        long time = 0L;
         for (Checker checker : checkerList) {
             inc += checker.getInc();
-            time = time + checker.getTimeCount();
         }
 
         System.out.println();
-        System.out.println("[INFO] 一致性检测过程完成，共检测出" + inc + "个不一致");
-        System.out.println("[INFO] 检测时间为" + timeSum / 1000000 + " ms");
-        LogFileHelper.getLogger().info("Total Inc: " + inc, false);
-        LogFileHelper.getLogger().info("Total checking time: " +  timeSum / 1000000 + " ms", false);
+        LogFileHelper.getLogger().info("[INFO] Total INC: " + inc, true);
+        LogFileHelper.getLogger().info("[INFO] Total checking time: " +  timeSum / 1000000 + " ms", true);
 
         serverSocket.close();
 

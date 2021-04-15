@@ -37,6 +37,8 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     protected List<Checker> checkerList;
 
+    protected List<Pattern> patternList;
+
     /*调度checker的策略*/
     protected Scheduler scheduler;
 
@@ -60,15 +62,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     protected String changeHandlerType;
 
-    private String kernelFilePath;
 
     private String oracleFilePath;
 
-    private CUcontext cuContext;
 
-    private List<String> contexts;
-
-    private String analysisFilePath;
 
     public AbstractCheckerBuilder(String configFilePath) {
         if (!isFileExists(configFilePath)) {
@@ -174,7 +171,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.out.println("[INFO] 配置文件解析失败：缺少changeHandlerType配置项");
             System.exit(1);
         }
-        else if (!changeHandlerType.contains("time-based") && !changeHandlerType.contains("change-based")) {
+        else if (!changeHandlerType.contains("change-based")) {
             System.out.println("[INFO] 配置文件解析失败：changeHandlerType配置项配置值" + this.changeHandlerType + "无效");
             System.exit(1);
         }
@@ -235,25 +232,23 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     }
 
     private void configChangeHandler() {
-        if(this.changeHandlerType.contains("time-based")) {
-            this.changeHandler = new TimebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
-        }
-        else if(this.changeHandlerType.contains("change-based")) {
+        if(this.changeHandlerType.contains("change-based")) {
             this.changeHandler = new ChangebasedChangeHandler(patternMap, checkerMap, scheduler, checkerList);
         }
     }
 
     private void parsePatternFile(String patternFilePath) {
         this.patternMap = new ConcurrentHashMap<>();
+        this.patternList = new CopyOnWriteArrayList<>();
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         try {
             DocumentBuilder db = dbf.newDocumentBuilder();
             Document document = db.parse(patternFilePath);
 
-            NodeList patternList = document.getElementsByTagName("pattern");
-            System.out.println("[INFO] Pattern文件为" + patternFilePath + "，总共" + patternList.getLength() + "个patterns");
-            for (int i = 0; i < patternList.getLength(); i++) {
-                Node patNode = patternList.item(i);
+            NodeList patterns = document.getElementsByTagName("pattern");
+            System.out.println("[INFO] Pattern文件为" + patternFilePath + "，总共" + patterns.getLength() + "个patterns");
+            for (int i = 0; i < patterns.getLength(); i++) {
+                Node patNode = patterns.item(i);
                 NodeList childNodes = patNode.getChildNodes();
 
                 Map<String, Boolean> member = new HashMap<>();
@@ -329,10 +324,9 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
                         System.exit(1);
                     }
                 }
-
-
-
-                patternMap.put(id, new Pattern(id, freshness, category, subject, predicate, object, site));
+                Pattern pattern = new Pattern(id, freshness, category, subject, predicate, object, site);
+                patternList.add(pattern);
+                patternMap.put(id, pattern);
             }
 
             /* for(String key : patternMap.keySet()) {
@@ -476,16 +470,6 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
     }
 
-    private void compileKernelFunction(String cudaSourceFilePath) {
-
-        try {
-            this.kernelFilePath = PTXFileHelper.preparePtxFile(cudaSourceFilePath);
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void shutdown() {
         checkExecutorService.shutdown();
         if(checkType == GAIN_TYPE) {
@@ -496,69 +480,10 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         }
     }
 
-    protected void update(int checkType, int scheduleType) {
-        boolean isUpdate = false;
-
-        //update checkers
-        if(this.checkType != checkType) {
-            isUpdate = true;
-            List<Checker> curList = new CopyOnWriteArrayList<>();
-            Map<String, Checker> curMap = new ConcurrentHashMap();
-
-            for(Checker checker : checkerList) {
-
-                Checker c = null;
-                if(checkType == PCC_TYPE) {
-                    c = new PccChecker(checker);
-                }
-                else if(checkType == ECC_TYPE) {
-                    c = new EccChecker(checker);
-                }
-                else if(checkType == CON_TYPE) {
-                    c = new ConChecker(checker, taskNum, this.checkExecutorService);
-                }
-                else if(checkType == CONPCC_TYPE) {
-                    c = new ConPccChecker(checker, taskNum, this.checkExecutorService);
-                }
-                else {
-                    assert false:"Type Error.";
-                }
-
-                curList.add(c);
-
-                Map<String, STNode> stMap = checker.getStMap();
-                for(String key : stMap.keySet()) {
-                    curMap.put(stMap.get(key).getContextSetName(), c);
-                }
-                checker.reset();
-            }
-            this.checkType = checkType;
-            this.checkerList = curList;
-            this.checkerMap = curMap;
-        }
-
-        //update scheduler
-        if(scheduleType != this.scheduleType) {
-            isUpdate = true;
-            if(scheduleType == 0) {
-                this.scheduler = new GEAScheduler(this.checkerList);
-            }
-            else {
-                this.scheduler = new BatchScheduler(scheduleType);
-            }
-
-            this.scheduleType = scheduleType;
-        }
-
-        if(isUpdate) {
-            this.changeHandler.update(this.checkerMap,this.scheduler, this.checkerList);
-        }
-    }
-
 
     protected void accuracy(String logFilePath) {
         if (this.oracleFilePath != null) {
-            Accuracy.main(new String[]{logFilePath, this.oracleFilePath, this.analysisFilePath});
+            Accuracy.main(new String[]{logFilePath, this.oracleFilePath});
         }
     }
 

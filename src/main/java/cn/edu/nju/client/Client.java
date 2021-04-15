@@ -1,5 +1,6 @@
 package cn.edu.nju.client;
 
+import cn.edu.nju.context.ContextParser;
 import cn.edu.nju.util.TimestampHelper;
 
 import java.io.*;
@@ -16,7 +17,7 @@ import java.util.Properties;
 public class Client implements Runnable{
     private DatagramSocket socket;
     private InetAddress address;
-    int port = 8000;
+    int port = 2424;
 
     private List<String> contextStrList;
     private List<Long> sleepTime;
@@ -33,14 +34,11 @@ public class Client implements Runnable{
             BufferedReader br = new BufferedReader(fr);
             String line = null;
             String lastLine = br.readLine();
-            int timestampIndex = 9;
-            if(lastLine.contains("+")) { //第一行总是增加
-                timestampIndex = 12;
-            }
+
             contextStrList.add(lastLine);
             while ((line = br.readLine()) != null) {
                 contextStrList.add(line);
-                long diff = TimestampHelper.timestampDiff(Long.parseLong(line.split(",")[timestampIndex]), Long.parseLong(lastLine.split(",")[timestampIndex]));
+                long diff = TimestampHelper.timestampDiff(ContextParser.jsonToContext(0, line).getTimestamp(), ContextParser.jsonToContext(0, lastLine).getTimestamp());
                 sleepTime.add(diff);
                 lastLine = line;
             }
@@ -66,7 +64,7 @@ public class Client implements Runnable{
 
             System.out.print("Send " + i + " at " + TimestampHelper.getCurrentTimestamp() + ", sleep:" + sleepMillis + " ms\r");
             sleepMillis = sleepTime.get(i);
-            sendMsg(i+ "," + contextStrList.get(i) + "," + sleepMillis);
+            sendMsg(contextStrList.get(i));
             endTime = System.nanoTime();
 
             long diff = (endTime - startTime) - totalTime * 1000000;

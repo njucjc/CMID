@@ -2,6 +2,7 @@ package cn.edu.nju.change;
 
 import cn.edu.nju.builder.AbstractCheckerBuilder;
 import cn.edu.nju.checker.Checker;
+import cn.edu.nju.context.ContextParser;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.scheduler.Scheduler;
 import cn.edu.nju.context.Context;
@@ -17,7 +18,7 @@ public class ChangebasedChangeHandler extends ChangeHandler {
     }
 
     @Override
-    public void doContextChange(int num, String change) {
+    public void doContextChange(String change) {
         scheduler.update(change);
         doCheck();
 
@@ -27,10 +28,10 @@ public class ChangebasedChangeHandler extends ChangeHandler {
         String patternId = strs[1];
 
         if (op.equals("+")) {
-            additionChange(patternId, parseContext(num, change));
+            additionChange(patternId, ContextParser.parseChangeContext(strs));
         }
         else if (op.equals("-")) {
-            deleteChange(parseContext(num, change).getTimestamp(), patternId);
+            deleteChange(ContextParser.parseChangeContext(strs).getTimestamp(), patternId);
         }
         else {
             System.out.println("[INFO] 存在不可识别操作类型" + op);

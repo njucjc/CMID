@@ -1,7 +1,7 @@
 package cn.edu.nju.context;
 
 import cn.edu.nju.builder.AbstractCheckerBuilder;
-
+import com.alibaba.fastjson.*;
 /**
  * Created by njucjc on 2017/10/23.
  */
@@ -69,5 +69,36 @@ public class ContextParser {
             System.exit(1);
         }
         return context;
+    }
+
+    public static Context jsonToContext(int no, String jsonStr) {
+        JSONObject object = JSONObject.parseObject(jsonStr);
+        String type = object.getString("Type");
+        String id = object.getString("ID");
+        String typeName = object.getString("TypeName");
+        int group = object.getInteger("Group");
+        double longitude = object.getDouble("Longitude");
+        double latitude = object.getDouble("Latitude");
+        double altitude = object.getDouble("Altitude");
+        double speed = object.getDouble("Speed");
+        double course = object.getDouble("Course");
+        long timestamp = object.getLong("TimeStamp");
+
+        return new Context(no, type, id, typeName, group, longitude, latitude, altitude, speed, course, timestamp);
+    }
+
+    public static String contextToJson(Context context) {
+        JSONObject object = new JSONObject();
+        object.put("Type", context.getType());
+        object.put("ID", context.getId());
+        object.put("TypeName", context.getTypeName());
+        object.put("Group", context.getGroup());
+        object.put("Longitude", context.getLongitude());
+        object.put("Latitude", context.getLatitude());
+        object.put("Altitude", context.getAltitude());
+        object.put("Speed", context.getSpeed());
+        object.put("Course", context.getCourse());
+        object.put("TimeStamp", context.getTimestamp());
+        return object.toJSONString();
     }
 }

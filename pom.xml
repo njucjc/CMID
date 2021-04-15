@@ -73,16 +73,16 @@
         </dependency>
 
         <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.47</version>
+        </dependency>
+
+        <dependency>
             <groupId>jcudaUtils-0.0.4</groupId>
             <artifactId>jcudaUtils-0.0.4</artifactId>
             <scope>system</scope>
             <systemPath>${basedir}/lib/jcudaUtils-0.0.4.jar</systemPath>
-        </dependency>
-
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-            <version>1.2.47</version>
         </dependency>
 
     </dependencies>

@@ -15,10 +15,10 @@ import java.util.*;
 /**
  * Created by njucjc at 2018/1/22
  */
-public class ChangeFileHelper {
+public class ChangeHelper {
     private List<Pattern> patternList = new ArrayList<>();
 
-    public ChangeFileHelper(String patternXmlPath) {
+    public ChangeHelper(String patternXmlPath) {
         parsePatternXml(patternXmlPath);
     }
 
@@ -60,31 +60,7 @@ public class ChangeFileHelper {
         List<String> res = new ArrayList<>();
         try {
             while ((context = contextStaticRepo.getContext()) != null) {
-                long currentTimestamp = context.getTimestamp();
-
-                Iterator<Map.Entry<Long, List<String>>> it = contextChangeMap.entrySet().iterator();
-                while(it.hasNext()) {
-                    Map.Entry<Long, List<String>> entry = it.next();
-                    long timestamp = entry.getKey();
-                    if(TimestampHelper.timestampCmp(timestamp, currentTimestamp) < 0) {
-                        res.addAll(contextChangeMap.get(timestamp));
-                        it.remove();
-                    }
-                }
-
-                String str = context.allForString();
-                for(Pattern pattern: patternList) {
-                    if(pattern.isBelong(context)) {
-                        res.add(("+," + pattern.getId() + "," + str));
-                        long key = TimestampHelper.plusMillis(currentTimestamp, pattern.getFreshness());
-                        context.setTimestamp(key);
-                        if(!contextChangeMap.containsKey(key)) {
-                            contextChangeMap.put(key, new ArrayList<>());
-                        }
-                        contextChangeMap.get(key).add("-," + pattern.getId() + "," + context.allForString());
-                    }
-                    context.setTimestamp(currentTimestamp);
-                }
+                toChanges(context, contextChangeMap, patternList);
             }
 
             Iterator<Map.Entry<Long, List<String>>> it = contextChangeMap.entrySet().iterator();
@@ -111,14 +87,42 @@ public class ChangeFileHelper {
         }
 
 
+    }
 
+    public static List<String> toChanges(Context c, Map<Long, List<String>> deleteChanges, List<Pattern> patterns) {
+        List<String> res = new ArrayList<>();
 
+        long currentTimestamp = c.getTimestamp();
+        Iterator<Map.Entry<Long, List<String>>> it = deleteChanges.entrySet().iterator();
+        while(it.hasNext()) {
+            Map.Entry<Long, List<String>> entry = it.next();
+            long timestamp = entry.getKey();
+            if(TimestampHelper.timestampCmp(timestamp, currentTimestamp) < 0) {
+                res.addAll(deleteChanges.get(timestamp));
+                it.remove();
+            }
+        }
+
+        String str = c.allForString();
+        for(Pattern pattern: patterns) {
+            if(pattern.isBelong(c)) {
+                res.add(("+," + pattern.getId() + "," + str));
+                long key = TimestampHelper.plusMillis(currentTimestamp, pattern.getFreshness());
+                c.setTimestamp(key);
+                if(!deleteChanges.containsKey(key)) {
+                    deleteChanges.put(key, new ArrayList<>());
+                }
+                deleteChanges.get(key).add("-," + pattern.getId() + "," + c.allForString());
+            }
+            c.setTimestamp(currentTimestamp);
+        }
+        return res;
     }
 
 
     public static void main(String[] args) {
         if(args.length == 2) {
-            ChangeFileHelper changeFileHelper = new ChangeFileHelper(args[0]);
+            ChangeHelper changeFileHelper = new ChangeHelper(args[0]);
             File file = new File(args[1]);
             if (file.isFile()) {
                 System.out.println(args[1]);

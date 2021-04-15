@@ -36,15 +36,6 @@ public abstract class ChangeHandler {
         return str.substring(str.lastIndexOf(".") + 1);
     }
 
-    protected Context parseContext(int num, String change) {
-        String [] strs = change.split(",");
-        if(strs[0].equals("+") || strs[0].equals("-")) {
-            return ContextParser.parseChangeContext(strs);
-        }
-        else {
-            return ContextParser.parseContext(num, change);
-        }
-    }
     public void doCheck() {
         long start = System.nanoTime();
         for(Checker checker : checkerList) {
@@ -78,7 +69,7 @@ public abstract class ChangeHandler {
         }
     }
 
-    public abstract void doContextChange(int num, String change);
+    public abstract void doContextChange(String change);
 
     public void shutdown() {}
 
