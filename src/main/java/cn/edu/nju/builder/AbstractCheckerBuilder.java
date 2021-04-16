@@ -42,7 +42,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
     /*调度checker的策略*/
     protected Scheduler scheduler;
 
-    public static String dataFilePath; //context data
+    protected String dataFilePath; //context data
 
     /*所有pattern*/
     protected Map<String, Pattern> patternMap;
