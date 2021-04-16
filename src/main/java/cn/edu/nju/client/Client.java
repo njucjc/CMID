@@ -17,13 +17,13 @@ import java.util.Properties;
 public class Client implements Runnable{
     private DatagramSocket socket;
     private InetAddress address;
-    int port = 2424;
+    int port;
 
     private List<String> contextStrList;
     private List<Long> sleepTime;
 
 
-    public Client(String contextFilePath)  {
+    public Client(String contextFilePath, String ip, int port)  {
         this.contextStrList = new ArrayList<>();
         this.sleepTime = new ArrayList<>();
 
@@ -44,8 +44,9 @@ public class Client implements Runnable{
             }
             sleepTime.add(1L);
 
-            socket = new DatagramSocket();
-            address = InetAddress.getByName("localhost");
+            this.port = port;
+            this.socket = new DatagramSocket();
+            this.address = InetAddress.getByName(ip);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -116,16 +117,12 @@ public class Client implements Runnable{
                 e.printStackTrace();
             }
             String dataFilePath = properties.getProperty("dataFilePath");
-            String changeFilePath = properties.getProperty("changeFilePath");
-            String changeHandlerType = properties.getProperty("changeHandlerType");
+            String ip = properties.getProperty("ip");
+            int port = Integer.parseInt(properties.getProperty("port"));
 
-            Thread client;
-            if("time".equals(changeHandlerType.split("-")[1])) {
-                client = new Thread(new Client(dataFilePath));
-            }
-            else {
-                client = new Thread(new Client(changeFilePath));
-            }
+            Thread client = new Thread(new Client(dataFilePath, ip, port));
+
+
 
             client.setPriority(Thread.MAX_PRIORITY);
             client.start();

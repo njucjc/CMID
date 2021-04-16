@@ -65,7 +65,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
 
     private String oracleFilePath;
 
-
+    protected int port;
 
     public AbstractCheckerBuilder(String configFilePath) {
         if (!isFileExists(configFilePath)) {
@@ -222,6 +222,15 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.exit(1);
 
         }
+
+        if (changeHandlerType.contains("dynamic")) {
+            try {
+                this.port = Integer.parseInt(properties.getProperty("port"));
+            } catch (NumberFormatException e) {
+                System.out.println("[INFO] 配置文件解析失败：port无配置或配置错误");
+            }
+        }
+
 
         System.out.println("[INFO] 配置文件解析成功");
     }

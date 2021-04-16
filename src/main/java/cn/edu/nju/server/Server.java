@@ -20,7 +20,6 @@ import java.util.*;
 public class Server extends AbstractCheckerBuilder implements Runnable{
     private DatagramSocket serverSocket;
     private boolean running;
-    private int port = 2424;
     private byte [] buf = new byte[256];
 
     public Server(String configFilePath)  {
