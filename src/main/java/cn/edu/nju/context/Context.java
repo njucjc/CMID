@@ -132,7 +132,7 @@ public class Context {
 
     @Override
     public String toString() {
-        return "ctx_" + id + "-" + timestamp;
+        return ContextParser.contextToJson(this);
     }
 
     @Override
