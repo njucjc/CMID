@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+
+<patterns>
+
+	<pattern>
+		<id>pat_00</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_01</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_02</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_03</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_04</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_05</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_06</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_07</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_08</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_09</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_10</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+
+	<pattern>
+		<id>pat_11</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+	<pattern>
+		<id>pat_12</id>
+		<freshness>4000</freshness>  <!-- ms -->
+		<category>entities</category>
+		<subject>any</subject>
+		<predicate>any</predicate>
+		<object>any</object>
+		<site>any</site>
+	</pattern>
+
+</patterns>

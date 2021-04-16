@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+
+<rules>
+
+	<rule>
+		<id>rule_00</id>
+		<formula>
+			<forall var = "v1" in = "pat_00">
+				<implies>
+					<bfunction name = "isFly">
+						<param pos = "1" var = "v1" field = "type" />
+					</bfunction>
+					<bfunction name = "inFlySpeedRange">
+						<param pos = "1" var = "v1" field = "speed" />
+					</bfunction>
+				</implies>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_01</id>
+		<formula>
+			<forall var = "v1" in = "pat_01">
+				<implies>
+					<bfunction name = "isShip">
+						<param pos = "1" var = "v1" field = "type" />
+					</bfunction>
+					<bfunction name = "inShipSpeedRange">
+						<param pos = "1" var = "v1" field = "speed" />
+					</bfunction>
+				</implies>
+			</forall>
+		</formula>
+	</rule>
+
+
+	<rule>
+		<id>rule_02</id>
+		<formula>
+			<forall var = "v1" in = "pat_02">
+				<implies>
+					<bfunction name = "isFly">
+						<param pos = "1" var = "v1" field = "type" />
+					</bfunction>
+					<bfunction name = "inLatLonRange">
+						<param pos = "1" var = "v1" field = "latitude and longitude" />
+					</bfunction>
+				</implies>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_03</id>
+		<formula>
+			<forall var = "v1" in = "pat_03">
+				<implies>
+					<bfunction name = "isShip">
+						<param pos = "1" var = "v1" field = "type" />
+					</bfunction>
+					<bfunction name = "inLatLonRange">
+						<param pos = "1" var = "v1" field = "latitude and longitude" />
+					</bfunction>
+				</implies>
+			</forall>
+		</formula>
+	</rule>
+
+
+	<rule>
+		<id>rule_04</id>
+		<formula>
+			<forall var = "v1" in = "pat_04">
+				<implies>
+					<bfunction name = "isFly">
+						<param pos = "1" var = "v1" field = "type" />
+					</bfunction>
+					<bfunction name = "inFlyAltRange">
+						<param pos = "1" var = "v1" field = "altitude" />
+					</bfunction>
+				</implies>
+			</forall>
+		</formula>
+	</rule>
+
+
+	<rule>
+		<id>rule_05</id>
+		<formula>
+			<forall var = "v1" in = "pat_05">
+				<implies>
+					<bfunction name = "isShip">
+						<param pos = "1" var = "v1" field = "type" />
+					</bfunction>
+					<bfunction name = "inShipAltRange">
+						<param pos = "1" var = "v1" field = "altitude" />
+					</bfunction>
+				</implies>
+			</forall>
+		</formula>
+	</rule>
+
+	<rule>
+		<id>rule_06</id>
+		<formula>
+			<forall var = "v1" in = "pat_06">
+				<bfunction name = "inCourseRange">
+					<param pos = "1" var = "v1" field = "course" />
+				</bfunction>
+			</forall>
+		</formula>
+	</rule>
+
+
+	<rule>
+		<id>rule_07</id>
+		<formula>
+			<forall var = "v1" in = "pat_07">
+				<forall var = "v2" in = "pat_08">
+					<implies>
+						<bfunction name = "isSameFly">
+							<param pos = "1" var = "v1" field = "type and id" />
+							<param pos = "2" var = "v2" field = "type and id" />
+						</bfunction>
+						<bfunction name = "flyControllable">
+							<param pos = "1" var = "v1" field = "latitude, longitude and timestamp" />
+							<param pos = "2" var = "v2" field = "latitude, longitude and timestamp" />
+						</bfunction>
+					</implies>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+
+	<rule>
+		<id>rule_08</id>
+		<formula>
+			<forall var = "v1" in = "pat_09">
+				<forall var = "v2" in = "pat_10">
+					<implies>
+						<bfunction name = "isSameShip">
+							<param pos = "1" var = "v1" field = "type and id" />
+							<param pos = "2" var = "v2" field = "type and id" />
+						</bfunction>
+						<bfunction name = "shipControllable">
+							<param pos = "1" var = "v1" field = "latitude, longitude and timestamp" />
+							<param pos = "2" var = "v2" field = "latitude, longitude and timestamp" />
+						</bfunction>
+					</implies>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+
+	<rule>
+		<id>rule_09</id>
+		<formula>
+			<forall var = "v1" in = "pat_11">
+				<forall var = "v2" in = "pat_12">
+					<implies>
+						<and>
+							<bfunction name = "isSameFly">
+								<param pos = "1" var = "v1" field = "type and id" />
+								<param pos = "2" var = "v2" field = "type and id" />
+							</bfunction>
+							<bfunction name = "isFlyAltSuddenChange">
+								<param pos = "1" var = "v1" field = "altitude" />
+								<param pos = "2" var = "v2" field = "altitude" />
+							</bfunction>
+						</and>
+						<bfunction name = "inFlySpeedRangeBasedOnAlt">
+							<param pos = "1" var = "v1" field = "speed" />
+							<param pos = "2" var = "v2" field = "speed" />
+						</bfunction>
+					</implies>
+				</forall>
+			</forall>
+		</formula>
+	</rule>
+
+	
+</rules>
