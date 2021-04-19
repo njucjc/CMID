@@ -1,6 +1,7 @@
 package cn.edu.nju.checker;
 
 import cn.edu.nju.context.Context;
+import cn.edu.nju.context.ContextParser;
 import cn.edu.nju.node.CCTNode;
 import cn.edu.nju.node.NodeType;
 import cn.edu.nju.node.STNode;
@@ -9,6 +10,7 @@ import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.BFuncHelper;
 import cn.edu.nju.util.LinkHelper;
 import cn.edu.nju.util.TimestampHelper;
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -798,14 +800,15 @@ public abstract class Checker {
         return result;
     }
 
-    public boolean inCriticalSet(String id) {
-        return criticalSet.contains("ctx_" + id);
+    public boolean inCriticalSet(String no) {
+        return criticalSet.contains(no);
     }
 
     protected void addCriticalSet(String link) {
         String [] contexts = link.split(" ");
-        criticalSet.addAll(Arrays.asList(contexts));
-
+        for (String jsonStr : contexts) {
+            criticalSet.add(ContextParser.jsonToContextWithNo(jsonStr).getNo() + "");
+        }
     }
 
     protected void clearCriticalSet() {

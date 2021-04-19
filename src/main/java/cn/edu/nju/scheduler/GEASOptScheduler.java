@@ -2,6 +2,7 @@ package cn.edu.nju.scheduler;
 
 import cn.edu.nju.checker.Checker;
 import cn.edu.nju.context.Context;
+import cn.edu.nju.context.ContextParser;
 
 import java.util.List;
 
@@ -26,8 +27,8 @@ public class GEASOptScheduler extends GEAScheduler {
                 continue;
             }
 
-            Context c1 = parser.parseChangeContext(elements);
-            Context c2 = parser.parseChangeContext(e);
+            Context c1 = ContextParser.parseChangeContext(elements);
+            Context c2 = ContextParser.parseChangeContext(e);
 
             if (checker.allEqual(e[1], c1, c2)) {
                 return c;

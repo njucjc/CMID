@@ -87,8 +87,42 @@ public class ContextParser {
         return new Context(no, type, id, typeName, group, longitude, latitude, altitude, speed, course, timestamp);
     }
 
+    public static Context jsonToContextWithNo(String jsonStr) {
+        JSONObject object = JSONObject.parseObject(jsonStr);
+        int no = Integer.parseInt(object.getString("No"));
+        String type = object.getString("Type");
+        String id = object.getString("ID");
+        String typeName = object.getString("TypeName");
+        int group = Integer.parseInt(object.getString("Group"));
+        double longitude = Double.parseDouble(object.getString("Longitude"));
+        double latitude =  Double.parseDouble(object.getString("Latitude"));
+        double altitude =  Double.parseDouble(object.getString("Altitude"));
+        double speed =  Double.parseDouble(object.getString("Speed"));
+        double course =  Double.parseDouble(object.getString("Course"));
+        long timestamp = Long.parseLong(object.getString("TimeStamp"));
+
+        return new Context(no, type, id, typeName, group, longitude, latitude, altitude, speed, course, timestamp);
+    }
+
     public static String contextToJson(Context context) {
         JSONObject object = new JSONObject();
+        object.put("Type", context.getType());
+        object.put("ID", context.getId());
+        object.put("TypeName", context.getTypeName());
+        object.put("Group", context.getGroup() + "");
+        object.put("Longitude", context.getLongitude() + "");
+        object.put("Latitude", context.getLatitude() + "");
+        object.put("Altitude", context.getAltitude() + "");
+        object.put("Speed", context.getSpeed() + "");
+        object.put("Course", context.getCourse() + "");
+        object.put("TimeStamp", context.getTimestamp() + "");
+        return object.toJSONString();
+    }
+
+
+    public static String contextToJsonWithNo(Context context) {
+        JSONObject object = new JSONObject();
+        object.put("No", context.getNo() + "");
         object.put("Type", context.getType());
         object.put("ID", context.getId());
         object.put("TypeName", context.getTypeName());

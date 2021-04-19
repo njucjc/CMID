@@ -17,8 +17,6 @@ public class GEAScheduler implements Scheduler{
 
     private Map<String, List<String>> currentBatchMap;
 
-    protected ContextParser parser = new ContextParser();
-
     private List<Context> contextList;
 
     private Map<String, int []> winSizeMap;
@@ -71,7 +69,7 @@ public class GEAScheduler implements Scheduler{
 
         boolean result = sCondition(checker, currentBatch, elements);
 
-        Context context = parser.parseChangeContext(elements);
+        Context context = ContextParser.parseChangeContext(elements);
         contextList.add(context);
 
         List<Boolean> subTree = calcSubTree(checker, elements[1], context);
@@ -116,7 +114,7 @@ public class GEAScheduler implements Scheduler{
     protected List<Boolean> calcSubTree(Checker checker, String patternId, Context c){
         List<Boolean> tmp = checker.calcSubTree(patternId, c);
         for(String c1 : currentBatchMap.get(checker.getName())) {
-            List<Boolean> l1 = checker.calcSubTree(patternId, parser.parseChangeContext(c1.split(",")));
+            List<Boolean> l1 = checker.calcSubTree(patternId, ContextParser.parseChangeContext(c1.split(",")));
 
             for (int i = 0; i < tmp.size(); i++) {
                 if (tmp.get(i) == l1.get(i)) {
