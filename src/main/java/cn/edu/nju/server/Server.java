@@ -31,7 +31,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
         }catch(IOException e) {
             e.printStackTrace();
         }
-        System.out.println("[INFO 成功绑定" + port + "端口");
+        System.out.println("[INFO] 成功绑定" + port + "端口");
     }
 
     @Override
