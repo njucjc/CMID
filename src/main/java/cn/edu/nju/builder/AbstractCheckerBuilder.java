@@ -171,7 +171,7 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
             System.out.println("[INFO] 配置文件解析失败：缺少changeHandlerType配置项");
             System.exit(1);
         }
-        else if (!changeHandlerType.contains("change-based")) {
+        else if (!changeHandlerType.equals("static-change-based") && !changeHandlerType.equals("dynamic-change-based")) {
             System.out.println("[INFO] 配置文件解析失败：changeHandlerType配置项配置值" + this.changeHandlerType + "无效");
             System.exit(1);
         }
@@ -210,20 +210,22 @@ public abstract class AbstractCheckerBuilder implements CheckerType{
         //change handle
         configChangeHandler();
 
-        //context file path
-        this.dataFilePath = properties.getProperty("dataFilePath");
+        if (changeHandlerType.contains("static")) {
+            //context file path
+            this.dataFilePath = properties.getProperty("dataFilePath");
 
-        if (this.dataFilePath == null) {
-            System.out.println("[INFO] 配置文件解析失败：缺少dataFilePath配置项");
-            System.exit(1);
-        }
-        else if(!isFileExists(this.dataFilePath)) {
-            System.out.println("[INFO] 数据文件解析失败：数据文件" + this.dataFilePath + "不存在");
-            System.exit(1);
+            if (this.dataFilePath == null) {
+                System.out.println("[INFO] 配置文件解析失败：缺少dataFilePath配置项");
+                System.exit(1);
+            } else if (!isFileExists(this.dataFilePath)) {
+                System.out.println("[INFO] 数据文件解析失败：数据文件" + this.dataFilePath + "不存在");
+                System.exit(1);
 
+            }
         }
 
         if (changeHandlerType.contains("dynamic")) {
+
             try {
                 this.port = Integer.parseInt(properties.getProperty("port"));
             } catch (NumberFormatException e) {

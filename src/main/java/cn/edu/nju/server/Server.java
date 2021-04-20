@@ -25,7 +25,7 @@ public class Server extends AbstractCheckerBuilder implements Runnable{
     public Server(String configFilePath)  {
         super(configFilePath);
         if (!changeHandlerType.contains("dynamic")) {
-            System.out.println("[INFO] 非动态检测，请将changeHandlerType配置为dynamic");
+            System.out.println("[INFO] 配置文件配置错误：运行Server需将changeHandlerType配置为dynamic-change-based");
             System.exit(1);
         }
         System.out.println("[INFO] 服务器开始启动");
