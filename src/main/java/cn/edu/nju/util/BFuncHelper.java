@@ -42,11 +42,11 @@ public class BFuncHelper {
     }
 
     private static boolean isSameFly(Context c1, Context c2) {
-        return c1.getNo() != c2.getNo() && isFly(c1) && isFly(c2) && c1.getId().equals(c2.getId());
+        return c1.getNo() < c2.getNo() && isFly(c1) && isFly(c2) && c1.getId().equals(c2.getId());
     }
 
     private static boolean isSameShip(Context c1, Context c2) {
-        return c1.getNo() != c2.getNo() && isShip(c1) && isShip(c2) && c1.getId().equals(c2.getId());
+        return c1.getNo() < c2.getNo() && isShip(c1) && isShip(c2) && c1.getId().equals(c2.getId());
     }
 
     private static boolean flyControllable(Context c1, Context c2) {
