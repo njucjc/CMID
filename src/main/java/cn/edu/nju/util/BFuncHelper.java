@@ -90,7 +90,7 @@ public class BFuncHelper {
                 return false;
             }
             else {
-                return totalSec * 200 >= high;
+                return 6000 + totalSec * 200 >= high;
             }
         }
     }
