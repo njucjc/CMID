@@ -61,14 +61,40 @@ public class BFuncHelper {
         return sec != 0 && dist / sec <= 20;
     }
 
-    private static boolean isFlyAltSuddenChange(Context c1, Context c2) {
-        return c1.getAltitude() < 6000 && c2.getAltitude() > 6000;
+    private static boolean inFlyClimbSpeedRange(Context c1, Context c2) {
+        if (c1.getAltitude() < 6000 && c2.getAltitude() < 6000) {
+            double sec = Math.abs(TimestampHelper.timestampDiff(c1.getTimestamp(), c2.getTimestamp())) / 1000.0;
+            double alt = Math.abs(c1.getAltitude() - c2.getAltitude());
+            return sec != 0 && alt / sec <= 300;
+        }
+        else if (c1.getAltitude() > 6000 && c2.getAltitude() > 6000) {
+            double sec = Math.abs(TimestampHelper.timestampDiff(c1.getTimestamp(), c2.getTimestamp())) / 1000.0;
+            double alt = Math.abs(c1.getAltitude() - c2.getAltitude());
+            return sec != 0 && alt / sec <= 200;
+        }
+        else {
+            double high, low;
+            if (c1.getAltitude() > c2.getAltitude()) {
+                high = c1.getAltitude();
+                low = c2.getAltitude();
+            }
+            else {
+                high = c2.getAltitude();
+                low = c1.getAltitude();
+            }
+
+            double totalSec = Math.abs(TimestampHelper.timestampDiff(c1.getTimestamp(), c2.getTimestamp())) / 1000.0;
+            totalSec -= (6000 - low) / 300;
+
+            if (totalSec < 0) {
+                return false;
+            }
+            else {
+                return totalSec * 200 >= high;
+            }
+        }
     }
 
-    private static boolean inFlySpeedRangeBasedOnAlt(Context c1, Context c2) {
-        return c1.getSpeed() >= 0 && c1.getSpeed() <= 300 &&
-                c2.getSpeed() >= 0 && c2.getSpeed() <= 200;
-    }
 
 
     public static boolean bfun(String name, Context context1, Context context2) {
@@ -110,11 +136,8 @@ public class BFuncHelper {
             case "shipControllable":
                 value = shipControllable(context1, context2);
                 break;
-            case "isFlyAltSuddenChange":
-                value = isFlyAltSuddenChange(context1, context2);
-                break;
-            case "inFlySpeedRangeBasedOnAlt":
-                value = inFlySpeedRangeBasedOnAlt(context1, context2);
+            case "inFlyClimbSpeedRange":
+                value = inFlyClimbSpeedRange(context1, context2);
                 break;
             default:
                 System.out.println("[INFO] Illegal bfunc: " + name);
