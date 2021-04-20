@@ -6,6 +6,7 @@ import cn.edu.nju.node.STNode;
 import cn.edu.nju.pattern.Pattern;
 import cn.edu.nju.util.LinkHelper;
 import cn.edu.nju.util.LogFileHelper;
+import cn.edu.nju.util.RuleInfoHelper;
 
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,8 @@ public class EccChecker extends Checker{
 
                 if (addIncLink(link)) {
                     LogFileHelper.getLogger().info(getName() + " " + link, false);
+                    LogFileHelper.getLogger().info(RuleInfoHelper.translate(getName(), link), false);
+                    LogFileHelper.getLogger().info("",false);
                 }
             }
 
